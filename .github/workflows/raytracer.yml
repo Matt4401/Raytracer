@@ -1,0 +1,96 @@
+name: Raytracer
+
+env:
+  EXECUTABLES: Raytracer
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: [ ubuntu-latest ]
+    container:
+      image: epitechcontent/epitest-docker:latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Create build directory
+        run: mkdir -p build
+
+      - name: Configure CMake
+        run: cd build && cmake ..
+        timeout-minutes: 5
+
+      - name: Compile all binaries
+        run: cd build && cmake --build . -j$(nproc)
+        timeout-minutes: 5
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v6
+        with:
+          name: binaries
+          path: |
+            Raytracer
+            lib/
+
+  check_program_compilation:
+    needs: build
+    runs-on: [ ubuntu-latest ]
+    container:
+      image: epitechcontent/epitest-docker:latest
+    steps:
+      - name: Download binaries
+        uses: actions/download-artifact@v8
+        with:
+          name: binaries
+
+      - name: Verify executables
+        run: |
+          chmod +x Raytracer
+          for exe in $EXECUTABLES; do
+            if [ ! -x "$exe" ]; then
+            echo "::error file=$exe::Executable $exe not found or not executable"
+            exit 1
+            fi
+          done
+
+  linter:
+    runs-on: [ ubuntu-latest ]
+    container:
+      image: epitechcontent/epitest-docker:latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Install clang-tidy
+        run: apt-get update && apt-get install -y clang-tidy
+
+      - name: Configure CMake for clang-tidy
+        run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Run linter
+        run: run-clang-tidy -p build -header-filter='.*' -j$(nproc)
+        timeout-minutes: 3
+  format:
+    runs-on: [ ubuntu-latest ]
+    container:
+      image: epitechcontent/epitest-docker:latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Install clang-format
+        run: apt-get update && apt-get install -y clang-format-20
+
+      - name: Check code formatting
+        run: |
+          find . -name "*.cpp" -o -name "*.hpp" | xargs clang-format-20 -style=file --dry-run --Werror
