@@ -1,0 +1,50 @@
+name: Bug Report
+description: Report a bug to help us improve
+labels: ["🐞 bug"]
+assignees: []
+type: bug
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Give us a clear and concise description of the bug you encountered.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the bug in detail.
+      placeholder: "Describe the bug here"
+
+  - type: textarea
+    id: steps_to_reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Provide a step-by-step guide to reproduce the bug.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected Behavior
+      description: Describe what tcsh expected to happen.
+      placeholder: "Expected behavior"
+
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: Actual Behavior
+      description: Describe what actually happened.
+      placeholder: "Actual behavior"
+
+  - type: input
+    id: estimated_time
+    attributes:
+      label: Estimated time
+      description: How long do you think this bug will take to fix? (optional)
+      placeholder: Enter estimated time

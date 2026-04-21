@@ -1,0 +1,32 @@
+name: "New Feature Request"
+description: "Suggest a new feature for the project"
+labels: [":sparkles: feature"]
+assignees: []
+type: feature
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please provide a clear and concise description of the new feature you would like to request.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature description
+      description: A detailed description of the feature.
+      placeholder: Enter the feature description
+
+  - type: input
+    id: deadline
+    attributes:
+      label: Deadline
+      description: When do you need this feature by? (optional)
+      placeholder: Enter a deadline date
+
+  - type: input
+    id: estimated_time
+    attributes:
+      label: Estimated time
+      description: How long do you think this feature will take to implement? (optional)
+      placeholder: Enter estimated time
