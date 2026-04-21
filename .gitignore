@@ -1,0 +1,8 @@
+/.idea/
+/.vscode/
+/build/
+/lib/
+compile_flags.txt
+raytracer
+*.pdf
+.cache/

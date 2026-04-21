@@ -30,7 +30,6 @@ body:
       label: Definition of Done
       options:
         - label: "Unit tests/functional tests written and passing"
-        - label: "No Memory Leaks (Valgrind ok)"
         - label: "Documentation updated"
         - label: "Code follows project coding standards"
         - label: "Feature has been reviewed and approved by maintainers"
