@@ -1,6 +1,6 @@
 name: Bug Report
 description: Report a bug to help us improve
-labels: ["🐞 bug"]
+labels: ["enhancement"]
 assignees: []
 type: bug
 
@@ -32,7 +32,7 @@ body:
     id: expected_behavior
     attributes:
       label: Expected Behavior
-      description: Describe what tcsh expected to happen.
+      description: Describe what you expected to happen.
       placeholder: "Expected behavior"
 
   - type: textarea
@@ -41,10 +41,3 @@ body:
       label: Actual Behavior
       description: Describe what actually happened.
       placeholder: "Actual behavior"
-
-  - type: input
-    id: estimated_time
-    attributes:
-      label: Estimated time
-      description: How long do you think this bug will take to fix? (optional)
-      placeholder: Enter estimated time
