@@ -33,4 +33,4 @@ namespace raytracer {
         double z = 0;
     };
 
-} // namespace raytracer
+}  // namespace raytracer
