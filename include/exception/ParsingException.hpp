@@ -23,7 +23,7 @@ namespace raytracer::exception {
         }
 
         explicit ParsingException(const std::string_view msg) noexcept
-            : Exception(std::string("[Parsing Error]: ") + std::string(msg)) {
+            : Exception(std::string("[Parsing error]: ") + std::string(msg)) {
         }
     };
 }  // namespace raytracer::exception

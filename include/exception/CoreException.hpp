@@ -23,7 +23,7 @@ namespace raytracer::exception {
         }
 
         explicit CoreException(const std::string_view msg) noexcept
-            : Exception(std::string("[Core Error]: ") + std::string(msg)) {
+            : Exception(std::string("[Core error]: ") + std::string(msg)) {
         }
     };
 }  // namespace raytracer::exception
