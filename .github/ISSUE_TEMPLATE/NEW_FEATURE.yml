@@ -23,16 +23,3 @@ body:
       label: Technical Approach
       description: How do you propose to implement this feature? (Class, design patterns, etc.)
       placeholder: "Utilisation of a Mediator pattern to manage interactions between components."
-
-  - type: checkboxes
-    id: definition_of_done
-    attributes:
-      label: Definition of Done
-      options:
-        - label: "Unit tests/functional tests written and passing"
-        - label: "Documentation updated"
-        - label: "Code follows project coding standards"
-        - label: "Feature has been reviewed and approved by maintainers"
-        - label: "Feature works as expected and does not introduce new bugs"
-    validations:
-      required: true
