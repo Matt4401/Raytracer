@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** raytracer
 ** File description:
-** ParsingException
+** CoreException
 */
 
 #pragma once
@@ -14,16 +14,16 @@
 #include "exception/Exception.hpp"
 
 namespace raytracer::exception {
-    class ParsingException : public Exception {
+    class CoreException : public Exception {
       public:
         template <typename... Args>
-        explicit ParsingException(const std::string_view fmt,
-                                  Args &&...args) noexcept
+        explicit CoreException(const std::string_view fmt,
+                               Args &&...args) noexcept
             : Exception(std::vformat(fmt, std::make_format_args(args...))) {
         }
 
-        explicit ParsingException(const std::string_view msg) noexcept
-            : Exception(std::string("[Parsing Error]: ") + std::string(msg)) {
+        explicit CoreException(const std::string_view msg) noexcept
+            : Exception(std::string("[Core Error]: ") + std::string(msg)) {
         }
     };
 }  // namespace raytracer::exception
