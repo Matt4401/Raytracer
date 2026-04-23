@@ -11,7 +11,7 @@ SET (HEADERS
     #Future headers
 )
 
-add_library(sphere_plug ${SRCS} ${HEADERS})
+add_library(sphere_plug SHARED ${SRCS} ${HEADERS})
 set_target_properties(sphere_plug PROPERTIES
     PREFIX ""
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/plugins/

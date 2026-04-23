@@ -28,4 +28,3 @@ set(HEADERS
 )
 
 add_executable(${NAME} src/main.cpp ${SRCS} ${HEADERS})
-target_link_libraries(${NAME} PRIVATE -ldl)
