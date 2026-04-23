@@ -1,0 +1,34 @@
+/*
+** EPITECH PROJECT, 2026
+** ObjectFactory
+** File description:
+** ObjectFactory code
+*/
+
+#include "ObjectFactory.hpp"
+
+#include <memory>
+
+#include "object/IObject.hpp"
+
+namespace raytracer {
+
+    void ObjectFactory::registerBuild(const std::string &name,
+                                      const object::buildFunction &builder) {
+        this->_builders.emplace(name, builder);
+    }
+
+    std::unique_ptr<object::IObject> ObjectFactory::build(
+        const std::string &name, const std::vector<std::any> &param) {
+        auto iter = this->_builders.find(name);
+
+        if (iter == this->_builders.end()) {
+            return nullptr;
+        }
+        object::IObject *rawObject = iter->second(param);
+        if (rawObject == nullptr) {
+            return nullptr;
+        }
+        return std::unique_ptr<object::IObject>(rawObject);
+    }
+}  // namespace raytracer
