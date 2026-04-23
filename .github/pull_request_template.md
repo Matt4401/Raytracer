@@ -1,7 +1,5 @@
 ## Description
 
-## Technical details
-
 ## Definition of Done
 - [ ] **Unit tests/functional :** tests written and passing.
 - [ ] **Documentation :** docs updated.
