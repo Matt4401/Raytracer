@@ -5,8 +5,6 @@
 ** Exception
 */
 
-#pragma once
-
 #include "exception/Exception.hpp"
 
 #include <source_location>
