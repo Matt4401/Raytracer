@@ -29,6 +29,7 @@ set(HEADERS
         src/exception/Exception.cpp
         include/exception/ParsingException.hpp
         include/exception/CoreException.hpp
+        include/exception/PluginException.hpp
 )
 
 add_executable(${NAME} src/main.cpp ${SRCS} ${HEADERS})
