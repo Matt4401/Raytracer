@@ -10,13 +10,14 @@
 #include <exception>
 #include <source_location>
 #include <string>
+#include <string_view>
 
 namespace raytracer::exception {
     using source = std::source_location;
 
     class Exception : public std::exception {
       public:
-        explicit Exception(const std::string &message,
+        explicit Exception(std::string_view,
                            const source &location = source::current()) noexcept;
         Exception(const Exception &) = default;
         Exception(Exception &&) = default;
@@ -34,6 +35,5 @@ namespace raytracer::exception {
         std::string _fullMessage;
 
         [[nodiscard]] std::string buildFullMessage() const noexcept;
-        [[nodiscard]] std::string getLocationString() const noexcept;
     };
 }  // namespace raytracer::exception

@@ -9,15 +9,15 @@
 
 #include "exception/Exception.hpp"
 
+#include <source_location>
 #include <sstream>
 #include <string>
+#include <string_view>
 
 namespace raytracer::exception {
-    Exception::Exception(const std::string &message,
+    Exception::Exception(const std::string_view message,
                          const source &location) noexcept
-        : _message(message),
-          _location(location),
-          _fullMessage(buildFullMessage()) {
+        : _message(message), _location(location) {
         _fullMessage = buildFullMessage();
     }
 
@@ -31,13 +31,8 @@ namespace raytracer::exception {
 
     std::string Exception::buildFullMessage() const noexcept {
         std::ostringstream oss;
-        oss << _message << " at " << getLocationString();
-        return oss.str();
-    }
-
-    std::string Exception::getLocationString() const noexcept {
-        std::ostringstream oss;
-        oss << _location.file_name() << ":" << _location.line();
+        oss << _message << " in " << _location.file_name() << " at line "
+            << _location.line();
         return oss.str();
     }
 }  // namespace raytracer::exception

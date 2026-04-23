@@ -7,17 +7,21 @@
 
 #pragma once
 
+#include <format>
+
 #include "exception/Exception.hpp"
 
 namespace raytracer::exception {
     class ParsingException : public Exception {
       public:
-        static constexpr auto PREFIX = "[Parsing error]: ";
+        template <typename... Args>
+        explicit ParsingException(const std::string_view fmt,
+                                  Args &&...args) noexcept
+            : Exception(std::vformat(fmt, std::make_format_args(args...))) {
+        }
 
-        explicit ParsingException(
-            const std::string &msg,
-            const source &location = source::current()) noexcept
-            : Exception(PREFIX + msg, location) {
+        explicit ParsingException(const std::string_view msg) noexcept
+            : Exception(std::string("[Parsing Error] ") + std::string(msg)) {
         }
     };
 }  // namespace raytracer::exception
