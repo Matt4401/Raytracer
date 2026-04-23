@@ -8,14 +8,21 @@
 #ifndef CORE_HPP_
 #define CORE_HPP_
 
+#include "plugin/ObjectFactory.hpp"
+#include "plugin/PluginManager.hpp"
+
 namespace raytracer {
     class Core {
       public:
-        Core();
-        ~Core();
+        Core() = default;
+        ~Core() = default;
 
-      protected:
+        void init();
+        void run();
+
       private:
+        PluginManager _plugManager;
+        ObjectFactory _objFactory;
     };
 }  // namespace raytracer
 

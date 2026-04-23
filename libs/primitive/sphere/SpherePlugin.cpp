@@ -13,11 +13,11 @@
 
 #include "object/IObject.hpp"
 
-__attribute__((constructor)) extern "C" void constructor(void) {
+extern "C" __attribute__((constructor)) void constructor(void) {
     std::cout << "Sphere Plugin loaded successfully." << std::endl;
 }
 
-__attribute__((destructor)) extern "C" void destructor(void) {
+extern "C" __attribute__((destructor)) void destructor(void) {
     std::cout << "Sphere Plugin unloaded successfully." << std::endl;
 }
 

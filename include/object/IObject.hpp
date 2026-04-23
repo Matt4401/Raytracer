@@ -9,7 +9,6 @@
 
 #include <any>
 #include <functional>
-#include <memory>
 
 namespace object {
 
@@ -19,6 +18,6 @@ namespace object {
     };
 
     using buildFunction =
-        std::function<std::unique_ptr<IObject>(std::vector<std::any>)>;
+        std::function<IObject *(const std::vector<std::any> &param)>;
 
 }  // namespace object

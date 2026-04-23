@@ -19,13 +19,10 @@ include_directories(include)
 
 add_subdirectory(libs)
 
-set(SRCS
-    src/Core.cpp
-)
+set(SRCS src/Core.cpp src/plugin/PluginManager.cpp src/plugin/ObjectFactory.cpp)
 
-set(HEADERS
-    src/Core.hpp
-)
+set(HEADERS src/Core.hpp src/plugin/PluginManager.hpp
+            src/plugin/ObjectFactory.hpp src/plugin/DlLoader.hpp)
 
 add_executable(${NAME} src/main.cpp ${SRCS} ${HEADERS})
 target_link_libraries(${NAME} PRIVATE -ldl)
