@@ -15,15 +15,16 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../")
 
-# libs
+include_directories(include)
 
-# Used to set the path of .so set_target_properties( ${LibNAME1} ${LibName2}
-# PROPERTIES LIBRARY_OUTPUT_DIRECTORY
-# "${CMAKE_BINARY_DIR}/../plugins/${Category}/")
+add_subdirectory(libs)
 
-# Les fonctions du core
-set(SOURCES src/core/main.cpp)
+set(SRCS
+    src/Core.cpp
+)
 
-# Creation de l'exec arcade
-add_executable(${NAME} ${SOURCES})
-target_link_libraries(${NAME} PRIVATE -ldl)
+set(HEADERS
+    src/Core.hpp
+)
+
+add_executable(${NAME} src/main.cpp ${SRCS} ${HEADERS})
