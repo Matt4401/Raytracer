@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: [ ubuntu-latest ]
+    runs-on: [ ubuntu-latest, self-hosted ]
     container:
       image: epitechcontent/epitest-docker:latest
     steps:
@@ -40,7 +40,7 @@ jobs:
 
   check_program_compilation:
     needs: build
-    runs-on: [ ubuntu-latest ]
+    runs-on: [ ubuntu-latest, self-hosted ]
     container:
       image: epitechcontent/epitest-docker:latest
     steps:
@@ -60,7 +60,7 @@ jobs:
           done
 
   linter:
-    runs-on: [ ubuntu-latest ]
+    runs-on: [ ubuntu-latest, self-hosted ]
     container:
       image: epitechcontent/epitest-docker:latest
     steps:
@@ -79,7 +79,7 @@ jobs:
         run: run-clang-tidy -p build -header-filter='.*' -j$(nproc)
         timeout-minutes: 3
   format:
-    runs-on: [ ubuntu-latest ]
+    runs-on: [ ubuntu-latest, self-hosted ]
     container:
       image: epitechcontent/epitest-docker:latest
     steps:
