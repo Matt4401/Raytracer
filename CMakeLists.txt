@@ -25,6 +25,8 @@ set(SRCS
 
 set(HEADERS
     src/Core.hpp
+        include/exception/Exception.hpp
+        src/exception/Exception.cpp
 )
 
 add_executable(${NAME} src/main.cpp ${SRCS} ${HEADERS})
