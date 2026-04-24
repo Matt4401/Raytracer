@@ -1,4 +1,5 @@
 set(FIXTURES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/fixtures")
+set(TEST_PLUGINS_DIR "${CMAKE_SOURCE_DIR}/tests/plugins/")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
 include(FetchContent)
@@ -31,7 +32,10 @@ if (NOT SKIP_INTERNET)
     add_executable(exception_tests
             src/main.cpp
             src/exception/exception.cpp
+            src/core/test_plugin.cpp
             ${CMAKE_SOURCE_DIR}/src/exception/Exception.cpp
+            ${CMAKE_SOURCE_DIR}/src/plugin/ObjectFactory.cpp
+            ${CMAKE_SOURCE_DIR}/src/plugin/PluginManager.cpp
     )
 
     target_link_libraries(exception_tests PRIVATE
@@ -47,9 +51,12 @@ if (NOT SKIP_INTERNET)
     target_compile_definitions(exception_tests
             PRIVATE
             FIXTURES_PATH="${FIXTURES_DIR}"
+            TEST_PLUGINS_PATH="${TEST_PLUGINS_DIR}"
     )
 
     gtest_discover_tests(exception_tests)
 else ()
     message(WARNING "GoogleTest not available. Unit tests will not be built.")
 endif ()
+
+add_subdirectory(libs)
