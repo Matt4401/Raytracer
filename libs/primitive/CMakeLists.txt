@@ -3,7 +3,5 @@ SET (CMAKE_CXX_STANDARD 20)
 
 project(primitives)
 
-include_directories(../../include)
-
 #add_subdirectory(rectangle)
 add_subdirectory(sphere)

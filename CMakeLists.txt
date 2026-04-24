@@ -25,4 +25,3 @@ set(HEADERS src/Core.hpp src/plugin/PluginManager.hpp
             src/plugin/ObjectFactory.hpp src/plugin/DlLoader.hpp)
 
 add_executable(${NAME} src/main.cpp ${SRCS} ${HEADERS})
-target_link_libraries(${NAME} PRIVATE -ldl)
