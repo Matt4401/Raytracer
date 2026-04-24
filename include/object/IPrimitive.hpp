@@ -7,13 +7,24 @@
 
 #pragma once
 
-namespace object::primitive {
+#include "Vector3"
+
+namespace raytracer::object::primitive {
 
     class IPrimitive {
       public:
-        virtual ~IPrimitive() = default;
+        struct BoundingBox {
+            double x;
+            double y;
+            double z;
+            double w;
+            double h;
+            double d;
+        };
 
-        bool hits();
+        virtual ~IPrimitive() = default;
+        virtual bool hits() = 0;
+        virtual BoundingBox boundingBox() = 0;
     };
 
-}  // namespace object::primitive
+}  // namespace raytracer::object::primitive

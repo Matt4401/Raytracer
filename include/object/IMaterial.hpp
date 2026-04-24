@@ -7,11 +7,11 @@
 
 #pragma once
 
-namespace object::material {
+namespace raytracer::object::material {
 
     class IMaterial {
       public:
         virtual ~IMaterial() = default;
     };
 
-}  // namespace object::material
+}  // namespace raytracer::object::material
