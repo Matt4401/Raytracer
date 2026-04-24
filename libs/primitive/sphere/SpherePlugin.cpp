@@ -11,7 +11,8 @@
 
 #include "object/IObject.hpp"
 
-extern "C" object::IObject* sphere_builder(const std::vector<std::any>& args) {
+extern "C" raytracer::object::IObject* sphere_builder(
+    const std::vector<std::any>& args) {
     return nullptr;
 }
 
