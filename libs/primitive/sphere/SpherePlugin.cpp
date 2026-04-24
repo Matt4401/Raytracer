@@ -25,6 +25,6 @@ extern "C" const char* name(void) {
 }
 
 // Returns a function pointer cast to void* for C compatibility
-extern "C" void* builder(void) {
-    return (void*)&sphere_builder;
+extern "C" raytracer::object::BuilderFunc builder(void) {
+    return &sphere_builder;
 }
