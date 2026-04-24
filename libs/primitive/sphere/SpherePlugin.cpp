@@ -11,7 +11,8 @@
 
 #include "object/IObject.hpp"
 
-extern "C" object::IObject* sphere_builder(const std::vector<std::any>& args) {
+extern "C" raytracer::object::IObject* sphere_builder(
+    const std::vector<std::any>& args) {
     return nullptr;
 }
 
@@ -24,6 +25,6 @@ extern "C" const char* name(void) {
 }
 
 // Returns a function pointer cast to void* for C compatibility
-extern "C" void* builder(void) {
-    return (void*)&sphere_builder;
+extern "C" raytracer::object::BuilderFunc builder(void) {
+    return &sphere_builder;
 }

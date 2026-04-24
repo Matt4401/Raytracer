@@ -11,14 +11,24 @@
 #include <functional>
 #include <memory>
 
-namespace object {
-
+namespace raytracer::object {
     class IObject {
       public:
+        enum class Type {
+            PRIMITIVE,
+            LIGHT,
+            MATERIAL,
+            SCENE,
+            CAMERA,
+            TRANSFORM
+        };
+
         virtual ~IObject() = default;
+        virtual Type type() const = 0;
     };
 
+    typedef raytracer::object::IObject* (*BuilderFunc)(const std::vector<std::any>&);
     using buildFunction =
         std::function<std::unique_ptr<IObject>(std::vector<std::any>)>;
 
-}  // namespace object
+}  // namespace raytracer::object

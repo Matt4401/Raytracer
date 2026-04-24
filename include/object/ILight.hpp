@@ -7,11 +7,11 @@
 
 #pragma once
 
-namespace object::light {
+namespace raytracer::object::light {
 
     class ILight {
       public:
         virtual ~ILight() = default;
     };
 
-}  // namespace object::light
+}  // namespace raytracer::object::light
