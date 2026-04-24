@@ -7,8 +7,10 @@
 
 #include "ObjectFactory.hpp"
 
+#include <iostream>
 #include <memory>
 
+#include "exception/PluginException.hpp"
 #include "object/IObject.hpp"
 
 namespace raytracer {
@@ -25,10 +27,15 @@ namespace raytracer {
         if (iter == this->_builders.end()) {
             return nullptr;
         }
-        object::IObject *rawObject = iter->second(param);
-        if (rawObject == nullptr) {
+        try {
+            object::IObject *rawObject = iter->second(param);
+            if (rawObject == nullptr) {
+                return nullptr;
+            }
+            return std::unique_ptr<object::IObject>(rawObject);
+        } catch (const raytracer::exception::PluginException &err) {
+            std::cerr << err.what() << "\n";
             return nullptr;
         }
-        return std::unique_ptr<object::IObject>(rawObject);
     }
 }  // namespace raytracer
