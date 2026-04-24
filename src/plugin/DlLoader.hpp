@@ -13,6 +13,8 @@
 #include <filesystem>
 #include <string_view>
 
+#include "exception/PluginException.hpp"
+
 namespace raytracer {
     class DlLoader {
       public:
@@ -68,19 +70,22 @@ namespace raytracer {
          * @tparam T The return type of the function to retrieve and execute
          * @param funcName The name of the function symbol to load and call
          * @return The result of executing the function, cast to type T
-         * @throw std::exception if the symbol is not found or library is not
-         * loaded
+         * @throw raytracer::exception::PluginException if the symbol is not
+         * found or library is not loaded
          */
         template <typename T>
         T get(const std::string_view &funcName) const {
             if (this->_handler == nullptr) {
-                throw std::exception();
+                throw raytracer::exception::PluginException(
+                    "DlLoader: Plugin is not loaded");
             }
+
             dlerror();
             void *sym = dlsym(this->_handler, funcName.data());
             const char *error = dlerror();
             if (error != nullptr || sym == nullptr) {
-                throw std::exception();
+                throw raytracer::exception::PluginException(
+                    "DlLoader: ", "Entry \"{}\" unfound", funcName);
             }
             auto func = reinterpret_cast<T (*)()>(sym);
             return func();

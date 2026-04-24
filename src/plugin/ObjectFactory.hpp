@@ -13,7 +13,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "../../include/object/IObject.hpp"
+#include "object/IObject.hpp"
 
 namespace raytracer {
 

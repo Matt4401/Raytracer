@@ -17,7 +17,7 @@ namespace raytracer {
 
     void ObjectFactory::registerBuild(const std::string &name,
                                       const object::buildFunction &builder) {
-        this->_builders.emplace(name, builder);
+        this->_builders.insert_or_assign(name, builder);
     }
 
     std::unique_ptr<object::IObject> ObjectFactory::build(

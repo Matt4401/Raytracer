@@ -8,10 +8,12 @@
 #include "PluginManager.hpp"
 
 #include <filesystem>
+#include <iostream>
 #include <string>
 #include <vector>
 
 #include "DlLoader.hpp"
+#include "exception/PluginException.hpp"
 #include "object/IObject.hpp"
 
 namespace raytracer {
@@ -28,11 +30,16 @@ namespace raytracer {
                 object::buildFunction builderPtr =
                     loader.get<raytracer::object::BuilderFunc>(ENTRY_BUILDER);
 
+                if (name.empty()) {
+                    return true;
+                }
                 factory.registerBuild(name, builderPtr);
                 return false;
+            } catch (const raytracer::exception::PluginException &err) {
+                std::cerr << err.what() << "\n";
             } catch (...) {
-                return true;
             }
+            return true;
         });
     }
 
