@@ -10,9 +10,9 @@
 #include <string_view>
 
 #include "../../libs/valid_plugin/ValidObject.hpp"
-#include "../src/plugin/ObjectFactory.hpp"
-#include "../src/plugin/PluginManager.hpp"
 #include "object/IObject.hpp"
+#include "plugin/ObjectFactory.hpp"
+#include "plugin/PluginManager.hpp"
 
 #ifndef TEST_PLUGINS_PATH
 #define TEST_PLUGINS_PATH "./tests/plugins/"

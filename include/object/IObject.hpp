@@ -9,6 +9,7 @@
 
 #include <any>
 #include <functional>
+#include <vector>
 
 namespace raytracer::object {
     class IObject {

@@ -5,7 +5,7 @@ SET (SRCS
 	TestPlugin.cpp
 )
 
-add_library(test_invalid_plug SHARED ${SRCS} ${HEADERS})
+add_library(test_invalid_plug SHARED ${SRCS})
 
 target_include_directories(test_invalid_plug PRIVATE ${CMAKE_SOURCE_DIR}/include)
 

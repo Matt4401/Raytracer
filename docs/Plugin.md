@@ -126,7 +126,7 @@ extern "C" const char *name(void) {
 
 // [4] Return the factory function
 extern "C" raytracer::object::BuilderFunc builder(void) {
-    return &exampleBbuilder;
+    return &exampleBuilder;
 }
 ```
 
