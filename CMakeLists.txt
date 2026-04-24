@@ -19,9 +19,17 @@ include_directories(include)
 
 add_subdirectory(libs)
 
+# raytracer
 set(SRCS src/Core.cpp src/plugin/PluginManager.cpp src/plugin/ObjectFactory.cpp)
 
 set(HEADERS src/Core.hpp src/plugin/PluginManager.hpp
             src/plugin/ObjectFactory.hpp src/plugin/DlLoader.hpp)
 
-add_executable(${NAME} src/main.cpp ${SRCS} ${HEADERS})
+add_library(core STATIC ${SRCS} ${HEADERS})
+
+target_include_directories(core PUBLIC src)
+
+# bin
+add_executable(${NAME} src/main.cpp)
+target_link_libraries(${NAME} PRIVATE core)
+

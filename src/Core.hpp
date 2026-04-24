@@ -23,6 +23,8 @@ namespace raytracer {
       private:
         PluginManager _plugManager;
         ObjectFactory _objFactory;
+
+        static constexpr std::string_view PLUGINS_FOLDER_PATH = "./plugins/";
     };
 }  // namespace raytracer
 

@@ -30,7 +30,7 @@ namespace raytracer {
         ~PluginManager() = default;
 
         void fillFactory(ObjectFactory &factory);
-        void updatePluginList();
+        void updatePluginList(const std::string_view &path);
 
       private:
         std::vector<DlLoader> _pluginLoaderList;
@@ -38,9 +38,9 @@ namespace raytracer {
         static constexpr std::string_view ENTRY_NAME = "name";
         static constexpr std::string_view ENTRY_BUILDER = "builder";
         static constexpr std::string_view ENTRY_TYPE = "type";
-        static constexpr std::string_view FOLDER_PATH = "./plugins/";
 
-        static std::vector<std::filesystem::path> fetchLibsPath();
+        static std::vector<std::filesystem::path> fetchLibsPath(
+            const std::string_view &path);
         static void getLibsFromFolder(std::vector<std::filesystem::path> &libs,
                                       const std::filesystem::path &folder);
     };

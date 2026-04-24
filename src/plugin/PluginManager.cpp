@@ -11,30 +11,34 @@
 #include <string>
 #include <vector>
 
-#include "../../include/object/IObject.hpp"
 #include "DlLoader.hpp"
+#include "object/IObject.hpp"
 
 namespace raytracer {
 
     void PluginManager::fillFactory(ObjectFactory &factory) {
-        std::erase_if(
-            this->_pluginLoaderList, [&factory](const DlLoader &loader) {
-                try {
-                    std::string name = loader.get<std::string>(ENTRY_NAME);
-                    object::buildFunction builderPtr =
-                        loader.get<object::buildFunction>(ENTRY_BUILDER);
+        if (this->_pluginLoaderList.empty()) {
+            return;
+        }
+        std::erase_if(this->_pluginLoaderList, [&factory](
+                                                   const DlLoader &loader) {
+            try {
+                const char *rawName = loader.get<const char *>(ENTRY_NAME);
+                std::string name = rawName ? rawName : "";
+                object::buildFunction builderPtr =
+                    loader.get<raytracer::object::BuilderFunc>(ENTRY_BUILDER);
 
-                    factory.registerBuild(name, builderPtr);
-                    return false;
-                } catch (...) {
-                    return true;
-                }
-            });
+                factory.registerBuild(name, builderPtr);
+                return false;
+            } catch (...) {
+                return true;
+            }
+        });
     }
 
-    void PluginManager::updatePluginList() {
+    void PluginManager::updatePluginList(const std::string_view &path) {
         this->_pluginLoaderList.clear();
-        std::vector<std::filesystem::path> libsPath = this->fetchLibsPath();
+        std::vector<std::filesystem::path> libsPath = this->fetchLibsPath(path);
 
         for (const auto &lib : libsPath) {
             DlLoader loader;
@@ -46,14 +50,15 @@ namespace raytracer {
         }
     }
 
-    std::vector<std::filesystem::path> PluginManager::fetchLibsPath() {
-        if (!std::filesystem::exists(FOLDER_PATH) ||
-            !std::filesystem::is_directory(FOLDER_PATH)) {
+    std::vector<std::filesystem::path> PluginManager::fetchLibsPath(
+        const std::string_view &path) {
+        if (!std::filesystem::exists(path) ||
+            !std::filesystem::is_directory(path)) {
             return {};
         }
         std::vector<std::filesystem::path> filepaths;
 
-        PluginManager::getLibsFromFolder(filepaths, FOLDER_PATH);
+        PluginManager::getLibsFromFolder(filepaths, path);
 
         return filepaths;
     }

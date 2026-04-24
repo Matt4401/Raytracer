@@ -7,22 +7,17 @@
 
 #include "Core.hpp"
 
-#include <iostream>
-
-#include "plugin/ObjectFactory.hpp"
 #include "plugin/PluginManager.hpp"
 
 namespace raytracer {
 
     void Core::init() {
-        this->_plugManager.updatePluginList();
+        this->_plugManager.updatePluginList(PLUGINS_FOLDER_PATH);
         this->_plugManager.fillFactory(this->_objFactory);
     }
 
     void Core::run() {
-        if (this->_objFactory.build("test", {}) == nullptr) {
-            std::cout << "it seem to work\n";
-        }
+        // TODO: loop
     }
 
 }  // namespace raytracer
