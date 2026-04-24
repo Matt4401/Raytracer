@@ -36,6 +36,12 @@ namespace raytracer {
         DlLoader(const DlLoader &) = delete;
         DlLoader &operator=(const DlLoader &) = delete;
 
+        /**
+         * @brief Open and load a shared library
+         *
+         * @param path: Path to the shared library file
+         * @return true if library was successfully loaded, false otherwise
+         */
         bool open(const std::filesystem::path &path) {
             void *buffer = dlopen(path.c_str(), RTLD_LAZY);
             if (buffer == nullptr) {
@@ -46,6 +52,9 @@ namespace raytracer {
             return true;
         }
 
+        /**
+         * @brief Close and unload the shared library
+         */
         void close() {
             if (this->_handler != nullptr) {
                 dlclose(this->_handler);
@@ -53,6 +62,15 @@ namespace raytracer {
             }
         }
 
+        /**
+         * @brief Load and execute a function from the loaded library
+         *
+         * @tparam T The return type of the function to retrieve and execute
+         * @param funcName The name of the function symbol to load and call
+         * @return The result of executing the function, cast to type T
+         * @throw std::exception if the symbol is not found or library is not
+         * loaded
+         */
         template <typename T>
         T get(const std::string_view &funcName) const {
             if (this->_handler == nullptr) {

@@ -17,7 +17,7 @@ namespace raytracer {
     }
 
     void Core::run() {
-        // TODO: loop
+        // TODO: main compute
     }
 
 }  // namespace raytracer

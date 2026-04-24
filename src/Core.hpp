@@ -17,7 +17,19 @@ namespace raytracer {
         Core() = default;
         ~Core() = default;
 
+        /**
+         * @brief Initialize the core and plugins
+         *
+         * Loads plugins from the plugins folder and registers them in the
+         * factory.
+         */
         void init();
+
+        /**
+         * @brief Run the main loop
+         *
+         * TODO: Implement the main core program
+         */
         void run();
 
       private:

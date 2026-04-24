@@ -36,7 +36,7 @@ namespace raytracer {
         });
     }
 
-    void PluginManager::updatePluginList(const std::string_view &path) {
+    void PluginManager::updatePluginList(const std::filesystem::path &path) {
         this->_pluginLoaderList.clear();
         std::vector<std::filesystem::path> libsPath = this->fetchLibsPath(path);
 
@@ -51,7 +51,7 @@ namespace raytracer {
     }
 
     std::vector<std::filesystem::path> PluginManager::fetchLibsPath(
-        const std::string_view &path) {
+        const std::filesystem::path &path) {
         if (!std::filesystem::exists(path) ||
             !std::filesystem::is_directory(path)) {
             return {};
