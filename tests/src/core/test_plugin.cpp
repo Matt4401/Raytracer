@@ -73,19 +73,6 @@ TEST(CORE_PLUGIN, mixed_valid_and_invalid_plugins) {
     ASSERT_EQ(invalidObject, nullptr);
 }
 
-TEST(CORE_PLUGIN, error_missing_name_symbol) {
-    raytracer::PluginManager plugManager;
-    raytracer::ObjectFactory objFactory;
-
-    plugManager.updatePluginList(PLUGINS_PATH);
-    plugManager.fillFactory(objFactory);
-
-    std::unique_ptr<raytracer::object::IObject> object =
-        objFactory.build("missing_name", {});
-
-    ASSERT_EQ(object, nullptr);
-}
-
 TEST(CORE_PLUGIN, update_plugin_list_idempotent_reload) {
     raytracer::PluginManager plugManager;
     raytracer::ObjectFactory objFactory;

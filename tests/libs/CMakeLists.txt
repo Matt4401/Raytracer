@@ -4,4 +4,4 @@ SET (CMAKE_CXX_STANDARD 20)
 project(test_libs)
 
 add_subdirectory(valid_plugin)
-add_subdirectory(invalid_plugins)
+add_subdirectory(invalid_plugin)
