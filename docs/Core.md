@@ -11,7 +11,7 @@
 ## Exceptions
 The system is based on a hierarchy of classes allowing specialization of errors by module (Parsing, Plugins, Primitives, etc.).
 
-- `BaseException` - Base class for all custom exceptions
+- `Exception` - Base class for all custom exceptions
 - `ParsingException` - Errors during file/configuration parsing
 - `PluginsException` - Errors related to plugin loading and execution
 - `PrimitivesException` - Errors in primitive object creation/manipulation

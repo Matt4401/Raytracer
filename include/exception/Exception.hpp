@@ -18,7 +18,7 @@ namespace raytracer::exception {
     class Exception : public std::exception {
       public:
         explicit Exception(std::string_view,
-                           const source &location = source::current()) noexcept;
+                           const source &location = source::current());
         Exception(const Exception &) = default;
         Exception(Exception &&) = default;
         ~Exception() override = default;
@@ -34,6 +34,6 @@ namespace raytracer::exception {
         std::source_location _location;
         std::string _fullMessage;
 
-        [[nodiscard]] std::string buildFullMessage() const noexcept;
+        [[nodiscard]] std::string buildFullMessage() const;
     };
 }  // namespace raytracer::exception

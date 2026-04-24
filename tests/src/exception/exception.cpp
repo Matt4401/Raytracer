@@ -87,14 +87,14 @@ TEST_F(ExceptionTest, CoreExceptionSimpleMessage) {
 }
 
 TEST_F(ExceptionTest, CoreExceptionWithFormat) {
-    raytracer::exception::CoreException exc("[Core error]: Error code: {}", 42);
+     raytracer::exception::CoreException exc("Error code: {}", 42);
     std::string message(exc.what());
     ASSERT_TRUE(message.find("[Core error]:") != std::string::npos);
     ASSERT_TRUE(message.find("Error code: 42") != std::string::npos);
 }
 
 TEST_F(ExceptionTest, CoreExceptionMultipleArgs) {
-    raytracer::exception::CoreException exc("[Core error]: File {} not found at line {}", "config.txt", 123);
+    raytracer::exception::CoreException exc("File {} not found at line {}", "config.txt", 123);
     std::string message(exc.what());
     ASSERT_TRUE(message.find("[Core error]:") != std::string::npos);
     ASSERT_TRUE(message.find("config.txt") != std::string::npos);
@@ -116,7 +116,7 @@ TEST_F(ExceptionTest, ParsingExceptionSimpleMessage) {
 }
 
 TEST_F(ExceptionTest, ParsingExceptionWithFormat) {
-    raytracer::exception::ParsingException exc("[Parsing error]: Expected token {} at position {}", "EOF", 512);
+    raytracer::exception::ParsingException exc("Expected token {} at position {}", "EOF", 512);
     std::string message(exc.what());
     ASSERT_TRUE(message.find("[Parsing error]:") != std::string::npos);
     ASSERT_TRUE(message.find("EOF") != std::string::npos);
@@ -143,18 +143,26 @@ TEST_F(ExceptionTest, PluginExceptionSimpleMessage) {
     ASSERT_TRUE(message.find("Plugin loading failed") != std::string::npos);
 }
 
-TEST_F(ExceptionTest, PluginExceptionWithFormat) {
-    raytracer::exception::PluginException exc("Plugin {} version mismatch", "sphere");
+TEST_F(ExceptionTest, PluginExceptionWithPrefix) {
+    raytracer::exception::PluginException exc(
+        raytracer::exception::PluginException::PREFIX,
+        "Plugin {} version mismatch",
+        "sphere"
+    );
     std::string message(exc.what());
     ASSERT_TRUE(message.find("[Plugin error]:") != std::string::npos);
     ASSERT_TRUE(message.find("sphere") != std::string::npos);
 }
 
-TEST_F(ExceptionTest, PluginExceptionWithPrefix) {
-    raytracer::exception::PluginException exc("[Custom]: ", "Error: {}", 99);
+TEST_F(ExceptionTest, PluginExceptionWithCustomPrefix) {
+    raytracer::exception::PluginException exc(
+        "[Custom]: ",
+        "Error code: {}",
+        99
+    );
     std::string message(exc.what());
     ASSERT_TRUE(message.find("[Custom]:") != std::string::npos);
-    ASSERT_FALSE(message.empty());
+    ASSERT_TRUE(message.find("99") != std::string::npos);
 }
 
 TEST_F(ExceptionTest, PluginExceptionThrow) {
@@ -188,6 +196,90 @@ TEST_F(ExceptionTest, PrimitivesExceptionThrow) {
 
 TEST_F(ExceptionTest, PrimitivesExceptionInheritance) {
     raytracer::exception::PrimitivesException exc("Test");
+    ASSERT_TRUE(dynamic_cast<raytracer::exception::PluginException*>(&exc) != nullptr);
+    ASSERT_TRUE(dynamic_cast<raytracer::exception::Exception*>(&exc) != nullptr);
+}
+
+// Tests for TransformationException class
+TEST_F(ExceptionTest, TransformationExceptionSimpleMessage) {
+    raytracer::exception::TransformationException exc("Rotation failed");
+    std::string message(exc.what());
+    ASSERT_TRUE(message.find("[Plugin > Transformation]:") != std::string::npos);
+    ASSERT_TRUE(message.find("Rotation failed") != std::string::npos);
+}
+
+TEST_F(ExceptionTest, TransformationExceptionWithFormat) {
+    raytracer::exception::TransformationException exc("Invalid angle: {} degrees", 360.5);
+    std::string message(exc.what());
+    ASSERT_TRUE(message.find("[Plugin > Transformation]:") != std::string::npos);
+    ASSERT_TRUE(message.find("360") != std::string::npos);
+}
+
+TEST_F(ExceptionTest, TransformationExceptionThrow) {
+    ASSERT_THROW(
+        throw raytracer::exception::TransformationException("Transformation error"),
+        raytracer::exception::PluginException
+    );
+}
+
+TEST_F(ExceptionTest, TransformationExceptionInheritance) {
+    raytracer::exception::TransformationException exc("Test");
+    ASSERT_TRUE(dynamic_cast<raytracer::exception::PluginException*>(&exc) != nullptr);
+    ASSERT_TRUE(dynamic_cast<raytracer::exception::Exception*>(&exc) != nullptr);
+}
+
+// Tests for LightException class
+TEST_F(ExceptionTest, LightExceptionSimpleMessage) {
+    raytracer::exception::LightException exc("Light creation failed");
+    std::string message(exc.what());
+    ASSERT_TRUE(message.find("[Plugin > Light]:") != std::string::npos);
+    ASSERT_TRUE(message.find("Light creation failed") != std::string::npos);
+}
+
+TEST_F(ExceptionTest, LightExceptionWithFormat) {
+    raytracer::exception::LightException exc("Invalid intensity: {}", -10);
+    std::string message(exc.what());
+    ASSERT_TRUE(message.find("[Plugin > Light]:") != std::string::npos);
+    ASSERT_TRUE(message.find("-10") != std::string::npos);
+}
+
+TEST_F(ExceptionTest, LightExceptionThrow) {
+    ASSERT_THROW(
+        throw raytracer::exception::LightException("Light error"),
+        raytracer::exception::PluginException
+    );
+}
+
+TEST_F(ExceptionTest, LightExceptionInheritance) {
+    raytracer::exception::LightException exc("Test");
+    ASSERT_TRUE(dynamic_cast<raytracer::exception::PluginException*>(&exc) != nullptr);
+    ASSERT_TRUE(dynamic_cast<raytracer::exception::Exception*>(&exc) != nullptr);
+}
+
+// Tests for MaterialException class
+TEST_F(ExceptionTest, MaterialExceptionSimpleMessage) {
+    raytracer::exception::MaterialException exc("Material loading failed");
+    std::string message(exc.what());
+    ASSERT_TRUE(message.find("[Plugin > Material]:") != std::string::npos);
+    ASSERT_TRUE(message.find("Material loading failed") != std::string::npos);
+}
+
+TEST_F(ExceptionTest, MaterialExceptionWithFormat) {
+    raytracer::exception::MaterialException exc("Unknown material: {}", "unknown_type");
+    std::string message(exc.what());
+    ASSERT_TRUE(message.find("[Plugin > Material]:") != std::string::npos);
+    ASSERT_TRUE(message.find("unknown_type") != std::string::npos);
+}
+
+TEST_F(ExceptionTest, MaterialExceptionThrow) {
+    ASSERT_THROW(
+        throw raytracer::exception::MaterialException("Material error"),
+        raytracer::exception::PluginException
+    );
+}
+
+TEST_F(ExceptionTest, MaterialExceptionInheritance) {
+    raytracer::exception::MaterialException exc("Test");
     ASSERT_TRUE(dynamic_cast<raytracer::exception::PluginException*>(&exc) != nullptr);
     ASSERT_TRUE(dynamic_cast<raytracer::exception::Exception*>(&exc) != nullptr);
 }

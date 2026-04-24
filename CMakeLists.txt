@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.28)
 set(NAME "raytracer")
 
 project(
-  ${NAME}
-  VERSION 1.0.0
-  LANGUAGES CXX)
+        ${NAME}
+        VERSION 1.0.0
+        LANGUAGES CXX)
 
 # config CPP
 set(CMAKE_CXX_STANDARD 20)
@@ -27,21 +27,22 @@ if (BUILD_TESTS)
     add_subdirectory(tests)
 
     add_custom_target(check
-        COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        COMMENT "Running all tests"
-        VERBATIM
+            COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Running all tests"
+            VERBATIM
     )
 endif ()
 
 set(SRCS
-    src/Core.cpp
+        src/Core.cpp
+        src/exception/Exception.cpp
+
 )
 
 set(HEADERS
-    src/Core.hpp
+        src/Core.hpp
         include/exception/Exception.hpp
-        src/exception/Exception.cpp
         include/exception/ParsingException.hpp
         include/exception/CoreException.hpp
         include/exception/PluginException.hpp

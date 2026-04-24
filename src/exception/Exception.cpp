@@ -19,7 +19,7 @@ namespace raytracer::exception {
      * @param location Call site metadata, defaults to std::source_location::current().
      */
     Exception::Exception(const std::string_view message,
-                         const source &location) noexcept
+                         const source &location)
         : _message(message), _location(location) {
         _fullMessage = buildFullMessage();
     }
@@ -44,7 +44,7 @@ namespace raytracer::exception {
      * @brief Composes a full message including file and line information.
      * @return Formatted string: "<message> in <file> at line <line>".
      */
-    std::string Exception::buildFullMessage() const noexcept {
+    std::string Exception::buildFullMessage() const {
         std::ostringstream oss;
         oss << _message << " in " << _location.file_name() << " at line "
             << _location.line();
