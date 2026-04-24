@@ -38,7 +38,8 @@ namespace raytracer {
 
     void PluginManager::updatePluginList(const std::filesystem::path &path) {
         this->_pluginLoaderList.clear();
-        std::vector<std::filesystem::path> libsPath = this->fetchLibsPath(path);
+        std::vector<std::filesystem::path> libsPath =
+            this->getLibsFromFolder(path);
 
         for (const auto &lib : libsPath) {
             DlLoader loader;
@@ -50,7 +51,7 @@ namespace raytracer {
         }
     }
 
-    std::vector<std::filesystem::path> PluginManager::fetchLibsPath(
+    std::vector<std::filesystem::path> PluginManager::getLibsFromFolder(
         const std::filesystem::path &path) {
         if (!std::filesystem::exists(path) ||
             !std::filesystem::is_directory(path)) {
@@ -58,26 +59,17 @@ namespace raytracer {
         }
         std::vector<std::filesystem::path> filepaths;
 
-        PluginManager::getLibsFromFolder(filepaths, path);
-
-        return filepaths;
-    }
-
-    void PluginManager::getLibsFromFolder(
-        std::vector<std::filesystem::path> &libs,
-        const std::filesystem::path &folder) {
         for (const auto &dirEntry :
              std::filesystem::recursive_directory_iterator(
-                 folder,
+                 path,
                  std::filesystem::directory_options::skip_permission_denied)) {
-            if (dirEntry.is_directory()) {
-                PluginManager::getLibsFromFolder(libs, dirEntry.path());
-            }
             if (dirEntry.is_regular_file() &&
                 dirEntry.path().extension() == EXTENSION_NAME) {
-                libs.emplace_back(dirEntry.path());
+                filepaths.emplace_back(dirEntry.path());
             }
         }
+
+        return filepaths;
     }
 
 }  // namespace raytracer

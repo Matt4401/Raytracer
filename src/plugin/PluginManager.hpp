@@ -58,18 +58,8 @@ namespace raytracer {
          * @param path: The directory path to search
          * @return A vector of filesystem paths to found libraries
          */
-        static std::vector<std::filesystem::path> fetchLibsPath(
+        static std::vector<std::filesystem::path> getLibsFromFolder(
             const std::filesystem::path &path);
-
-        /**
-         * @brief Recursively collect library files from a folder and its
-         * subdirectories
-         *
-         * @param libs: Reference to vector where library paths will be stored
-         * @param folder: The folder to search recursively
-         */
-        static void getLibsFromFolder(std::vector<std::filesystem::path> &libs,
-                                      const std::filesystem::path &folder);
     };
 
 }  // namespace raytracer
