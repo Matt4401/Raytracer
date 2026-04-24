@@ -19,6 +19,21 @@ include_directories(include)
 
 add_subdirectory(libs)
 
+# Enable testing
+enable_testing()
+set(BUILD_TESTS ON)
+
+if (BUILD_TESTS)
+    add_subdirectory(tests)
+
+    add_custom_target(check
+        COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMENT "Running all tests"
+        VERBATIM
+    )
+endif ()
+
 set(SRCS
     src/Core.cpp
 )
