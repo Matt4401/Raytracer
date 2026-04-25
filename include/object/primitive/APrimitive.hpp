@@ -8,6 +8,7 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 
 #include "math/Ray.hpp"
 #include "math/Vector.hpp"

@@ -11,10 +11,10 @@
 #include <cmath>
 #include <vector>
 
-#include "utils/ObjectMiddleware.hpp"
 #include "math/Vector.hpp"
 #include "object/primitive/APrimitive.hpp"
 #include "object/primitive/ReflTypes.hpp"
+#include "util/ObjectMiddleware.hpp"
 
 namespace raytracer::object::primitive {
     Sphere::Sphere(const std::vector<std::any> &args)
@@ -29,12 +29,16 @@ namespace raytracer::object::primitive {
                                                               EXPECTED_ARGS)),
           _radius(util::ObjectMiddleware::validate<double>(args, 3, "Sphere",
                                                            EXPECTED_ARGS)) {
+        util::ObjectMiddleware::unsignedDouble(_radius, "radius", "Sphere");
+        util::ObjectMiddleware::vectorColor(_color, "Sphere");
     }
 
     Sphere::Sphere(const maths::Vector &vector, const maths::Vector &emission,
                    const maths::Vector &color, const double radius,
                    const RefltT refl)
         : APrimitive("Sphere", vector, emission, color, refl), _radius(radius) {
+        util::ObjectMiddleware::unsignedDouble(_radius, "radius", "Sphere");
+        util::ObjectMiddleware::vectorColor(_color, "Sphere");
     }
 
     const double &Sphere::radius() const noexcept {
@@ -50,7 +54,7 @@ namespace raytracer::object::primitive {
         if (det < 0) {
             return 0;
         }
-        det = sqrt(det);
+        det = std::sqrt(det);
         return (t = b - det) > EPS ? t : ((t = b + det) > EPS ? t : 0);
     }
 

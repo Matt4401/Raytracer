@@ -5,7 +5,7 @@
 ** APrimitive
 */
 
-#include "../../../include/object/primitive/APrimitive.hpp"
+#include "object/primitive/APrimitive.hpp"
 
 namespace raytracer::object::primitive {
     const std::string &APrimitive::name() const noexcept {

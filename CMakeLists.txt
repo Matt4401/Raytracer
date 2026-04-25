@@ -58,7 +58,8 @@ set(HEADERS
         include/object/primitive/IPrimitive.hpp
         include/object/primitive/APrimitive.hpp
         include/object/primitive/ReflTypes.hpp
-        include/utils/ObjectMiddleware.hpp
+        include/util/ObjectMiddleware.hpp
+        src/util/ObjectMiddleware.cpp
 )
 
 add_executable(${NAME} src/main.cpp ${SRCS} ${HEADERS})
