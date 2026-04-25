@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "math/Color.hpp"
 #include "math/Ray.hpp"
 #include "math/Vector.hpp"
 #include "object/primitive/IPrimitive.hpp"
@@ -21,7 +22,7 @@ namespace raytracer::object::primitive {
         explicit APrimitive(const std::string_view name,
                             const maths::Vector &center,
                             const maths::Vector &emission,
-                            const maths::Vector &color,
+                            const maths::Color &color,
                             const RefltT refl = RefltT::DIFF)
             : _name(name),
               _center(center),
@@ -36,7 +37,7 @@ namespace raytracer::object::primitive {
 
         maths::Vector center() const noexcept;
         maths::Vector emission() const noexcept;
-        maths::Vector color() const noexcept;
+        maths::Color color() const noexcept;
         RefltT refl() const noexcept;
         const std::string &name() const noexcept;
 
@@ -44,7 +45,7 @@ namespace raytracer::object::primitive {
         std::string _name;
         maths::Vector _center;
         maths::Vector _emission;
-        maths::Vector _color;
+        maths::Color _color;
         RefltT _refl;
     };
 }  // namespace raytracer::object::primitive
