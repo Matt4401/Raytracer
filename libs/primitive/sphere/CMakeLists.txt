@@ -11,6 +11,7 @@ SET (HEADERS
 )
 
 add_library(sphere_plug SHARED ${SRCS} ${HEADERS})
+target_link_libraries(sphere_plug PRIVATE raytracer_core)
 
 target_include_directories(sphere_plug PRIVATE
     ${CMAKE_SOURCE_DIR}/include

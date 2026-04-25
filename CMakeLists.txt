@@ -17,8 +17,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../")
 
 include_directories(include)
 
-add_subdirectory(libs)
-
 # Enable testing
 enable_testing()
 set(BUILD_TESTS ON)
@@ -37,8 +35,10 @@ endif ()
 set(SRCS
         src/Core.cpp
         src/exception/Exception.cpp
+        src/math/Color.cpp
         src/math/Vector.cpp
         src/object/primitive/APrimitive.cpp
+        src/util/ObjectMiddleware.cpp
 )
 
 set(HEADERS
@@ -47,6 +47,7 @@ set(HEADERS
         include/exception/ParsingException.hpp
         include/exception/CoreException.hpp
         include/exception/PluginException.hpp
+        include/math/Color.hpp
         include/math/Vector.hpp
         include/math/Ray.hpp
         include/object/AObject.hpp
@@ -59,7 +60,15 @@ set(HEADERS
         include/object/primitive/APrimitive.hpp
         include/object/primitive/ReflTypes.hpp
         include/util/ObjectMiddleware.hpp
-        src/util/ObjectMiddleware.cpp
 )
 
-add_executable(${NAME} src/main.cpp ${SRCS} ${HEADERS})
+add_library(raytracer_core STATIC ${SRCS})
+target_include_directories(raytracer_core PUBLIC
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/src
+)
+
+add_executable(${NAME} src/main.cpp ${HEADERS})
+target_link_libraries(${NAME} PRIVATE raytracer_core)
+
+add_subdirectory(libs)
