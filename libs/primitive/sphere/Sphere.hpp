@@ -34,6 +34,6 @@ namespace raytracer::object::primitive {
         double _radius;
 
         static constexpr std::size_t EXPECTED_ARGS = 5;
-        static constexpr std::size_t EPS = 1e-4;
+        static constexpr double EPS = 1e-4;
     };
 }  // namespace raytracer::object::primitive
