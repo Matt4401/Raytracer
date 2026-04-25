@@ -27,6 +27,11 @@ namespace raytracer::exception {
             "[Plugin > Material]: ";
 
         template <typename... Args>
+        explicit PluginException(std::string_view fmt, Args &&...args)
+            : PluginException(PREFIX, fmt, std::forward<Args>(args)...) {
+        }
+
+        template <typename... Args>
         explicit PluginException(const std::string_view prefix,
                                  const std::string_view fmt,
                                  Args &&...args)
