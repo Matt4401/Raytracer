@@ -37,7 +37,8 @@ endif ()
 set(SRCS
         src/Core.cpp
         src/exception/Exception.cpp
-
+        src/math/Vector.cpp
+        src/object/primitive/APrimitive.cpp
 )
 
 set(HEADERS
@@ -46,6 +47,18 @@ set(HEADERS
         include/exception/ParsingException.hpp
         include/exception/CoreException.hpp
         include/exception/PluginException.hpp
+        include/math/Vector.hpp
+        include/math/Ray.hpp
+        include/object/AObject.hpp
+        include/object/ACamera.hpp
+        include/object/IObject.hpp
+        include/object/ICamera.hpp
+        include/object/ILight.hpp
+        include/object/IScene.hpp
+        include/object/primitive/IPrimitive.hpp
+        include/object/primitive/APrimitive.hpp
+        include/object/primitive/ReflTypes.hpp
+        include/utils/ObjectMiddleware.hpp
 )
 
 add_executable(${NAME} src/main.cpp ${SRCS} ${HEADERS})
