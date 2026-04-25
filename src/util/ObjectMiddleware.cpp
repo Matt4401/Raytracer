@@ -19,12 +19,9 @@ namespace raytracer::util {
         }
     }
 
-    void ObjectMiddleware::vectorColor(maths::Vector color,
-                                       const std::string_view className) {
-        if (color.x < 0 || color.y < 0 || color.z < 0) {
-            throw exception::PluginException{
-                "{} color can't have negative value : {} {} {}", className,
-                color.x, color.y, color.z};
-        }
+    void ObjectMiddleware::color(const maths::Color &color,
+                                 const std::string_view className) {
+        (void)className;
+        (void)color;
     }
 }  // namespace raytracer::util
