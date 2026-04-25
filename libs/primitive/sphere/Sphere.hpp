@@ -10,6 +10,7 @@
 #include <any>
 #include <vector>
 
+#include "math/Color.hpp"
 #include "math/Ray.hpp"
 #include "math/Vector.hpp"
 #include "object/primitive/APrimitive.hpp"
@@ -21,7 +22,7 @@ namespace raytracer::object::primitive {
         explicit Sphere(const std::vector<std::any> &args);
         explicit Sphere(const maths::Vector &vector,
                         const maths::Vector &emission,
-                        const maths::Vector &color, double radius, RefltT refl);
+                        const maths::Color &color, double radius, RefltT refl);
         ~Sphere() override = default;
 
         const double &radius() const noexcept;
@@ -33,5 +34,6 @@ namespace raytracer::object::primitive {
         double _radius;
 
         static constexpr std::size_t EXPECTED_ARGS = 5;
+        static constexpr std::size_t EPS = 1e-4;
     };
 }  // namespace raytracer::object::primitive
