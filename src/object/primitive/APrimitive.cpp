@@ -20,7 +20,7 @@ namespace raytracer::object::primitive {
         return _emission;
     }
 
-    maths::Vector APrimitive::color() const noexcept {
+    maths::Color APrimitive::color() const noexcept {
         return _color;
     }
 
