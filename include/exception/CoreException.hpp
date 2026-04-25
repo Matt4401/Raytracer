@@ -26,9 +26,8 @@ namespace raytracer::exception {
                         source::current()) {
         }
 
-        explicit CoreException(
-            const std::string_view msg,
-            const source &location = source::current())
+        explicit CoreException(const std::string_view msg,
+                               const source &location = source::current())
             : Exception(std::string(PREFIX) + std::string(msg), location) {
         }
     };

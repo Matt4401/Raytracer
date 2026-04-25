@@ -27,7 +27,8 @@ namespace raytracer::object {
         virtual Type type() const = 0;
     };
 
-    typedef raytracer::object::IObject* (*BuilderFunc)(const std::vector<std::any>&);
+    typedef raytracer::object::IObject* (*BuilderFunc)(
+        const std::vector<std::any>&);
     using buildFunction =
         std::function<std::unique_ptr<IObject>(std::vector<std::any>)>;
 

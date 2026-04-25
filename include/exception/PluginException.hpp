@@ -33,8 +33,7 @@ namespace raytracer::exception {
 
         template <typename... Args>
         explicit PluginException(const std::string_view prefix,
-                                 const std::string_view fmt,
-                                 Args &&...args)
+                                 const std::string_view fmt, Args &&...args)
             : Exception(std::string(prefix) +
                             std::vformat(fmt, std::make_format_args(args...)),
                         source::current()) {
@@ -87,8 +86,7 @@ namespace raytracer::exception {
       public:
         template <typename... Args>
         explicit LightException(std::string_view fmt, Args &&...args)
-            : PluginException(LIGHT_PREFIX, fmt,
-                              std::forward<Args>(args)...) {
+            : PluginException(LIGHT_PREFIX, fmt, std::forward<Args>(args)...) {
         }
 
         explicit LightException(
@@ -111,11 +109,15 @@ namespace raytracer::exception {
             const source &location = source::current()) noexcept
             : PluginException(MATERIAL_PREFIX, msg, location) {
         }
-    private:
+
+      private:
         template <typename... Args>
-        static std::string formatWithPrefix(std::string_view prefix, std::string_view fmt, Args &&...args) {
-            return std::string(prefix) + std::vformat(fmt, std::make_format_args(std::forward<Args>(args)...));
+        static std::string formatWithPrefix(std::string_view prefix,
+                                            std::string_view fmt,
+                                            Args &&...args) {
+            return std::string(prefix) +
+                   std::vformat(
+                       fmt, std::make_format_args(std::forward<Args>(args)...));
         }
     };
 }  // namespace raytracer::exception
-
