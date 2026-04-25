@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "exception/PluginException.hpp"
+#include "math/Color.hpp"
 #include "math/Vector.hpp"
 
 namespace raytracer::util {
@@ -78,14 +79,13 @@ namespace raytracer::util {
                                    std::string_view className);
 
         /**
-         @brief Check if a double given color vector is negative or not. Because
-         a RGB color can't be negative.
-         * @param color color vector to check. Compose of r g and b value.
+        @brief Check if a color is valid.
+         * @param color color to check.
          * @param className name of the class of the value.v
          * @throws PluginException If the index is out of bounds or if the type
          casting fails, with a message indicating the nature of the error.
          */
-        static void vectorColor(maths::Vector color,
-                                std::string_view className);
+        static void color(const maths::Color &color,
+                          std::string_view className);
     };
 }  // namespace raytracer::util
