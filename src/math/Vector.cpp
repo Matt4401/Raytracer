@@ -5,7 +5,7 @@
 ** Vector
 */
 
-#include "Vector.hpp"
+#include "../../include/math/Vector.hpp"
 
 namespace raytracer::maths {
 
