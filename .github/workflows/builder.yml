@@ -1,0 +1,75 @@
+name: Render PPM on VM
+
+on:
+  push:
+    branches: ["main"]
+    paths-ignore:
+      - "image.ppm"
+      - "image.png"
+
+jobs:
+  build:
+    runs-on: [ self-hosted ]
+    container:
+      image: epitechcontent/epitest-docker:latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          mkdir -p build
+          cd build
+          cmake ..
+          cmake --build . -j$(nproc)
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries
+          path: Raytracer
+
+
+  render_on_vm:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: binaries
+
+      - name: Setup SSH
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > key.pem
+          chmod 600 key.pem
+
+      - name: Send binary
+        run: |
+          scp -o StrictHostKeyChecking=no -i key.pem \
+          Raytracer ${{ secrets.USER }}@${{ secrets.HOST }}:/home/${{ secrets.USER }}/Raytracer
+
+      - name: Run on VM
+        run: |
+          ssh -o StrictHostKeyChecking=no -i key.pem \
+          ${{ secrets.USER }}@${{ secrets.HOST }} \
+          "chmod +x ~/Raytracer && ~/Raytracer > image.ppm"
+
+      - name: Retrieve image
+        run: |
+          scp -o StrictHostKeyChecking=no -i key.pem \
+          ${{ secrets.USER }}@${{ secrets.HOST }}:/home/${{ secrets.USER }}/image.ppm .
+
+      - name: Convert image to PNG
+        run: |
+          ffmpeg -y -i image.ppm image.png
+
+      - name: Commit image
+        run: |
+          git config user.name "tanou-documentation-bot"
+          git config user.email "tanou-documentation-bot@epitech.eu"
+          git add image.png
+          git commit -m "fix(render-image): update rendered PNG for the documentation (automated commit)"
+          git push
