@@ -15,9 +15,9 @@ int main() {
 
     try {
         core.init();
-        return 84;
     } catch (const std::exception &err) {
         std::cerr << "Error: " << err.what() << "\n";
+        return 84;
     }
     core.run();
     return 0;

@@ -22,7 +22,7 @@ namespace raytracer {
 
     std::unique_ptr<object::IObject> ObjectFactory::build(
         const std::string &name, const std::vector<std::any> &param) {
-        auto iter = this->_builders.find(name);
+        const auto iter = this->_builders.find(name);
 
         if (iter == this->_builders.end()) {
             return nullptr;

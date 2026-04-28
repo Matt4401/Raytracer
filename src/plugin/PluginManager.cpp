@@ -37,7 +37,8 @@ namespace raytracer {
                 return false;
             } catch (const raytracer::exception::PluginException &err) {
                 std::cerr << err.what() << "\n";
-            } catch (...) {
+            } catch (const std::exception &err) {
+                std::cerr << "Unexpected error: " << err.what() << "\n";
             }
             return true;
         });
