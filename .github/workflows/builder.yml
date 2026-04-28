@@ -7,6 +7,9 @@ on:
       - "image.ppm"
       - "image.png"
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: [ self-hosted ]
@@ -36,6 +39,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Download binaries
         uses: actions/download-artifact@v4
         with:
