@@ -77,5 +77,9 @@ jobs:
           git config user.name "tanou-documentation-bot"
           git config user.email "tanou-documentation-bot@epitech.eu"
           git add image.png
-          git commit -m "fix(render-image): update rendered PNG for the documentation (automated commit)"
-          git push
+          if git diff --cached --quiet -- image.png; then
+            echo "image.png unchanged; skipping commit"
+          else
+            git commit -m "fix(render-image): update rendered PNG for the documentation (automated commit)"
+            git push
+          fi
