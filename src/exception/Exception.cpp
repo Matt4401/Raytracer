@@ -16,10 +16,10 @@ namespace raytracer::exception {
     /**
      * @brief Builds an exception with a message and captured source location.
      * @param message Human-readable error description.
-     * @param location Call site metadata, defaults to std::source_location::current().
+     * @param location Call site metadata, defaults to
+     * std::source_location::current().
      */
-    Exception::Exception(const std::string_view message,
-                         const source &location)
+    Exception::Exception(const std::string_view message, const source &location)
         : _message(message), _location(location) {
         _fullMessage = buildFullMessage();
     }

@@ -1,4 +1,3 @@
-
 /*
 ** EPITECH PROJECT, 2026
 ** Vector
@@ -19,7 +18,7 @@ namespace raytracer::maths {
         ~Vector() = default;
 
         Vector &operator=(const Vector &other);
-    
+
         Vector operator+(const double &scalar) const;
         Vector operator-(const double &scalar) const;
         Vector operator*(const double &scalar) const;
@@ -37,10 +36,10 @@ namespace raytracer::maths {
         Vector &operator-=(const Vector &other);
         Vector &operator*=(const Vector &other);
         Vector &operator/=(const Vector &other);
-    
+
         bool operator==(const Vector &other) const;
         bool operator!=(const Vector &other) const;
-    
+
         double dot(const Vector &other) const;
 
         Vector cross(const Vector &other) const;
