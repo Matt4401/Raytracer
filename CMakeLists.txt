@@ -37,11 +37,15 @@ endif ()
 set(SRCS
         src/Core.cpp
         src/exception/Exception.cpp
-
+        src/plugin/PluginManager.cpp
+        src/plugin/ObjectFactory.cpp
 )
 
 set(HEADERS
         src/Core.hpp
+        src/plugin/PluginManager.hpp
+        src/plugin/ObjectFactory.hpp
+        src/plugin/DlLoader.hpp
         include/exception/Exception.hpp
         include/exception/ParsingException.hpp
         include/exception/CoreException.hpp
@@ -49,3 +53,5 @@ set(HEADERS
 )
 
 add_executable(${NAME} src/main.cpp ${SRCS} ${HEADERS})
+target_link_libraries(${NAME} PRIVATE ${CMAKE_DL_LIBS})
+

@@ -6,14 +6,14 @@
 */
 
 #include <any>
-#include <string>
 #include <vector>
 
+#include "./ValidObject.hpp"
 #include "object/IObject.hpp"
 
-extern "C" raytracer::object::IObject *sphere_builder(
+extern "C" raytracer::object::IObject *testBuilder(
     const std::vector<std::any> &args) {
-    return nullptr;
+    return new raytracer::tests::ValidObject();
 }
 
 extern "C" const char *type(void) {
@@ -21,10 +21,10 @@ extern "C" const char *type(void) {
 }
 
 extern "C" const char *name(void) {
-    return "sphere";
+    return "valid_test";
 }
 
 // Returns a function pointer cast to void* for C compatibility
 extern "C" raytracer::object::BuilderFunc builder(void) {
-    return &sphere_builder;
+    return &testBuilder;
 }
