@@ -28,7 +28,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: binaries
-          path: Raytracer
+          path: raytracer
 
 
   render_on_vm:
@@ -49,13 +49,13 @@ jobs:
       - name: Send binary
         run: |
           scp -o StrictHostKeyChecking=no -i key.pem \
-          Raytracer ${{ secrets.USER }}@${{ secrets.HOST }}:/home/${{ secrets.USER }}/Raytracer
+          raytracer ${{ secrets.USER }}@${{ secrets.HOST }}:/home/${{ secrets.USER }}/raytracer
 
       - name: Run on VM
         run: |
           ssh -o StrictHostKeyChecking=no -i key.pem \
           ${{ secrets.USER }}@${{ secrets.HOST }} \
-          "chmod +x ~/Raytracer && ~/Raytracer > image.ppm"
+          "chmod +x ~/raytracer && ~/raytracer > image.ppm"
 
       - name: Retrieve image
         run: |
