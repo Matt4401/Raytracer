@@ -9,7 +9,7 @@
 
 #include <any>
 #include <functional>
-#include <memory>
+#include <vector>
 
 namespace raytracer::object {
     class IObject {
@@ -29,7 +29,10 @@ namespace raytracer::object {
 
     typedef raytracer::object::IObject* (*BuilderFunc)(
         const std::vector<std::any>&);
+  
+    using BuilderFunc =
+        raytracer::object::IObject *(*)(const std::vector<std::any> &);
     using buildFunction =
-        std::function<std::unique_ptr<IObject>(std::vector<std::any>)>;
+        std::function<IObject *(const std::vector<std::any> &param)>;
 
 }  // namespace raytracer::object

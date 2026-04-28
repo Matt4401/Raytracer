@@ -39,10 +39,15 @@ set(SRCS
         src/math/Vector.cpp
         src/object/primitive/APrimitive.cpp
         src/util/ObjectMiddleware.cpp
+        src/plugin/PluginManager.cpp
+        src/plugin/ObjectFactory.cpp
 )
 
 set(HEADERS
         src/Core.hpp
+        src/plugin/PluginManager.hpp
+        src/plugin/ObjectFactory.hpp
+        src/plugin/DlLoader.hpp
         include/exception/Exception.hpp
         include/exception/ParsingException.hpp
         include/exception/CoreException.hpp
