@@ -12,7 +12,6 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
-#include <vector>
 
 #include "exception/PluginException.hpp"
 #include "math/Color.hpp"

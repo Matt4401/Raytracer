@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <object/IObject.hpp>
+#include "object/IObject.hpp"
 #include <string>
 #include <string_view>
 #include "math/Color.hpp"
