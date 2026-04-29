@@ -7,24 +7,26 @@
 
 #pragma once
 
+#include <object/IObject.hpp>
 #include <string>
 #include <string_view>
-
 #include "math/Color.hpp"
 #include "math/Ray.hpp"
 #include "math/Vector.hpp"
+#include "object/AObject.hpp"
 #include "object/primitive/IPrimitive.hpp"
 #include "object/primitive/ReflTypes.hpp"
 
 namespace raytracer::object::primitive {
-    class APrimitive : public IPrimitive {
+    class APrimitive : public IPrimitive, public AObject {
       public:
         explicit APrimitive(const std::string_view name,
                             const maths::Vector &center,
                             const maths::Vector &emission,
                             const maths::Color &color,
                             const RefltT refl = RefltT::DIFF)
-            : _name(name),
+            : AObject(Type::PRIMITIVE),
+              _name(name),
               _center(center),
               _emission(emission),
               _color(color),

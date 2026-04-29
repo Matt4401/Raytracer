@@ -11,7 +11,7 @@
 #include "object/IObject.hpp"
 
 namespace raytracer::object::primitive {
-    class IPrimitive : public IObject {
+    class IPrimitive {
       public:
         struct BoundingBox {
             double x;
@@ -22,7 +22,7 @@ namespace raytracer::object::primitive {
             double d;
         };
 
-        ~IPrimitive() override = default;
+        virtual ~IPrimitive() = default;
         /**
          *
          * @param ray the ray to test for intersection with the primitive. The
@@ -53,10 +53,6 @@ namespace raytracer::object::primitive {
          * primitive itself.
          */
         virtual BoundingBox boundingBox() = 0;
-
-        Type type() const override {
-            return Type::PRIMITIVE;
-        }
     };
 
 }  // namespace raytracer::object::primitive
