@@ -21,25 +21,15 @@ namespace raytracer::object::primitive {
     Sphere::Sphere(const std::vector<std::any> &args)
         : APrimitive("Sphere",
                      util::ObjectMiddleware::validate<maths::Vector>(
-                         args, 0, "Sphere", EXPECTED_ARGS),
-                     util::ObjectMiddleware::validate<maths::Vector>(
-                         args, 1, "Sphere", EXPECTED_ARGS),
-                     util::ObjectMiddleware::validate<maths::Color>(
-                         args, 2, "Sphere", EXPECTED_ARGS),
-                     util::ObjectMiddleware::validate<RefltT>(args, 4, "Sphere",
-                                                              EXPECTED_ARGS)),
-          _radius(util::ObjectMiddleware::validate<double>(args, 3, "Sphere",
+                         args, 0, "Sphere", EXPECTED_ARGS)),
+          _radius(util::ObjectMiddleware::validate<double>(args, 1, "Sphere",
                                                            EXPECTED_ARGS)) {
         util::ObjectMiddleware::unsignedDouble(_radius, "radius", "Sphere");
-        util::ObjectMiddleware::color(_color, "Sphere");
     }
 
-    Sphere::Sphere(const maths::Vector &vector, const maths::Vector &emission,
-                   const maths::Color &color, const double radius,
-                   const RefltT refl)
-        : APrimitive("Sphere", vector, emission, color, refl), _radius(radius) {
+    Sphere::Sphere(const maths::Vector &vector, const double radius)
+        : APrimitive("Sphere", vector), _radius(radius) {
         util::ObjectMiddleware::unsignedDouble(_radius, "radius", "Sphere");
-        util::ObjectMiddleware::color(_color, "Sphere");
     }
 
     const double &Sphere::radius() const noexcept {
@@ -76,6 +66,22 @@ namespace raytracer::object::primitive {
             .w = 2 * _radius,
             .h = 2 * _radius,
             .d = 2 * _radius,
+        };
+    }
+
+    SurfaceData Sphere::surfaceData(const maths::Vector& hitPoint) const {
+        maths::Vector normal = (hitPoint - _center).normalized();
+
+        double u = 0.5 + std::atan2(normal.z, normal.x) / (2 * M_PI);
+        double v = 0.5 - std::asin(normal.y) / M_PI;
+
+        return {
+            .normal = normal,
+            .uv = maths::Vector(u, v, 0),
+            .color = maths::Color(255, 255, 255),
+            .emission = maths::Vector(0, 0, 0),
+            .reflType = RefltT::DIFF,
+            .extraParams = {}
         };
     }
 }  // namespace raytracer::object::primitive

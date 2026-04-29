@@ -14,7 +14,6 @@
 extern "C" raytracer::object::IObject *sphereBuilder(
     const std::vector<std::any> &args) {
     return new raytracer::object::primitive::Sphere(args);
-
 }
 
 extern "C" const char *type(void) {
