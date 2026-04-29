@@ -28,8 +28,7 @@ namespace raytracer::object {
         virtual Type type() const = 0;
     };
 
-    using BuilderFunc = raytracer::object::IObject
-        *(*)(const std::map<std::string, std::any> &);
+    using BuilderFunc = IObject *(*)(const std::map<std::string, std::any> &);
     using buildFunction =
         std::function<IObject *(const std::map<std::string, std::any> &param)>;
 
