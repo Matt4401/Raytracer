@@ -40,7 +40,7 @@ extern "C" raytracer::object::BuilderFunc builder(void) {
 
 ```cpp
 using BuilderFunc =
-    raytracer::object::IObject *(*)(const std::vector<std::any> &);
+    raytracer::object::IObject *(*)(const std::map<std::string, std::any> &);
 ```
 
 **Returns**: a pointer to the factory function (cast via `BuilderFunc`) that creates instances.
@@ -102,13 +102,13 @@ Plugin entry point containing the three exported functions:
 
 ```cpp
 #include <any>
+#include <map>
 #include <string>
-#include <vector>
 #include "object/IObject.hpp"
 
 // [1] Factory function that creates instances
 extern "C" raytracer::object::IObject *exampleBuilder(
-    const std::vector<std::any> &args) {
+    const std::map<std::string, std::any> &param) {
     // Validate and parse arguments
     // Create and return an instance
     return new raytracer::object::Example();
