@@ -9,6 +9,8 @@
 
 #include "object/primitive/IPrimitive.hpp"
 
+#include <memory>
+
 namespace raytracer::object::primitive {
     class APrimitiveDecorator : public IPrimitive {
       public:
