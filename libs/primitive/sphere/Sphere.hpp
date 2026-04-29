@@ -8,7 +8,8 @@
 #pragma once
 
 #include <any>
-#include <vector>
+#include <map>
+#include <string>
 
 #include "math/Color.hpp"
 #include "math/Ray.hpp"
@@ -19,7 +20,7 @@
 namespace raytracer::object::primitive {
     class Sphere : public APrimitive {
       public:
-        explicit Sphere(const std::vector<std::any> &args);
+        explicit Sphere(const std::map<std::string, std::any> &params);
         explicit Sphere(const maths::Vector &vector,
                         const maths::Vector &emission,
                         const maths::Color &color, double radius, RefltT refl);

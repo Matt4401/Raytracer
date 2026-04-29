@@ -6,15 +6,15 @@
 */
 
 #include <any>
-#include <vector>
+#include <map>
+#include <string>
 
 #include "Sphere.hpp"
 #include "object/IObject.hpp"
 
 extern "C" raytracer::object::IObject *sphereBuilder(
-    const std::vector<std::any> &args) {
-    return new raytracer::object::primitive::Sphere(args);
-
+    const std::map<std::string, std::any> &params) {
+    return new raytracer::object::primitive::Sphere(params);
 }
 
 extern "C" const char *type(void) {
