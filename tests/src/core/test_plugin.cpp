@@ -27,7 +27,7 @@ TEST(CORE_PLUGIN, valid_plugins) {
     plugManager.updatePluginList(PLUGINS_PATH);
     plugManager.fillFactory(objFactory);
 
-    std::unique_ptr<raytracer::object::IObject> object =
+    std::shared_ptr<raytracer::object::IObject> object =
         objFactory.build("valid_test", {});
 
     ASSERT_FALSE(object == nullptr);
@@ -51,7 +51,7 @@ TEST(CORE_PLUGIN, error_missing_entry) {
     plugManager.updatePluginList(PLUGINS_PATH);
     plugManager.fillFactory(objFactory);
 
-    std::unique_ptr<raytracer::object::IObject> object =
+    std::shared_ptr<raytracer::object::IObject> object =
         objFactory.build("missing_entry", {});
 
     ASSERT_TRUE(object == nullptr);
@@ -64,9 +64,9 @@ TEST(CORE_PLUGIN, mixed_valid_and_invalid_plugins) {
     plugManager.updatePluginList(PLUGINS_PATH);
     plugManager.fillFactory(objFactory);
 
-    std::unique_ptr<raytracer::object::IObject> validObject =
+    std::shared_ptr<raytracer::object::IObject> validObject =
         objFactory.build("valid_test", {});
-    std::unique_ptr<raytracer::object::IObject> invalidObject =
+    std::shared_ptr<raytracer::object::IObject> invalidObject =
         objFactory.build("missing_entry", {});
 
     ASSERT_NE(validObject, nullptr);
@@ -82,7 +82,7 @@ TEST(CORE_PLUGIN, update_plugin_list_idempotent_reload) {
     plugManager.updatePluginList(PLUGINS_PATH);
     plugManager.fillFactory(objFactory);
 
-    std::unique_ptr<raytracer::object::IObject> object =
+    std::shared_ptr<raytracer::object::IObject> object =
         objFactory.build("valid_test", {});
 
     ASSERT_NE(object, nullptr);
