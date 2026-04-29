@@ -9,7 +9,8 @@
 
 #include <any>
 #include <cmath>
-#include <vector>
+#include <map>
+#include <string>
 
 #include "math/Color.hpp"
 #include "math/Vector.hpp"
@@ -18,19 +19,17 @@
 #include "util/ObjectMiddleware.hpp"
 
 namespace raytracer::object::primitive {
-    Sphere::Sphere(const std::vector<std::any> &args)
+    Sphere::Sphere(const std::map<std::string, std::any> &params)
         : APrimitive("Sphere",
                      util::ObjectMiddleware::validate<maths::Vector>(
-                         args, 0, "Sphere", EXPECTED_ARGS),
-                     util::ObjectMiddleware::validate<maths::Vector>(
-                         args, 1, "Sphere", EXPECTED_ARGS),
+                         params, "pos", "Sphere"),
+                     maths::Vector(0, 0, 0),
                      util::ObjectMiddleware::validate<maths::Color>(
-                         args, 2, "Sphere", EXPECTED_ARGS),
-                     util::ObjectMiddleware::validate<RefltT>(args, 4, "Sphere",
-                                                              EXPECTED_ARGS)),
-          _radius(util::ObjectMiddleware::validate<double>(args, 3, "Sphere",
-                                                           EXPECTED_ARGS)) {
-        util::ObjectMiddleware::unsignedDouble(_radius, "radius", "Sphere");
+                         params, "color", "Sphere"),
+                     RefltT::DIFF),
+          _radius(
+              util::ObjectMiddleware::validate<double>(params, "r", "Sphere")) {
+        util::ObjectMiddleware::unsignedDouble(_radius, "r", "Sphere");
         util::ObjectMiddleware::color(_color, "Sphere");
     }
 
@@ -51,7 +50,7 @@ namespace raytracer::object::primitive {
         const double b = op.dot(ray.direction);
         const double a = ray.direction.dot(ray.direction);
         const double c = op.dot(op) - _radius * _radius;
-        double det = b * b - 4 * a * c;
+        const double det = b * b - 4 * a * c;
         if (det < 0) {
             return 0;
         }
