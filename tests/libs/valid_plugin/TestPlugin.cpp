@@ -6,13 +6,14 @@
 */
 
 #include <any>
-#include <vector>
+#include <map>
+#include <string>
 
 #include "./ValidObject.hpp"
 #include "object/IObject.hpp"
 
 extern "C" raytracer::object::IObject *testBuilder(
-    const std::vector<std::any> &args) {
+    const std::map<std::string, std::any> &args) {
     return new raytracer::tests::ValidObject();
 }
 

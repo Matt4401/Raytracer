@@ -41,6 +41,7 @@ set(SRCS
         src/util/ObjectMiddleware.cpp
         src/plugin/PluginManager.cpp
         src/plugin/ObjectFactory.cpp
+        src/parser/ConfigParser.cpp
 )
 
 set(HEADERS
@@ -48,6 +49,7 @@ set(HEADERS
         src/plugin/PluginManager.hpp
         src/plugin/ObjectFactory.hpp
         src/plugin/DlLoader.hpp
+        src/parser/ConfigParser.hpp
         include/exception/Exception.hpp
         include/exception/ParsingException.hpp
         include/exception/CoreException.hpp
@@ -68,12 +70,21 @@ set(HEADERS
 )
 
 add_library(raytracer_core STATIC ${SRCS})
+set_target_properties(raytracer_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_include_directories(raytracer_core PUBLIC
         ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_SOURCE_DIR}/src
 )
 
+
+# libconfig
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBCONFIG REQUIRED libconfig++)
+
+#bin
 add_executable(${NAME} src/main.cpp ${HEADERS})
 target_link_libraries(${NAME} PRIVATE raytracer_core)
+target_link_libraries(${NAME} PRIVATE ${LIBCONFIG_LIBRARIES})
+target_include_directories(${NAME} PRIVATE ${LIBCONFIG_INCLUDE_DIRS})
 
-add_subdirectory(libs)
+# add_subdirectory(libs)

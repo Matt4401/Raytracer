@@ -8,6 +8,8 @@
 #ifndef CORE_HPP_
 #define CORE_HPP_
 
+#include <filesystem>
+
 #include "plugin/ObjectFactory.hpp"
 #include "plugin/PluginManager.hpp"
 
@@ -23,7 +25,7 @@ namespace raytracer {
          * Loads plugins from the plugins folder and registers them in the
          * factory.
          */
-        void init();
+        void init(const std::filesystem::path &file);
 
         /**
          * @brief Run the main loop

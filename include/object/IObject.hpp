@@ -9,7 +9,8 @@
 
 #include <any>
 #include <functional>
-#include <vector>
+#include <map>
+#include <string>
 
 namespace raytracer::object {
     class IObject {
@@ -27,12 +28,9 @@ namespace raytracer::object {
         virtual Type type() const = 0;
     };
 
-    typedef raytracer::object::IObject* (*BuilderFunc)(
-        const std::vector<std::any>&);
-  
-    using BuilderFunc =
-        raytracer::object::IObject *(*)(const std::vector<std::any> &);
+    using BuilderFunc = raytracer::object::IObject
+        *(*)(const std::map<std::string, std::any> &);
     using buildFunction =
-        std::function<IObject *(const std::vector<std::any> &param)>;
+        std::function<IObject *(const std::map<std::string, std::any> &param)>;
 
 }  // namespace raytracer::object

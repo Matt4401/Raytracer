@@ -8,10 +8,10 @@
 #pragma once
 
 #include <any>
+#include <map>
 #include <memory>
 #include <string>
 #include <unordered_map>
-#include <vector>
 
 #include "object/IObject.hpp"
 
@@ -41,7 +41,8 @@ namespace raytracer {
          * is not registered or build fails
          */
         std::unique_ptr<object::IObject> build(
-            const std::string &name, const std::vector<std::any> &param);
+            const std::string &name,
+            const std::map<std::string, std::any> &param);
 
       private:
         std::unordered_map<std::string, object::buildFunction> _builders;
