@@ -64,18 +64,6 @@ namespace raytracer::util {
         }
 
         /**
-         @brief Check if a double given value it negative or not.
-         * @param value double to check if it is negative or not.
-         * @param fieldName name of the double to check. For Example radius for
-         a Sphere.
-         * @param className name of the class of the value.v
-         * @throws PluginException If the index is out of bounds or if the type
-         casting fails, with a message indicating the nature of the error.
-         */
-        static void unsignedDouble(double value, std::string_view fieldName,
-                                   std::string_view className);
-
-        /**
          @brief Retrieve a nested map parameter from a parameter map.
          * @param params The parameter map containing the nested map.
          * @param key The key to look up in the parameter map.
@@ -102,35 +90,5 @@ namespace raytracer::util {
                     std::string(className), std::string(key));
             }
         }
-
-        /**
-         @brief Convert a nested map parameter to a Color object.
-         * @param params The parameter map containing the color information.
-         * @param keyName The key to look up in the parameter map for the color
-         information.
-         * @param className The name of the class requesting the color
-         conversion, used for error messages.
-         * @return A Color object constructed from the nested map parameters.
-         * @throws PluginException If the key is missing, the type is invalid,
-         or if the color components are out of the valid range (0-255).
-         */
-        static maths::Color toColor(
-            const std::map<std::string, std::any> &params,
-            std::string_view keyName, std::string_view className);
-
-        /**
-         @brief Convert a nested map parameter to a Vector object.
-         * @param params The parameter map containing the vector information.
-         * @param keyName The key to look up in the parameter map for the vector
-         information.
-         * @param className The name of the class requesting the vector
-         conversion, used for error messages.
-         * @return A Vector object constructed from the nested map parameters.
-         * @throws PluginException If the key is missing, the type is invalid,
-         or if the vector components cannot be converted to double.
-         */
-        static maths::Vector toVector(
-            const std::map<std::string, std::any> &params,
-            std::string_view keyName, std::string_view className);
     };
 }  // namespace raytracer::util

@@ -39,7 +39,7 @@ set(SRCS
         src/math/Vector.cpp
         src/math/Rectangle.cpp
         src/object/primitive/APrimitive.cpp
-        src/util/ObjectMiddleware.cpp
+        src/util/middleware/Helpers.cpp
         src/plugin/PluginManager.cpp
         src/plugin/ObjectFactory.cpp
 )
@@ -66,7 +66,7 @@ set(HEADERS
         include/object/primitive/IPrimitive.hpp
         include/object/primitive/APrimitive.hpp
         include/object/primitive/ReflTypes.hpp
-        include/util/ObjectMiddleware.hpp
+        include/util/middleware/ObjectMiddleware.hpp
 )
 
 add_library(raytracer_core STATIC ${SRCS})
