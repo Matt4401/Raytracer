@@ -18,10 +18,4 @@ namespace raytracer::util {
                                              className, fieldName, value};
         }
     }
-
-    void ObjectMiddleware::color(const maths::Color &color,
-                                 const std::string_view className) {
-        (void)className;
-        (void)color;
-    }
 }  // namespace raytracer::util

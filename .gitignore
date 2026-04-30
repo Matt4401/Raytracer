@@ -8,3 +8,4 @@ raytracer
 .cache/
 *.dylib
 *.so
+.DS_Store
