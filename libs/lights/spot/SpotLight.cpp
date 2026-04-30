@@ -30,19 +30,19 @@ namespace raytracer::object::light {
         maths::Vector toL(_position.x - x.x, _position.y - x.y,
                           _position.z - x.z);
         double dist = toL.magnitude();
-        if (dist < 1e-6)
+        if (dist < kMinDistanceEpsilon)
             return maths::Vector(0, 0, 0);
         maths::Vector ldir = toL / dist;
         double cosTheta = nl.dot(ldir.normalized());
         if (cosTheta <= 0)
             return maths::Vector(0, 0, 0);
 
-        maths::Ray shadowRay(x + nl * 1e-4, ldir);
+        maths::Ray shadowRay(x + nl * kShadowRayBias, ldir);
         double sT;
         int sId;
         bool hit = scene.intersect(shadowRay, sT, sId);
 
-        if (!hit || sT > dist - 1e-3) {
+        if (!hit || sT > dist - kOcclusionEpsilon) {
             double spotEffect =
                 std::pow(std::max(0.0, ldir.dot(_direction * -1.0)), _exponent);
             double att = spotEffect / (dist * dist);

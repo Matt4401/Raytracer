@@ -48,6 +48,10 @@ namespace raytracer::object::light {
         double intensity() const override;
 
       protected:
+        static constexpr double kMinDistanceEpsilon = 1e-6;
+        static constexpr double kShadowRayBias = 1e-4;
+        static constexpr double kOcclusionEpsilon = 1e-3;
+
         maths::Vector _position;
         maths::Color _color;
         double _intensity;

@@ -29,20 +29,20 @@ namespace raytracer::object::light {
         maths::Vector toL(position().x - x.x, position().y - x.y,
                           position().z - x.z);
         double dist = toL.magnitude();
-        if (dist < 1e-6)
+        if (dist < kMinDistanceEpsilon)
             return maths::Vector(0, 0, 0);
         maths::Vector ldir = toL / dist;
         double cosTheta = nl.dot(ldir);
         if (cosTheta <= 0)
             return maths::Vector(0, 0, 0);
 
-        maths::Ray shadowRay(x + nl * 1e-4, ldir);
+        maths::Ray shadowRay(x + nl * kShadowRayBias, ldir);
         double sT;
         int sId;
         bool hit = scene.intersect(shadowRay, sT, sId);
 
         if (_radius > 0.0) {
-            if (!hit || sT > dist - _radius - 1e-3) {
+            if (!hit || sT > dist - _radius - kOcclusionEpsilon) {
                 double cosAlpha = std::sqrt(
                     std::max(0.0, 1.0 - (_radius / dist) * (_radius / dist)));
                 double omega = 2 * M_PI * (1.0 - cosAlpha);
@@ -50,7 +50,7 @@ namespace raytracer::object::light {
                        (omega / (2.0 * M_PI));
             }
         } else {
-            if (!hit || sT > dist - 1e-3) {
+            if (!hit || sT > dist - kOcclusionEpsilon) {
                 double att = 1.0 / (dist * dist);
                 return color().toVector() * intensity() * f * cosTheta * att;
             }
