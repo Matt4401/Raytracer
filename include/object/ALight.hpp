@@ -5,8 +5,7 @@
 ** ALight
 */
 
-#ifndef ALIGHT_HPP_
-#define ALIGHT_HPP_
+#pragma once
 
 #include <any>
 #include <map>
@@ -60,5 +59,3 @@ namespace raytracer::object::light {
       private:
     };
 }  // namespace raytracer::object::light
-
-#endif /* !ALIGHT_HPP_ */

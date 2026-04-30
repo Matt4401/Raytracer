@@ -5,8 +5,7 @@
 ** ACamera
 */
 
-#ifndef ACAMERA_HPP_
-#define ACAMERA_HPP_
+#pragma once
 
 #include <numbers>
 
@@ -60,5 +59,3 @@ namespace raytracer::object::camera {
       private:
     };
 }  // namespace raytracer::object::camera
-
-#endif /* !ACAMERA_HPP_ */

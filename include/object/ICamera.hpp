@@ -5,8 +5,7 @@
 ** ICamera
 */
 
-#ifndef ICAMERA_HPP_
-#define ICAMERA_HPP_
+#pragma once
 
 #include "Ray.hpp"
 
@@ -30,5 +29,3 @@ namespace raytracer::object::camera {
       private:
     };
 }  // namespace raytracer::object::camera
-
-#endif /* !ICAMERA_HPP_ */

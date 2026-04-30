@@ -5,8 +5,7 @@
 ** SpotLight
 */
 
-#ifndef SPOTLIGHT_HPP_
-#define SPOTLIGHT_HPP_
+#pragma once
 
 #include <any>
 #include <map>
@@ -21,7 +20,7 @@
 namespace raytracer::object::light {
     class SpotLight : public ALight {
       public:
-        SpotLight(const std::map<std::string, std::any> &params);
+        explicit SpotLight(const std::map<std::string, std::any> &params);
         ~SpotLight() override = default;
 
         /// @brief Compute the NEE contribution from this spot light.
@@ -41,5 +40,3 @@ namespace raytracer::object::light {
         double _exponent;
     };
 }  // namespace raytracer::object::light
-
-#endif /* !SPOTLIGHT_HPP_ */

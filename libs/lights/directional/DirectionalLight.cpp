@@ -14,10 +14,8 @@ namespace raytracer::object::light {
     DirectionalLight::DirectionalLight(
         const std::map<std::string, std::any> &params)
         : ALight(params) {
-        const auto &direction = util::ObjectMiddleware::requireMap(
-            params, "direction", "DirectionalLight");
         _direction =
-            util::Helpers::toVector(direction, "direction", "DirectionalLight");
+            util::Helpers::toVector(params, "direction", "DirectionalLight");
 
         if (_direction.magnitude() < kMinDistanceEpsilon) {
             throw exception::PluginException{

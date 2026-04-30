@@ -5,8 +5,7 @@
 ** Rectangle
 */
 
-#ifndef RECTANGLE_HPP_
-#define RECTANGLE_HPP_
+#pragma once
 
 #include "Vector.hpp"
 
@@ -39,5 +38,3 @@ namespace raytracer::maths {
         Vector _leftSide;
     };
 }  // namespace raytracer::maths
-
-#endif /* !RECTANGLE_HPP_ */

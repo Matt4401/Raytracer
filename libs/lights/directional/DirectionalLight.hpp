@@ -5,8 +5,7 @@
 ** DirectionalLight
 */
 
-#ifndef DIRECTIONALLIGHT_HPP_
-#define DIRECTIONALLIGHT_HPP_
+#pragma once
 
 #include <any>
 #include <map>
@@ -21,7 +20,8 @@
 namespace raytracer::object::light {
     class DirectionalLight : public ALight {
       public:
-        DirectionalLight(const std::map<std::string, std::any> &params);
+        explicit DirectionalLight(
+            const std::map<std::string, std::any> &params);
         ~DirectionalLight() override = default;
 
         /// @brief Compute the NEE contribution from this directional light.
@@ -40,5 +40,3 @@ namespace raytracer::object::light {
         maths::Vector _direction;
     };
 }  // namespace raytracer::object::light
-
-#endif /* !DIRECTIONALLIGHT_HPP_ */
