@@ -7,14 +7,6 @@
 
 #include "object/ALight.hpp"
 
-#include <any>
-#include <map>
-#include <string>
-
-#include "math/Color.hpp"
-#include "math/Vector.hpp"
-#include "object/ALight.hpp"
-#include "object/IScene.hpp"
 #include "util/middleware/ObjectMiddleware.hpp"
 #include "util/middleware/Helpers.hpp"
 
