@@ -82,7 +82,7 @@ namespace raytracer::object::primitive {
         double u = 0.5 + std::atan2(normal.z, normal.x) / (2 * M_PI);
         double v = 0.5 - std::asin(normal.y) / M_PI;
 
-        return {
+        SurfaceData data{
             .normal = normal,
             .uv = maths::Vector(u, v, 0),
             .color = maths::Color(255, 255, 255),
@@ -90,5 +90,11 @@ namespace raytracer::object::primitive {
             .reflType = RefltT::DIFF,
             .extraParams = {}
         };
+
+        if (this->_material) {
+            this->_material->apply(data, hitPoint);
+        }
+
+        return data;
     }
 }  // namespace raytracer::object::primitive
