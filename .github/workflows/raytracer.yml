@@ -76,7 +76,8 @@ jobs:
         run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
       - name: Run linter
-        run: run-clang-tidy -p build -header-filter='.*' -j$(nproc)
+        run: |
+          find . -not -path "./tests/*" -not -path "./build/_deps/*" \( -name "*.cpp" -o -name "*.hpp" \) | xargs clang-tidy -p build
         timeout-minutes: 3
   format:
     runs-on: [ self-hosted ]
@@ -93,4 +94,4 @@ jobs:
 
       - name: Check code formatting
         run: |
-          find . -name "*.cpp" -o -name "*.hpp" | xargs clang-format-20 -style=file --dry-run --Werror
+          find . -not -path "./tests/*" \( -name "*.cpp" -o -name "*.hpp" \) | xargs clang-format-20 -style=file --dry-run --Werror

@@ -7,10 +7,23 @@
 
 #pragma once
 
+#include <string>
+#include <unordered_map>
+
+#include "math/Color.hpp"
 #include "math/Ray.hpp"
-#include "object/IObject.hpp"
+#include "object/primitive/ReflTypes.hpp"
 
 namespace raytracer::object::primitive {
+    struct SurfaceData {
+        maths::Vector normal;
+        maths::Vector uv;
+        maths::Color color;
+        maths::Vector emission;
+        RefltT reflType;
+        std::unordered_map<std::string, double> extraParams;
+    };
+
     class IPrimitive {
       public:
         struct BoundingBox {
@@ -38,6 +51,14 @@ namespace raytracer::object::primitive {
          * intersection occurs
          */
         virtual double hits(const maths::Ray &ray) = 0;
+
+        /**
+         * @brief Get surface data at hit point (normal, uv, etc.) and evaluates
+         * underlying materials for color, emission, etc.
+         */
+        virtual SurfaceData surfaceData(
+            const maths::Vector &hitPoint) const = 0;
+
         /**
          *
          * @return a BoundingBox struct that defines the axis-aligned bounding

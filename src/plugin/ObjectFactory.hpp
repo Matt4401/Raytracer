@@ -37,10 +37,10 @@ namespace raytracer {
          *
          * @param name: The name of the object type to build
          * @param param :Parameters to pass to the builder function
-         * @return A unique pointer to the created IObject, or nullptr if type
+         * @return A shared pointer to the created IObject, or nullptr if type
          * is not registered or build fails
          */
-        std::unique_ptr<object::IObject> build(
+        std::shared_ptr<object::IObject> build(
             const std::string &name,
             const std::map<std::string, std::any> &param);
 

@@ -53,6 +53,7 @@ set(HEADERS
 )
 
 add_library(raytracer_core STATIC ${SRCS})
+set_property(TARGET raytracer_core PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_include_directories(raytracer_core PUBLIC
         ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_SOURCE_DIR}/src

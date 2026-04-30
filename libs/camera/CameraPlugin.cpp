@@ -12,8 +12,8 @@
 #include "Camera.hpp"
 #include "object/IObject.hpp"
 
-extern "C" raytracer::object::Type type(void) {
-    return raytracer::object::Type::CAMERA;
+extern "C" raytracer::object::AObject::Type type(void) {
+    return raytracer::object::AObject::Type::CAMERA;
 }
 
 extern "C" const char *name(void) {
