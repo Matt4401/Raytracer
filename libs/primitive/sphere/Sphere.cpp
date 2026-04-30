@@ -25,21 +25,8 @@ namespace raytracer::object::primitive {
           _radius(
               util::ObjectMiddleware::validate<double>(params, "r", "Sphere")) {
         util::ObjectMiddleware::unsignedDouble(_radius, "r", "Sphere");
-
-        auto &pos = util::ObjectMiddleware::requireMap(params, "pos", "Sphere");
-        _center = maths::Vector(
-            util::ObjectMiddleware::validate<double>(pos, "x", "Sphere"),
-            util::ObjectMiddleware::validate<double>(pos, "y", "Sphere"),
-            util::ObjectMiddleware::validate<double>(pos, "z", "Sphere"));
-
-        auto &color =
-            util::ObjectMiddleware::requireMap(params, "color", "Sphere");
-        _color = maths::Color(util::ObjectMiddleware::validate<unsigned char>(
-                                  color, "r", "Sphere"),
-                              util::ObjectMiddleware::validate<unsigned char>(
-                                  color, "g", "Sphere"),
-                              util::ObjectMiddleware::validate<unsigned char>(
-                                  color, "b", "Sphere"));
+        _center = util::ObjectMiddleware::toVector(params, "center", "Sphere");
+        _color = util::ObjectMiddleware::toColor(params, "color", "Sphere");
     }
 
     Sphere::Sphere(const maths::Vector &vector, const maths::Vector &emission,
