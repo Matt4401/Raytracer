@@ -44,6 +44,11 @@ namespace raytracer::object::camera {
         util::ObjectMiddleware::unsignedDouble(width, "width", "Camera");
         util::ObjectMiddleware::unsignedDouble(height, "height", "Camera");
 
+        if (width == 0 || height == 0) {
+            throw exception::PluginException{
+                "Camera resolution width and height must be greater than zero"};
+        }
+
         const double fieldOfViewDegrees =
             util::ObjectMiddleware::validate<double>(params, "fieldOfView",
                                                      "Camera");
