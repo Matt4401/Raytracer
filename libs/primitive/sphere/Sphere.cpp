@@ -24,7 +24,7 @@ namespace raytracer::object::primitive {
     Sphere::Sphere(const std::map<std::string, std::any> &params)
         : APrimitive("Sphere",
                      util::Helpers::toVector(params, "center", "Sphere"),
-                     nullptr),
+                     util::ObjectMiddleware::validate<std::shared_ptr<raytracer::object::material::IMaterial>>(params, "material", "Sphere")),
           _radius(util::ObjectMiddleware::validate<double>(params, "r", "Sphere")) {
         util::Helpers::unsignedDouble(_radius, "r", "Sphere");
     }

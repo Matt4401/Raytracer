@@ -33,8 +33,8 @@ TEST(MATERIAL, flatcolor_decorator) {
     plugManager.fillFactory(objFactory);
 
     std::map<std::string, std::any> flatColorArgs = {
-        {"color", raytracer::maths::Color(255, 0, 0)},
-        {"emission", raytracer::maths::Vector(0, 0, 0)},
+        {"color", std::map<std::string, std::any>{{"r", (unsigned char)255}, {"g", (unsigned char)0}, {"b", (unsigned char)0}}},
+        {"emission", std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
         {"reflType", raytracer::object::primitive::RefltT::DIFF}
     };
     auto matObj = objFactory.build("flatcolor", flatColorArgs);
@@ -44,8 +44,8 @@ TEST(MATERIAL, flatcolor_decorator) {
 
     std::map<std::string, std::any> sphereArgs = {
         {"material", matPtr},
-        {"center", raytracer::maths::Vector(0, 0, 0)},
-        {"radius", 10.0}
+        {"center", std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
+        {"r", 10.0}
     };
     auto sphere = objFactory.build("sphere", sphereArgs);
     ASSERT_NE(sphere, nullptr);
@@ -71,10 +71,9 @@ TEST(MATERIAL, flatcolor_preserves_normal) {
 #endif
     plugManager.fillFactory(objFactory);
 
-    // Create a material and then a sphere using that material
     std::map<std::string, std::any> flatColorArgs = {
-        {"color", raytracer::maths::Color(100, 150, 200)},
-        {"emission", raytracer::maths::Vector(0, 0, 0)},
+        {"color", std::map<std::string, std::any>{{"r", (unsigned char)100}, {"g", (unsigned char)150}, {"b", (unsigned char)200}}},
+        {"emission", std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
         {"reflType", raytracer::object::primitive::RefltT::DIFF}
     };
     auto matObj = objFactory.build("flatcolor", flatColorArgs);
@@ -84,8 +83,8 @@ TEST(MATERIAL, flatcolor_preserves_normal) {
 
     std::map<std::string, std::any> sphereArgs = {
         {"material", matPtr},
-        {"center", raytracer::maths::Vector(5, 5, 5)},
-        {"radius", 2.0}
+        {"center", std::map<std::string, std::any>{{"x", 5.0}, {"y", 5.0}, {"z", 5.0}}},
+        {"r", 2.0}
     };
     auto sphere = objFactory.build("sphere", sphereArgs);
     ASSERT_NE(sphere, nullptr);
