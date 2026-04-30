@@ -17,6 +17,11 @@ namespace raytracer::object::light {
         const auto &direction = util::ObjectMiddleware::requireMap(
             params, "direction", "DirectionalLight");
         _direction = util::Helpers::toVector(direction, "direction", "DirectionalLight");
+
+        if (_direction.magnitude() < 1e-6) {
+            throw exception::PluginException{
+                "DirectionalLight direction vector cannot be zero"};
+        }
         _direction.normalize();
     }
 
