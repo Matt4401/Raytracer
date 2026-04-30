@@ -33,7 +33,7 @@ namespace raytracer::object::light {
         if (dist < 1e-6)
             return maths::Vector(0, 0, 0);
         maths::Vector ldir = toL / dist;
-        double cosTheta = nl.dot(ldir);
+        double cosTheta = nl.dot(ldir.normalized());
         if (cosTheta <= 0)
             return maths::Vector(0, 0, 0);
 
