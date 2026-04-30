@@ -67,8 +67,8 @@ namespace raytracer::object::camera {
           _position(position),
           _rotation(rotation),
           _viewport(),
-          _fov(0),
-          _aspectRatio(1.0) {
+          _fov(fieldOfView),
+          _aspectRatio(aspectRatio) {
         setViewport(fieldOfView, aspectRatio);
     }
 
