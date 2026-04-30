@@ -32,8 +32,6 @@ if (BUILD_TESTS)
     )
 endif ()
 
-include_directories(include)
-
 set(SRCS
         src/Core.cpp
         src/exception/Exception.cpp
