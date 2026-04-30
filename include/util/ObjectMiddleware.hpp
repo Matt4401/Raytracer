@@ -30,11 +30,7 @@ namespace raytracer::util {
         ObjectMiddleware &operator=(ObjectMiddleware &&) = default;
 
         /**
-         @brief Validates and retrieves an argument from a map of std::any
-         objects. This function checks if the specified key exists in the map
-         and attempts to cast the argument at that key to the specified type T.
-         For Vector and Color types, if the value is a nested map, it will
-         automatically convert it using mapTo().
+         @brief Validates and retrieves an argument from a map of std::any objects.
          * @tparam T The expected type of the argument at the specified key.
          * @param params The map of std::any objects containing the arguments
          to validate.

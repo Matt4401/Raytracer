@@ -51,10 +51,6 @@ namespace raytracer::object::camera {
         /// vof the viewport.
         maths::Ray ray(double u, double v) const;
 
-        const std::map<std::string, std::any> &requireMap(
-            const std::map<std::string, std::any> &params,
-            const std::string_view key, const std::string_view className);
-
         void move(const maths::Vector &direction);
         void rotate(const maths::Vector &rotation);
         void setPosition(const maths::Vector &position);

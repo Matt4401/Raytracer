@@ -17,25 +17,36 @@ namespace raytracer::object::camera {
     Camera::Camera(const std::map<std::string, std::any> &params)
         : AObject(Type::CAMERA),
           _origin(),
-          _position(util::ObjectMiddleware::validate<maths::Vector>(
-              params, "position", "Camera")),
-          _rotation(util::ObjectMiddleware::validate<maths::Vector>(
-              params, "rotation", "Camera")),
+          _position(),
+          _rotation(),
           _viewport(),
           _fod(0),
           _aspectRatio(1.0) {
-        const auto &resolution =
-            util::ObjectMiddleware::requireMap(params, "resolution", "camera");
+        const auto &position = util::ObjectMiddleware::requireMap(
+            params, "position", "Camera");
+        const auto &rotation = util::ObjectMiddleware::requireMap(
+            params, "rotation", "Camera");
+        const auto &resolution = util::ObjectMiddleware::requireMap(
+            params, "resolution", "Camera");
+
+        _position = maths::Vector(
+            util::ObjectMiddleware::validate<double>(position, "x", "Camera"),
+            util::ObjectMiddleware::validate<double>(position, "y", "Camera"),
+            util::ObjectMiddleware::validate<double>(position, "z", "Camera"));
+        _rotation = maths::Vector(
+            util::ObjectMiddleware::validate<double>(rotation, "x", "Camera"),
+            util::ObjectMiddleware::validate<double>(rotation, "y", "Camera"),
+            util::ObjectMiddleware::validate<double>(rotation, "z", "Camera"));
         const double width = util::ObjectMiddleware::validate<double>(
-            resolution, "width", "camera");
+            resolution, "width", "Camera");
         const double height = util::ObjectMiddleware::validate<double>(
-            resolution, "height", "camera");
-        util::ObjectMiddleware::unsignedDouble(width, "width", "camera");
-        util::ObjectMiddleware::unsignedDouble(height, "height", "camera");
+            resolution, "height", "Camera");
+        util::ObjectMiddleware::unsignedDouble(width, "width", "Camera");
+        util::ObjectMiddleware::unsignedDouble(height, "height", "Camera");
 
         const double fieldOfViewDegrees =
             util::ObjectMiddleware::validate<double>(params, "fieldOfView",
-                                                     "camera");
+                                                     "Camera");
         const double fieldOfViewRadians =
             fieldOfViewDegrees * std::numbers::pi / 180.0;
 
