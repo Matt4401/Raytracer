@@ -87,6 +87,7 @@ namespace raytracer::util {
             const std::map<std::string, std::any> &params,
             const std::string_view key, const std::string_view className) {
             const auto it = params.find(std::string(key));
+
             if (it == params.end()) {
                 throw exception::PluginException("{} requires parameter '{}'",
                                                  std::string(className),
@@ -101,5 +102,9 @@ namespace raytracer::util {
                     std::string(className), std::string(key));
             }
         }
+
+        static maths::Color toColor(
+            const std::map<std::string, std::any> &params,
+            std::string_view keyName, std::string_view className);
     };
 }  // namespace raytracer::util

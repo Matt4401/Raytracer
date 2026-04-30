@@ -18,4 +18,17 @@ namespace raytracer::util {
                                              className, fieldName, value};
         }
     }
+
+    maths::Color toColor(const std::map<std::string, std::any> &params,
+                         const std::string_view keyName,
+                         const std::string_view className) {
+        const auto &colorMap =
+            ObjectMiddleware::requireMap(params, keyName, className);
+
+        return maths::Color(
+            ObjectMiddleware::validate<unsigned char>(colorMap, "r", className),
+            ObjectMiddleware::validate<unsigned char>(colorMap, "g", className),
+            ObjectMiddleware::validate<unsigned char>(colorMap, "b",
+                                                      className));
+    }
 }  // namespace raytracer::util
