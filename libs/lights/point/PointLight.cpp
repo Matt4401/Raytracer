@@ -8,6 +8,7 @@
 #include "PointLight.hpp"
 
 #include <cmath>
+#include <algorithm>
 
 #include "util/middleware/ObjectMiddleware.hpp"
 #include "util/middleware/Helpers.hpp"
