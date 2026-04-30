@@ -11,7 +11,8 @@
 #include <numbers>
 
 #include "exception/PluginException.hpp"
-#include "util/ObjectMiddleware.hpp"
+#include "util/middleware/Helpers.hpp"
+#include "util/middleware/ObjectMiddleware.hpp"
 
 namespace raytracer::object::camera {
     Camera::Camera(const std::map<std::string, std::any> &params)
@@ -29,12 +30,10 @@ namespace raytracer::object::camera {
         const double height = util::ObjectMiddleware::validate<double>(
             resolution, "height", "Camera");
 
-        _position =
-            util::ObjectMiddleware::toVector(params, "position", "Camera");
-        _rotation =
-            util::ObjectMiddleware::toVector(params, "rotation", "Camera");
-        util::ObjectMiddleware::unsignedDouble(width, "width", "Camera");
-        util::ObjectMiddleware::unsignedDouble(height, "height", "Camera");
+        _position = util::Helpers::toVector(params, "position", "Camera");
+        _rotation = util::Helpers::toVector(params, "rotation", "Camera");
+        util::Helpers::unsignedDouble(width, "width", "Camera");
+        util::Helpers::unsignedDouble(height, "height", "Camera");
 
         if (width == 0 || height == 0) {
             throw exception::PluginException{
