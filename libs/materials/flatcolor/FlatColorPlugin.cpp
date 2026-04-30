@@ -17,5 +17,13 @@ extern "C" raytracer::object::IObject *flatcolorBuilder(
 }
 
 extern "C" const char *type(void) {
+    return "material";
+}
+
+extern "C" const char *name(void) {
     return "flatcolor";
+}
+
+extern "C" raytracer::object::BuilderFunc builder(void) {
+    return &flatcolorBuilder;
 }
