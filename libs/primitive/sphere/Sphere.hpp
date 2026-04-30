@@ -31,7 +31,6 @@ namespace raytracer::object::primitive {
         double hits(const maths::Ray &ray) override;
         BoundingBox boundingBox() override;
         SurfaceData surfaceData(const maths::Vector& hitPoint) const override;
-        Type type() const override { return Type::PRIMITIVE; }
 
       private:
         double _radius;

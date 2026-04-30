@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "object/material/IMaterial.hpp"
+#include "object/material/AMaterial.hpp"
 #include "math/Color.hpp"
 #include "math/Vector.hpp"
 #include "object/primitive/ReflTypes.hpp"
@@ -17,7 +17,7 @@
 #include <string>
 
 namespace raytracer::object::material {
-    class FlatColor : public IMaterial {
+    class FlatColor : public AMaterial {
       public:
         explicit FlatColor(const std::map<std::string, std::any> &args);
         ~FlatColor() override = default;
