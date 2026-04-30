@@ -12,13 +12,8 @@
 #include "FlatColor.hpp"
 #include "object/IObject.hpp"
 
-extern "C" raytracer::object::IObject *flatcolorBuilder(
-    const std::map<std::string, std::any> &args) {
-    return new raytracer::object::material::FlatColor(args);
-}
-
-extern "C" const char *type(void) {
-    return "material";
+extern "C" raytracer::object::AObject::Type type(void) {
+    return raytracer::object::AObject::Type::MATERIAL;
 }
 
 extern "C" const char *name(void) {
@@ -26,5 +21,8 @@ extern "C" const char *name(void) {
 }
 
 extern "C" raytracer::object::BuilderFunc builder(void) {
-    return &flatcolorBuilder;
+    return [](const std::map<std::string, std::any> &params)
+               -> raytracer::object::IObject * {
+        return new raytracer::object::material::FlatColor(params);
+    };
 }

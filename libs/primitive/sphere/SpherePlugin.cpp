@@ -12,8 +12,8 @@
 #include "Sphere.hpp"
 #include "object/IObject.hpp"
 
-extern "C" raytracer::object::Type type(void) {
-    return raytracer::object::Type::PRIMITIVE;
+extern "C" raytracer::object::AObject::Type type(void) {
+    return raytracer::object::AObject::Type::PRIMITIVE;
 }
 
 extern "C" const char *name(void) {
