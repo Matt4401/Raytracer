@@ -40,7 +40,6 @@ namespace raytracer::object::primitive {
                                   color, "g", "Sphere"),
                               util::ObjectMiddleware::validate<unsigned char>(
                                   color, "b", "Sphere"));
-
     }
 
     Sphere::Sphere(const maths::Vector &vector, const maths::Vector &emission,

@@ -16,7 +16,7 @@ namespace raytracer::maths {
     Rectangle::Rectangle() : _origin(), _bottomSide(), _leftSide() {
     }
 
-    Vector Rectangle::pointAt(double u, double v) const {
+    Vector Rectangle::pointAt(const double u, const double v) const {
         return Vector(_origin.x + u * _bottomSide.x + v * _leftSide.x,
                       _origin.y + u * _bottomSide.y + v * _leftSide.y,
                       _origin.z + u * _bottomSide.z + v * _leftSide.z);

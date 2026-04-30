@@ -22,12 +22,12 @@ namespace raytracer::object::camera {
           _viewport(),
           _fov(0),
           _aspectRatio(1.0) {
-        const auto &position = util::ObjectMiddleware::requireMap(
-            params, "position", "Camera");
-        const auto &rotation = util::ObjectMiddleware::requireMap(
-            params, "rotation", "Camera");
-        const auto &resolution = util::ObjectMiddleware::requireMap(
-            params, "resolution", "Camera");
+        const auto &position =
+            util::ObjectMiddleware::requireMap(params, "position", "Camera");
+        const auto &rotation =
+            util::ObjectMiddleware::requireMap(params, "rotation", "Camera");
+        const auto &resolution =
+            util::ObjectMiddleware::requireMap(params, "resolution", "Camera");
 
         _position = maths::Vector(
             util::ObjectMiddleware::validate<double>(position, "x", "Camera"),

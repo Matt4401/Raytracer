@@ -30,7 +30,8 @@ namespace raytracer::util {
         ObjectMiddleware &operator=(ObjectMiddleware &&) = default;
 
         /**
-         @brief Validates and retrieves an argument from a map of std::any objects.
+         @brief Validates and retrieves an argument from a map of std::any
+         objects.
          * @tparam T The expected type of the argument at the specified key.
          * @param params The map of std::any objects containing the arguments
          to validate.

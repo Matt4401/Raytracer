@@ -30,7 +30,7 @@ namespace raytracer::maths {
         /// @param v expected to be in the range [0, 1], where 0 corresponds to
         /// the bottom edge and 1 corresponds to the top edge of the rectangle
         /// @return the point at the given u and v coordinates on the rectangle
-        Vector pointAt(double u, double v) const;
+        Vector pointAt(const double u, const double v) const;
 
       protected:
       private:
