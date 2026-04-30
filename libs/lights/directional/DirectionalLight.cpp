@@ -36,7 +36,7 @@ namespace raytracer::object::light {
         double sT;
         int sId;
         bool occluded = scene.intersect(shadowRay, sT, sId);
-        if (!occluded || sT > 5e4) {
+        if (!occluded) {
             return _color.toVector() * _intensity * f * cosTheta;
         }
         return maths::Vector(0, 0, 0);
