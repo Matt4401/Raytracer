@@ -6,19 +6,17 @@
 */
 
 #include "FlatColor.hpp"
-#include "util/ObjectMiddleware.hpp"
+#include "util/middleware/Helpers.hpp"
+#include "util/middleware/ObjectMiddleware.hpp"
 
 namespace raytracer::object::material {
 
     FlatColor::FlatColor(const std::map<std::string, std::any> &args)
-        : _color(util::ObjectMiddleware::validate<maths::Color>(
-              args, "color", "FlatColor")),
-          _emission(util::ObjectMiddleware::validate<maths::Vector>(
-              args, "emission", "FlatColor")),
+        : AMaterial(),
+          _color(util::Helpers::toColor(args, "color", "FlatColor")),
+          _emission(util::Helpers::toVector(args, "emission", "FlatColor")),
           _refl(util::ObjectMiddleware::validate<raytracer::object::primitive::RefltT>(
               args, "reflType", "FlatColor")) {
-
-        util::ObjectMiddleware::color(_color, "FlatColor");
     }
 
     void FlatColor::apply(raytracer::object::primitive::SurfaceData& data, const maths::Vector& hitPoint) const {
