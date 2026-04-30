@@ -8,6 +8,7 @@
 #include "Sphere.hpp"
 
 #include <any>
+#include <memory>
 #include <cmath>
 #include <vector>
 
@@ -21,14 +22,20 @@ namespace raytracer::object::primitive {
     Sphere::Sphere(const std::vector<std::any> &args)
         : APrimitive("Sphere",
                      util::ObjectMiddleware::validate<maths::Vector>(
+                         args, 1, "Sphere", EXPECTED_ARGS),
+                     util::ObjectMiddleware::validate<std::shared_ptr<raytracer::object::material::IMaterial>>(
                          args, 0, "Sphere", EXPECTED_ARGS)),
-          _radius(util::ObjectMiddleware::validate<double>(args, 1, "Sphere",
+          _radius(util::ObjectMiddleware::validate<double>(args, 2, "Sphere",
                                                            EXPECTED_ARGS)) {
         util::ObjectMiddleware::unsignedDouble(_radius, "radius", "Sphere");
     }
 
     Sphere::Sphere(const maths::Vector &vector, const double radius)
-        : APrimitive("Sphere", vector), _radius(radius) {
+        : Sphere(nullptr, vector, radius) {}
+
+    Sphere::Sphere(std::shared_ptr<raytracer::object::material::IMaterial> material,
+                   const maths::Vector &vector, const double radius)
+        : APrimitive("Sphere", vector, std::move(material)), _radius(radius) {
         util::ObjectMiddleware::unsignedDouble(_radius, "radius", "Sphere");
     }
 

@@ -9,6 +9,7 @@
 
 #include <any>
 #include <vector>
+#include <memory>
 
 #include "math/Ray.hpp"
 #include "math/Vector.hpp"
@@ -19,6 +20,8 @@ namespace raytracer::object::primitive {
       public:
         explicit Sphere(const std::vector<std::any> &args);
         explicit Sphere(const maths::Vector &vector, double radius);
+        explicit Sphere(std::shared_ptr<raytracer::object::material::IMaterial> material,
+            const maths::Vector &vector, double radius);
         ~Sphere() override = default;
 
         const double &radius() const noexcept;
@@ -31,7 +34,7 @@ namespace raytracer::object::primitive {
       private:
         double _radius;
 
-        static constexpr std::size_t EXPECTED_ARGS = 2;
+        static constexpr std::size_t EXPECTED_ARGS = 3;
         static constexpr double EPS = 1e-4;
     };
 }  // namespace raytracer::object::primitive

@@ -7,6 +7,9 @@
 
 #pragma once
 
+#include "object/material/IMaterial.hpp"
+#include <memory>
+
 #include <string>
 #include <string_view>
 
@@ -18,8 +21,10 @@ namespace raytracer::object::primitive {
     class APrimitive : public IPrimitive {
       public:
         explicit APrimitive(const std::string_view name,
-                            const maths::Vector &center)
-            : _name(name),
+                            const maths::Vector &center,
+                            std::shared_ptr<raytracer::object::material::IMaterial> material = nullptr)
+            : _material(std::move(material)),
+              _name(name),
               _center(center) {
         }
         ~APrimitive() override = default;
@@ -32,6 +37,7 @@ namespace raytracer::object::primitive {
         const std::string &name() const noexcept;
 
       protected:
+        std::shared_ptr<raytracer::object::material::IMaterial> _material;
         std::string _name;
         maths::Vector _center;
     };
