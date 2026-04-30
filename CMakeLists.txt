@@ -67,7 +67,6 @@ set(HEADERS
         include/object/primitive/APrimitive.hpp
         include/object/primitive/ReflTypes.hpp
         include/util/ObjectMiddleware.hpp
-        include/util/MapConverter.hpp
 )
 
 add_library(raytracer_core STATIC ${SRCS})
