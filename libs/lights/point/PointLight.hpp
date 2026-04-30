@@ -21,7 +21,7 @@ namespace raytracer::object::light {
     class PointLight : public ALight {
       public:
         PointLight()
-            : ALight(maths::Vector(), maths::Color(), 0.0), radius(0.0) {
+            : ALight(maths::Vector(), maths::Color(), 0.0), _radius(0.0) {
         }
 
         PointLight(const std::map<std::string, std::any> &params);
@@ -39,7 +39,7 @@ namespace raytracer::object::light {
         PointLight(const maths::Vector &pos, const maths::Color &col,
                    double intens, double rad = 0.0)
             : ALight(maths::Vector(pos), maths::Color(col), intens),
-              radius(rad) {
+              _radius(rad) {
         }
 
         /// @brief Compute the NEE contribution from this point light.
@@ -55,7 +55,7 @@ namespace raytracer::object::light {
 
       protected:
       private:
-        double radius;
+        double _radius;
     };
 }  // namespace raytracer::object::light
 

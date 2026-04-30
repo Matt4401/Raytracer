@@ -15,7 +15,8 @@
 #include "math/Vector.hpp"
 #include "object/ALight.hpp"
 #include "object/IScene.hpp"
-#include "util/ObjectMiddleware.hpp"
+#include "util/middleware/ObjectMiddleware.hpp"
+#include "util/middleware/Helpers.hpp"
 
 namespace raytracer::object::light {
 
@@ -28,18 +29,12 @@ namespace raytracer::object::light {
         const double intensity = util::ObjectMiddleware::validate<double>(
             params, "intensity", "ALight");
 
-        util::ObjectMiddleware::unsignedDouble(intensity, "intensity",
+        util::Helpers::unsignedDouble(intensity, "intensity",
                                                "ALight");
 
-        setPosition(maths::Vector(
-            util::ObjectMiddleware::validate<double>(position, "x", "ALight"),
-            util::ObjectMiddleware::validate<double>(position, "y", "ALight"),
-            util::ObjectMiddleware::validate<double>(position, "z", "ALight")));
-        setColor(maths::Color(
-            util::ObjectMiddleware::validate<int>(color, "r", "ALight"),
-            util::ObjectMiddleware::validate<int>(color, "g", "ALight"),
-            util::ObjectMiddleware::validate<int>(color, "b", "ALight")));
-        setIntensity(intensity);
+        _position = util::Helpers::toVector(position, "position", "ALight");
+        _color = util::Helpers::toColor(color, "color", "ALight");
+        _intensity = intensity;
     }
 
     void ALight::setPosition(const maths::Vector &position) {

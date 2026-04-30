@@ -7,22 +7,18 @@
 
 #include "SpotLight.hpp"
 
-#include "util/ObjectMiddleware.hpp"
+#include "util/middleware/ObjectMiddleware.hpp"
+#include "util/middleware/Helpers.hpp"
 
 namespace raytracer::object::light {
     SpotLight::SpotLight(const std::map<std::string, std::any> &params)
         : ALight(params) {
         const auto &direction = util::ObjectMiddleware::requireMap(
             params, "direction", "SpotLight");
-        _direction = maths::Vector(util::ObjectMiddleware::validate<double>(
-                                       direction, "x", "SpotLight"),
-                                   util::ObjectMiddleware::validate<double>(
-                                       direction, "y", "SpotLight"),
-                                   util::ObjectMiddleware::validate<double>(
-                                       direction, "z", "SpotLight"));
+        _direction = util::Helpers::toVector(direction, "direction", "SpotLight");
         const double exponent = util::ObjectMiddleware::validate<double>(
             params, "exponent", "SpotLight");
-        util::ObjectMiddleware::unsignedDouble(exponent, "exponent",
+        util::Helpers::unsignedDouble(exponent, "exponent",
                                                "SpotLight");
         _exponent = exponent;
     }

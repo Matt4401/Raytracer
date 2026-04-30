@@ -9,13 +9,16 @@
 
 #include <cmath>
 
-#include "util/ObjectMiddleware.hpp"
+#include "util/middleware/ObjectMiddleware.hpp"
+#include "util/middleware/Helpers.hpp"
 
 namespace raytracer::object::light {
     PointLight::PointLight(const std::map<std::string, std::any> &params)
         : ALight(params) {
-        this->radius = util::ObjectMiddleware::validate<double>(
+        const double radius = util::ObjectMiddleware::validate<double>(
             params, "radius", "PointLight");
+        util::Helpers::unsignedDouble(radius, "radius", "PointLight");
+        _radius = radius;
     }
 
     maths::Vector PointLight::computeNEE(const scene::IScene &scene,
@@ -37,10 +40,10 @@ namespace raytracer::object::light {
         int sId;
         bool hit = scene.intersect(shadowRay, sT, sId);
 
-        if (radius > 0.0) {
-            if (!hit || sT > dist - radius - 1e-3) {
+        if (_radius > 0.0) {
+            if (!hit || sT > dist - _radius - 1e-3) {
                 double cosAlpha = std::sqrt(
-                    std::max(0.0, 1.0 - (radius / dist) * (radius / dist)));
+                    std::max(0.0, 1.0 - (_radius / dist) * (_radius / dist)));
                 double omega = 2 * M_PI * (1.0 - cosAlpha);
                 return color().toVector() * intensity() * f * cosTheta *
                        (omega / (2.0 * M_PI));
