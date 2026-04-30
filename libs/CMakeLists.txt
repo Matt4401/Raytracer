@@ -5,3 +5,4 @@ project(libs)
 
 add_subdirectory(primitive)
 add_subdirectory(materials)
+add_subdirectory(camera)

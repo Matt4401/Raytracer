@@ -20,17 +20,27 @@
 
 namespace raytracer::object::primitive {
     Sphere::Sphere(const std::map<std::string, std::any> &params)
-        : APrimitive("Sphere",
-                     util::ObjectMiddleware::validate<maths::Vector>(
-                         params, "pos", "Sphere"),
-                     maths::Vector(0, 0, 0),
-                     util::ObjectMiddleware::validate<maths::Color>(
-                         params, "color", "Sphere"),
-                     RefltT::DIFF),
+        : APrimitive("Sphere", maths::Vector(0, 0, 0), maths::Vector(0, 0, 0),
+                     maths::Color(0, 0, 0), RefltT::DIFF),
           _radius(
               util::ObjectMiddleware::validate<double>(params, "r", "Sphere")) {
         util::ObjectMiddleware::unsignedDouble(_radius, "r", "Sphere");
-        util::ObjectMiddleware::color(_color, "Sphere");
+
+        auto &pos = util::ObjectMiddleware::requireMap(params, "pos", "Sphere");
+        _center = maths::Vector(
+            util::ObjectMiddleware::validate<double>(pos, "x", "Sphere"),
+            util::ObjectMiddleware::validate<double>(pos, "y", "Sphere"),
+            util::ObjectMiddleware::validate<double>(pos, "z", "Sphere"));
+
+        auto &color =
+            util::ObjectMiddleware::requireMap(params, "color", "Sphere");
+        _color = maths::Color(util::ObjectMiddleware::validate<unsigned char>(
+                                  color, "r", "Sphere"),
+                              util::ObjectMiddleware::validate<unsigned char>(
+                                  color, "g", "Sphere"),
+                              util::ObjectMiddleware::validate<unsigned char>(
+                                  color, "b", "Sphere"));
+
     }
 
     Sphere::Sphere(const maths::Vector &vector, const maths::Vector &emission,
@@ -38,7 +48,6 @@ namespace raytracer::object::primitive {
                    const RefltT refl)
         : APrimitive("Sphere", vector, emission, color, refl), _radius(radius) {
         util::ObjectMiddleware::unsignedDouble(_radius, "radius", "Sphere");
-        util::ObjectMiddleware::color(_color, "Sphere");
     }
 
     const double &Sphere::radius() const noexcept {
