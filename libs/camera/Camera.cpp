@@ -96,7 +96,7 @@ namespace raytracer::object::camera {
                              horizontal, vertical);
     }
 
-    maths::Ray Camera::ray(double u, double v) const {
+    maths::Ray Camera::ray(const double u, const double v) const {
         const maths::Vector rayPoint = _viewport.pointAt(u, v) - _position;
         const maths::Vector rayDirection(rayPoint.x, rayPoint.y, rayPoint.z);
         return maths::Ray(_position, rayDirection.normalized());

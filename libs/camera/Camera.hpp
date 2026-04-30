@@ -49,7 +49,7 @@ namespace raytracer::object::camera {
         /// the bottom edge and 1 corresponds to the top edge of the viewport
         /// @return return a ray, going from the camera to the coordinates and
         /// fov of the viewport.
-        maths::Ray ray(double u, double v) const;
+        maths::Ray ray(const double u, const double v) const;
 
         void move(const maths::Vector &direction);
         void rotate(const maths::Vector &rotation);
