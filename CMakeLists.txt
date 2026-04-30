@@ -39,7 +39,7 @@ set(SRCS
         src/math/Vector.cpp
         src/math/Rectangle.cpp
         src/object/primitive/APrimitive.cpp
-        src/util/ObjectMiddleware.cpp
+        src/util/middleware/Helpers.cpp
         src/plugin/PluginManager.cpp
         src/plugin/ObjectFactory.cpp
         src/object/light/ALight.cpp

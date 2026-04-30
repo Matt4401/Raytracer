@@ -64,18 +64,6 @@ namespace raytracer::util {
         }
 
         /**
-         @brief Check if a double given value it negative or not.
-         * @param value double to check if it is negative or not.
-         * @param fieldName name of the double to check. For Example radius for
-         a Sphere.
-         * @param className name of the class of the value.v
-         * @throws PluginException If the index is out of bounds or if the type
-         casting fails, with a message indicating the nature of the error.
-         */
-        static void unsignedDouble(double value, std::string_view fieldName,
-                                   std::string_view className);
-
-        /**
          @brief Retrieve a nested map parameter from a parameter map.
          * @param params The parameter map containing the nested map.
          * @param key The key to look up in the parameter map.
@@ -87,6 +75,7 @@ namespace raytracer::util {
             const std::map<std::string, std::any> &params,
             const std::string_view key, const std::string_view className) {
             const auto it = params.find(std::string(key));
+
             if (it == params.end()) {
                 throw exception::PluginException("{} requires parameter '{}'",
                                                  std::string(className),
