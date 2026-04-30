@@ -24,7 +24,7 @@ namespace raytracer::object::camera {
                const maths::Vector &rotation, double fieldOfView,
                double aspectRatio);
         Camera();
-        ~Camera() = default;
+        ~Camera() override = default;
 
         /// @brief Set the camera's viewport based on the given field of view
         /// and aspect ratio. The viewport is defined as a rectangle in 3D
