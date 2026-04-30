@@ -90,12 +90,7 @@ namespace raytracer::maths {
         return *this;
     }
 
-    Color &Color::operator=(const Color &other) {
-        this->r = other.r;
-        this->g = other.g;
-        this->b = other.b;
-        return *this;
-    }
+    Color &Color::operator=(const Color &other) = default;
 
     bool Color::operator==(const Color &other) const {
         return this->r == other.r && this->g == other.g && this->b == other.b;

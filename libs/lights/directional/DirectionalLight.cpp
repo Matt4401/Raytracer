@@ -17,7 +17,7 @@ namespace raytracer::object::light {
         _direction =
             util::Helpers::toVector(params, "direction", "DirectionalLight");
 
-        if (_direction.magnitude() < kMinDistanceEpsilon) {
+        if (_direction.magnitude() < K_MIN_DISTANCE_EPSILON) {
             throw exception::PluginException{
                 "DirectionalLight direction vector cannot be zero"};
         }
@@ -32,7 +32,7 @@ namespace raytracer::object::light {
         if (cosTheta <= 0)
             return maths::Vector(0, 0, 0);
 
-        maths::Ray shadowRay(x + nl * kShadowRayBias, _direction);
+        maths::Ray shadowRay(x + nl * K_SHADOW_RAY_BIAS, _direction);
         double sT;
         int sId;
         bool occluded = scene.intersect(shadowRay, sT, sId);
