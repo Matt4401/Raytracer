@@ -22,25 +22,17 @@ namespace raytracer::object::camera {
           _viewport(),
           _fov(0),
           _aspectRatio(1.0) {
-        const auto &position =
-            util::ObjectMiddleware::requireMap(params, "position", "Camera");
-        const auto &rotation =
-            util::ObjectMiddleware::requireMap(params, "rotation", "Camera");
         const auto &resolution =
             util::ObjectMiddleware::requireMap(params, "resolution", "Camera");
-
-        _position = maths::Vector(
-            util::ObjectMiddleware::validate<double>(position, "x", "Camera"),
-            util::ObjectMiddleware::validate<double>(position, "y", "Camera"),
-            util::ObjectMiddleware::validate<double>(position, "z", "Camera"));
-        _rotation = maths::Vector(
-            util::ObjectMiddleware::validate<double>(rotation, "x", "Camera"),
-            util::ObjectMiddleware::validate<double>(rotation, "y", "Camera"),
-            util::ObjectMiddleware::validate<double>(rotation, "z", "Camera"));
         const double width = util::ObjectMiddleware::validate<double>(
             resolution, "width", "Camera");
         const double height = util::ObjectMiddleware::validate<double>(
             resolution, "height", "Camera");
+
+        _position =
+            util::ObjectMiddleware::toVector(params, "position", "Camera");
+        _rotation =
+            util::ObjectMiddleware::toVector(params, "rotation", "Camera");
         util::ObjectMiddleware::unsignedDouble(width, "width", "Camera");
         util::ObjectMiddleware::unsignedDouble(height, "height", "Camera");
 
@@ -60,8 +52,8 @@ namespace raytracer::object::camera {
     }
 
     Camera::Camera(const maths::Vector &origin, const maths::Vector &position,
-                   const maths::Vector &rotation, double fieldOfView,
-                   double aspectRatio)
+                   const maths::Vector &rotation, const double fieldOfView,
+                   const double aspectRatio)
         : AObject(Type::CAMERA),
           _origin(origin),
           _position(position),
@@ -82,7 +74,8 @@ namespace raytracer::object::camera {
           _aspectRatio(1.0) {
     }
 
-    void Camera::setViewport(double fieldOfView, double aspectRatio) {
+    void Camera::setViewport(const double fieldOfView,
+                             const double aspectRatio) {
         _fov = fieldOfView;
         _aspectRatio = aspectRatio;
         const double viewportHeight = 2.0 * std::tan(fieldOfView / 2.0);
