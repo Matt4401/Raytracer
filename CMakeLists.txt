@@ -42,6 +42,7 @@ set(SRCS
         src/util/middleware/Helpers.cpp
         src/plugin/PluginManager.cpp
         src/plugin/ObjectFactory.cpp
+        src/object/light/ALight.cpp
 )
 
 set(HEADERS
@@ -49,24 +50,6 @@ set(HEADERS
         src/plugin/PluginManager.hpp
         src/plugin/ObjectFactory.hpp
         src/plugin/DlLoader.hpp
-        include/exception/Exception.hpp
-        include/exception/ParsingException.hpp
-        include/exception/CoreException.hpp
-        include/exception/PluginException.hpp
-        include/math/Color.hpp
-        include/math/Vector.hpp
-        include/math/Rectangle.hpp
-        include/math/Ray.hpp
-        include/object/AObject.hpp
-        include/object/ACamera.hpp
-        include/object/IObject.hpp
-        include/object/ICamera.hpp
-        include/object/ILight.hpp
-        include/object/IScene.hpp
-        include/object/primitive/IPrimitive.hpp
-        include/object/primitive/APrimitive.hpp
-        include/object/primitive/ReflTypes.hpp
-        include/util/middleware/ObjectMiddleware.hpp
 )
 
 add_library(raytracer_core STATIC ${SRCS})
