@@ -5,3 +5,4 @@ project(libs)
 
 add_subdirectory(point)
 add_subdirectory(directional)
+add_subdirectory(spot)
