@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
-#include "math/Ray.hpp"
 #include "math/Color.hpp"
+#include "math/Ray.hpp"
 #include "object/primitive/ReflTypes.hpp"
 
 namespace raytracer::object::primitive {
@@ -53,10 +53,11 @@ namespace raytracer::object::primitive {
         virtual double hits(const maths::Ray &ray) = 0;
 
         /**
-         * @brief Get surface data at hit point (normal, uv, etc.) and evaluates 
+         * @brief Get surface data at hit point (normal, uv, etc.) and evaluates
          * underlying materials for color, emission, etc.
          */
-        virtual SurfaceData surfaceData(const maths::Vector& hitPoint) const = 0;
+        virtual SurfaceData surfaceData(
+            const maths::Vector &hitPoint) const = 0;
 
         /**
          *

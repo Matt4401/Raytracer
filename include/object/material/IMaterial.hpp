@@ -7,14 +7,15 @@
 
 #pragma once
 
-#include "object/primitive/IPrimitive.hpp"
 #include "math/Vector.hpp"
+#include "object/primitive/IPrimitive.hpp"
 
 namespace raytracer::object::material {
     class IMaterial {
       public:
         virtual ~IMaterial() = default;
 
-        virtual void apply(raytracer::object::primitive::SurfaceData& data, const maths::Vector& hitPoint) const = 0;
+        virtual void apply(raytracer::object::primitive::SurfaceData& data,
+                           const maths::Vector& hitPoint) const = 0;
     };
-}
+}  // namespace raytracer::object::material

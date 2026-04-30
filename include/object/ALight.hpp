@@ -24,7 +24,8 @@ namespace raytracer::object::light {
             : AObject(Type::LIGHT), _position(), _color(), _intensity(0.0) {
         }
         explicit ALight(const std::map<std::string, std::any> &params);
-        explicit ALight(maths::Vector position, maths::Color color, double intensity)
+        explicit ALight(maths::Vector position, maths::Color color,
+                        double intensity)
             : AObject(Type::LIGHT),
               _position(position),
               _color(color),

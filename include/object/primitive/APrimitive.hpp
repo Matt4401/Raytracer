@@ -15,27 +15,27 @@
 #include "math/Vector.hpp"
 #include "object/AObject.hpp"
 #include "object/IObject.hpp"
-#include "object/primitive/IPrimitive.hpp"
-#include "object/IObject.hpp"
 #include "object/material/IMaterial.hpp"
+#include "object/primitive/IPrimitive.hpp"
 
 namespace raytracer::object::primitive {
     class APrimitive : public IPrimitive, public AObject {
       public:
-        explicit APrimitive(const std::string_view name,
-                            const maths::Vector &center,
-                            std::shared_ptr<raytracer::object::material::IMaterial> material = nullptr)
+        explicit APrimitive(
+            const std::string_view name, const maths::Vector &center,
+            std::shared_ptr<raytracer::object::material::IMaterial> material =
+                nullptr)
             : AObject(Type::PRIMITIVE),
               _material(std::move(material)),
               _name(name),
               _center(center) {
-
         }
         ~APrimitive() override = default;
 
         double hits(const maths::Ray &ray) override = 0;
         BoundingBox boundingBox() override = 0;
-        SurfaceData surfaceData(const maths::Vector& hitPoint) const override = 0;
+        SurfaceData surfaceData(const maths::Vector &hitPoint) const override =
+            0;
 
         maths::Vector center() const noexcept;
         const std::string &name() const noexcept;
