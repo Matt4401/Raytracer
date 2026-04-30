@@ -65,7 +65,7 @@ namespace raytracer::object::camera {
         maths::Vector _position;
         maths::Vector _rotation;
         maths::Rectangle _viewport;
-        double _fod;
+        double _fov;
         double _aspectRatio;
     };
 }  // namespace raytracer::object::camera

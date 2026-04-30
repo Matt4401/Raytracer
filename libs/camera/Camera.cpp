@@ -20,7 +20,7 @@ namespace raytracer::object::camera {
           _position(),
           _rotation(),
           _viewport(),
-          _fod(0),
+          _fov(0),
           _aspectRatio(1.0) {
         const auto &position = util::ObjectMiddleware::requireMap(
             params, "position", "Camera");
@@ -62,7 +62,7 @@ namespace raytracer::object::camera {
           _position(position),
           _rotation(rotation),
           _viewport(),
-          _fod(0),
+          _fov(0),
           _aspectRatio(1.0) {
         setViewport(fieldOfView, aspectRatio);
     }
@@ -73,12 +73,12 @@ namespace raytracer::object::camera {
           _position(),
           _rotation(),
           _viewport(),
-          _fod(0),
+          _fov(0),
           _aspectRatio(1.0) {
     }
 
     void Camera::setViewport(double fieldOfView, double aspectRatio) {
-        _fod = fieldOfView;
+        _fov = fieldOfView;
         _aspectRatio = aspectRatio;
         const double viewportHeight = 2.0 * std::tan(fieldOfView / 2.0);
         const double viewportWidth = aspectRatio * viewportHeight;
@@ -99,7 +99,7 @@ namespace raytracer::object::camera {
 
     void Camera::move(const maths::Vector &direction) {
         _position += direction;
-        setViewport(_fod, _aspectRatio);
+        setViewport(_fov, _aspectRatio);
     }
 
     void Camera::rotate(const maths::Vector &rotation) {
@@ -108,7 +108,7 @@ namespace raytracer::object::camera {
 
     void Camera::setPosition(const maths::Vector &position) {
         _position = position;
-        setViewport(_fod, _aspectRatio);
+        setViewport(_fov, _aspectRatio);
     }
 
     void Camera::setRotation(const maths::Vector &rotation) {
