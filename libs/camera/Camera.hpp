@@ -47,8 +47,8 @@ namespace raytracer::object::camera {
         /// the left edge and 1 corresponds to the right edge of the viewport
         /// @param v expected to be in the range [0, 1], where 0 corresponds to
         /// the bottom edge and 1 corresponds to the top edge of the viewport
-        /// @return return a ray, going from the camera to the coordinates uand
-        /// vof the viewport.
+        /// @return return a ray, going from the camera to the coordinates and
+        /// fov of the viewport.
         maths::Ray ray(double u, double v) const;
 
         void move(const maths::Vector &direction);
