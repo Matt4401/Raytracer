@@ -106,5 +106,10 @@ namespace raytracer::util {
         static maths::Color toColor(
             const std::map<std::string, std::any> &params,
             std::string_view keyName, std::string_view className);
+
+        static maths::Vector toVector(
+            const std::map<std::string, std::any> &params,
+            std::string_view keyName, std::string_view className);
+
     };
 }  // namespace raytracer::util

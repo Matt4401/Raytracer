@@ -31,4 +31,16 @@ namespace raytracer::util {
             ObjectMiddleware::validate<unsigned char>(colorMap, "b",
                                                       className));
     }
+
+    maths::Vector toVector(const std::map<std::string, std::any> &params,
+                           const std::string_view keyName,
+                           const std::string_view className) {
+        const auto &vectorMap =
+            ObjectMiddleware::requireMap(params, keyName, className);
+
+        return maths::Vector(
+            ObjectMiddleware::validate<double>(vectorMap, "x", className),
+            ObjectMiddleware::validate<double>(vectorMap, "y", className),
+            ObjectMiddleware::validate<double>(vectorMap, "z", className));
+    }
 }  // namespace raytracer::util
