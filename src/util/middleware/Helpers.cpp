@@ -5,6 +5,8 @@
 ** Helpers
 */
 
+#include "Helpers.hpp"
+
 #include <any>
 #include <map>
 #include <string>
@@ -15,6 +17,15 @@
 #include "exception/PluginException.hpp"
 
 namespace raytracer::util {
+
+    void Helpers::unsignedInt(const int value, const std::string_view fieldName,
+                              const std::string_view className) {
+        if (value < 0) {
+            throw exception::PluginException{"{} {} can't be negative: {}",
+                                             className, fieldName, value};
+        }
+    }
+
     void Helpers::unsignedDouble(const double value,
                                  const std::string_view fieldName,
                                  const std::string_view className) {
