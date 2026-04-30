@@ -5,8 +5,7 @@
 ** IScene
 */
 
-#ifndef ISCENE_HPP_
-#define ISCENE_HPP_
+#pragma once
 
 #include "math/Ray.hpp"
 
@@ -23,4 +22,3 @@ namespace raytracer::object::scene {
       private:
     };
 }  // namespace raytracer::object::scene
-#endif /* !ISCENE_HPP_ */

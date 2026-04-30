@@ -12,20 +12,17 @@
 #include "Sphere.hpp"
 #include "object/IObject.hpp"
 
-extern "C" raytracer::object::IObject *sphereBuilder(
-    const std::map<std::string, std::any> &params) {
-    return new raytracer::object::primitive::Sphere(params);
-}
-
-extern "C" const char *type(void) {
-    return "primitive";
+extern "C" raytracer::object::Type type(void) {
+    return raytracer::object::Type::PRIMITIVE;
 }
 
 extern "C" const char *name(void) {
     return "sphere";
 }
 
-// Returns a function pointer cast to void* for C compatibility
 extern "C" raytracer::object::BuilderFunc builder(void) {
-    return &sphereBuilder;
+    return [](const std::map<std::string, std::any> &params)
+               -> raytracer::object::IObject * {
+        return new raytracer::object::primitive::Sphere(params);
+    };
 }

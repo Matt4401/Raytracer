@@ -5,8 +5,7 @@
 ** Ray
 */
 
-#ifndef RAY_HPP_
-#define RAY_HPP_
+#pragma once
 
 #include "Vector.hpp"
 
@@ -25,5 +24,3 @@ namespace raytracer::maths {
       private:
     };
 }  // namespace raytracer::maths
-
-#endif /* !RAY_HPP_ */

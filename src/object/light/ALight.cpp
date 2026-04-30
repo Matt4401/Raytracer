@@ -14,18 +14,13 @@ namespace raytracer::object::light {
 
     ALight::ALight(const std::map<std::string, std::any> &params)
         : AObject(Type::LIGHT) {
-        const auto &position =
-            util::ObjectMiddleware::requireMap(params, "position", "ALight");
-        const auto &color =
-            util::ObjectMiddleware::requireMap(params, "color", "ALight");
         const double intensity = util::ObjectMiddleware::validate<double>(
             params, "intensity", "ALight");
-
         util::Helpers::unsignedDouble(intensity, "intensity", "ALight");
 
-        _position = util::Helpers::toVector(position, "position", "ALight");
-        _color = util::Helpers::toColor(color, "color", "ALight");
         _intensity = intensity;
+        _position = util::Helpers::toVector(params, "position", "ALight");
+        _color = util::Helpers::toColor(params, "color", "ALight");
     }
 
     void ALight::setPosition(const maths::Vector &position) {

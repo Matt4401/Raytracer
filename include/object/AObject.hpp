@@ -5,15 +5,14 @@
 ** AObject
 */
 
-#ifndef AOBJECT_HPP_
-#define AOBJECT_HPP_
+#pragma once
 
 #include "IObject.hpp"
 
 namespace raytracer::object {
     class AObject : public IObject {
       public:
-        AObject(Type type) : _type(type) {};
+        explicit AObject(Type type) : _type(type) {};
         ~AObject() override = default;
         Type type() const override {
             return _type;
@@ -23,5 +22,3 @@ namespace raytracer::object {
         Type _type;
     };
 }  // namespace raytracer::object
-
-#endif /* !AOBJECT_HPP_ */
