@@ -19,10 +19,6 @@
 #include "math/Vector.hpp"
 
 namespace raytracer::util {
-    template <typename T>
-    T mapTo(const std::map<std::string, std::any> &mapData,
-            std::string_view className);
-
     class ObjectMiddleware {
       public:
         ObjectMiddleware() = default;
@@ -35,10 +31,7 @@ namespace raytracer::util {
 
         /**
          @brief Validates and retrieves an argument from a map of std::any
-         objects. This function checks if the specified key exists in the map
-         and attempts to cast the argument at that key to the specified type T.
-         For Vector and Color types, if the value is a nested map, it will
-         automatically convert it using mapTo().
+         objects.
          * @tparam T The expected type of the argument at the specified key.
          * @param params The map of std::any objects containing the arguments
          to validate.
@@ -61,16 +54,6 @@ namespace raytracer::util {
                                                  std::string(className),
                                                  std::string(key)};
             }
-            if constexpr (std::is_same_v<T, maths::Vector> ||
-                          std::is_same_v<T, maths::Color>) {
-                try {
-                    const auto &nestedMap =
-                        std::any_cast<const std::map<std::string, std::any> &>(
-                            it->second);
-                    return raytracer::util::mapTo<T>(nestedMap, className);
-                } catch (const std::bad_any_cast &) {
-                }
-            }
             try {
                 return std::any_cast<T>(it->second);
             } catch (const std::bad_any_cast &) {
@@ -81,25 +64,31 @@ namespace raytracer::util {
         }
 
         /**
-         @brief Check if a double given value it negative or not.
-         * @param value double to check if it is negative or not.
-         * @param fieldName name of the double to check. For Example radius for
-         a Sphere.
-         * @param className name of the class of the value.v
-         * @throws PluginException If the index is out of bounds or if the type
-         casting fails, with a message indicating the nature of the error.
+         @brief Retrieve a nested map parameter from a parameter map.
+         * @param params The parameter map containing the nested map.
+         * @param key The key to look up in the parameter map.
+         * @param className The name of the class requesting the parameter.
+         * @return A reference to the nested map stored at the given key.
+         * @throws PluginException If the key is missing or the type is invalid.
          */
-        static void unsignedDouble(double value, std::string_view fieldName,
-                                   std::string_view className);
+        static const std::map<std::string, std::any> &requireMap(
+            const std::map<std::string, std::any> &params,
+            const std::string_view key, const std::string_view className) {
+            const auto it = params.find(std::string(key));
 
-        /**
-        @brief Check if a color is valid.
-         * @param color color to check.
-         * @param className name of the class of the value.v
-         * @throws PluginException If the index is out of bounds or if the type
-         casting fails, with a message indicating the nature of the error.
-         */
-        static void color(const maths::Color &color,
-                          std::string_view className);
+            if (it == params.end()) {
+                throw exception::PluginException("{} requires parameter '{}'",
+                                                 std::string(className),
+                                                 std::string(key));
+            }
+            try {
+                return std::any_cast<const std::map<std::string, std::any> &>(
+                    it->second);
+            } catch (const std::bad_any_cast &) {
+                throw exception::PluginException(
+                    "{} parameter '{}' has invalid type",
+                    std::string(className), std::string(key));
+            }
+        }
     };
 }  // namespace raytracer::util

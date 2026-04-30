@@ -17,27 +17,25 @@
 #include "math/Vector.hpp"
 #include "object/primitive/APrimitive.hpp"
 #include "object/primitive/ReflTypes.hpp"
-#include "util/ObjectMiddleware.hpp"
+#include "util/middleware/Helpers.hpp"
+#include "util/middleware/ObjectMiddleware.hpp"
 
 namespace raytracer::object::primitive {
     Sphere::Sphere(const std::map<std::string, std::any> &params)
-        : APrimitive("Sphere",
-                     util::ObjectMiddleware::validate<maths::Vector>(
-                         params, "center", "Sphere"),
-                     util::ObjectMiddleware::validate<std::shared_ptr<raytracer::object::material::IMaterial>>(
-                         params, "material", "Sphere")),
-          _radius(util::ObjectMiddleware::validate<double>(params, "radius", "Sphere")) {
-        util::ObjectMiddleware::unsignedDouble(_radius, "radius", "Sphere");
-
+        : APrimitive("Sphere", maths::Vector(0, 0, 0), maths::Vector(0, 0, 0),
+                     maths::Color(0, 0, 0), RefltT::DIFF),
+          _radius(
+              util::ObjectMiddleware::validate<double>(params, "r", "Sphere")) {
+        util::Helpers::unsignedDouble(_radius, "r", "Sphere");
+        _center = util::Helpers::toVector(params, "center", "Sphere");
+        _color = util::Helpers::toColor(params, "color", "Sphere");
     }
 
-    Sphere::Sphere(const maths::Vector &vector, const double radius)
-        : Sphere(nullptr, vector, radius) {}
-
-    Sphere::Sphere(std::shared_ptr<raytracer::object::material::IMaterial> material,
-                   const maths::Vector &vector, const double radius)
-        : APrimitive("Sphere", vector, std::move(material)), _radius(radius) {
-        util::ObjectMiddleware::unsignedDouble(_radius, "radius", "Sphere");
+    Sphere::Sphere(const maths::Vector &vector, const maths::Vector &emission,
+                   const maths::Color &color, const double radius,
+                   const RefltT refl)
+        : APrimitive("Sphere", vector, emission, color, refl), _radius(radius) {
+        util::Helpers::unsignedDouble(_radius, "radius", "Sphere");
     }
 
     const double &Sphere::radius() const noexcept {

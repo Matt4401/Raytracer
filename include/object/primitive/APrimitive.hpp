@@ -14,6 +14,7 @@
 #include "math/Ray.hpp"
 #include "math/Vector.hpp"
 #include "object/AObject.hpp"
+#include "object/IObject.hpp"
 #include "object/primitive/IPrimitive.hpp"
 #include "object/IObject.hpp"
 #include "object/material/IMaterial.hpp"
