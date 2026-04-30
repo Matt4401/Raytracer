@@ -1,0 +1,79 @@
+/*
+** EPITECH PROJECT, 2026
+** RayTracer
+** File description:
+** PointLight
+*/
+
+#include "PointLight.hpp"
+
+#include <cmath>
+
+#include "util/ObjectMiddleware.hpp"
+
+namespace raytracer::object::light {
+    PointLight::PointLight(const std::map<std::string, std::any> &params)
+        : ALight() {
+        const auto &position = util::ObjectMiddleware::requireMap(
+            params, "position", "PointLight");
+        const auto &color =
+            util::ObjectMiddleware::requireMap(params, "color", "PointLight");
+        const double intensity = util::ObjectMiddleware::validate<double>(
+            params, "intensity", "PointLight");
+        const double radius = util::ObjectMiddleware::validate<double>(
+            params, "radius", "PointLight");
+
+        util::ObjectMiddleware::unsignedDouble(intensity, "intensity",
+                                               "PointLight");
+        util::ObjectMiddleware::unsignedDouble(radius, "radius", "PointLight");
+
+        setPosition(maths::Vector(util::ObjectMiddleware::validate<double>(
+                                      position, "x", "PointLight"),
+                                  util::ObjectMiddleware::validate<double>(
+                                      position, "y", "PointLight"),
+                                  util::ObjectMiddleware::validate<double>(
+                                      position, "z", "PointLight")));
+        setColor(maths::Color(
+            util::ObjectMiddleware::validate<int>(color, "r", "PointLight"),
+            util::ObjectMiddleware::validate<int>(color, "g", "PointLight"),
+            util::ObjectMiddleware::validate<int>(color, "b", "PointLight")));
+        setIntensity(intensity);
+        this->radius = radius;
+    }
+
+    maths::Vector PointLight::computeNEE(const scene::IScene &scene,
+                                         const maths::Vector &x,
+                                         const maths::Vector &nl,
+                                         const maths::Vector &f) const {
+        maths::Vector toL(position().x - x.x, position().y - x.y,
+                          position().z - x.z);
+        double dist = toL.magnitude();
+        if (dist < 1e-6)
+            return maths::Vector(0, 0, 0);
+        maths::Vector ldir = toL / dist;
+        double cosTheta = nl.dot(ldir);
+        if (cosTheta <= 0)
+            return maths::Vector(0, 0, 0);
+
+        maths::Ray shadowRay(x + nl * 1e-4, ldir);
+        double sT;
+        int sId;
+        bool hit = scene.intersect(shadowRay, sT, sId);
+
+        if (radius > 0.0) {
+            if (!hit || sT > dist - radius - 1e-3) {
+                double cosAlpha = std::sqrt(
+                    std::max(0.0, 1.0 - (radius / dist) * (radius / dist)));
+                double omega = 2 * M_PI * (1.0 - cosAlpha);
+                return color().toVector() * intensity() * f * cosTheta *
+                       (omega / (2.0 * M_PI));
+            }
+        } else {
+            if (!hit || sT > dist - 1e-3) {
+                double att = 1.0 / (dist * dist);
+                return color().toVector() * intensity() * f * cosTheta * att;
+            }
+        }
+        return maths::Vector(0, 0, 0);
+    }
+}  // namespace raytracer::object::light

@@ -42,6 +42,7 @@ set(SRCS
         src/util/ObjectMiddleware.cpp
         src/plugin/PluginManager.cpp
         src/plugin/ObjectFactory.cpp
+        src/object/light/ALight.cpp
 )
 
 set(HEADERS
@@ -62,6 +63,7 @@ set(HEADERS
         include/object/IObject.hpp
         include/object/ICamera.hpp
         include/object/ILight.hpp
+        include/object/ALight.hpp
         include/object/IScene.hpp
         include/object/primitive/IPrimitive.hpp
         include/object/primitive/APrimitive.hpp
