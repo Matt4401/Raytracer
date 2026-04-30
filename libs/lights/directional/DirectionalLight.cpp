@@ -7,8 +7,8 @@
 
 #include "DirectionalLight.hpp"
 
-#include "util/middleware/ObjectMiddleware.hpp"
 #include "util/middleware/Helpers.hpp"
+#include "util/middleware/ObjectMiddleware.hpp"
 
 namespace raytracer::object::light {
     DirectionalLight::DirectionalLight(
@@ -16,7 +16,8 @@ namespace raytracer::object::light {
         : ALight(params) {
         const auto &direction = util::ObjectMiddleware::requireMap(
             params, "direction", "DirectionalLight");
-        _direction = util::Helpers::toVector(direction, "direction", "DirectionalLight");
+        _direction =
+            util::Helpers::toVector(direction, "direction", "DirectionalLight");
 
         if (_direction.magnitude() < 1e-6) {
             throw exception::PluginException{

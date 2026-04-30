@@ -8,14 +8,14 @@
 #ifndef ALIGHT_HPP_
 #define ALIGHT_HPP_
 
+#include <any>
+#include <map>
+#include <string>
+
 #include "AObject.hpp"
 #include "ILight.hpp"
 #include "math/Color.hpp"
 #include "math/Vector.hpp"
-
-#include <any>
-#include <map>
-#include <string>
 
 namespace raytracer::object::light {
     class ALight : public ILight, public object::AObject {

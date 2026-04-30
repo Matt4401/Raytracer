@@ -7,11 +7,11 @@
 
 #include "PointLight.hpp"
 
-#include <cmath>
 #include <algorithm>
+#include <cmath>
 
-#include "util/middleware/ObjectMiddleware.hpp"
 #include "util/middleware/Helpers.hpp"
+#include "util/middleware/ObjectMiddleware.hpp"
 
 namespace raytracer::object::light {
     PointLight::PointLight(const std::map<std::string, std::any> &params)

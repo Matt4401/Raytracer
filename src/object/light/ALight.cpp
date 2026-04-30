@@ -7,8 +7,8 @@
 
 #include "object/ALight.hpp"
 
-#include "util/middleware/ObjectMiddleware.hpp"
 #include "util/middleware/Helpers.hpp"
+#include "util/middleware/ObjectMiddleware.hpp"
 
 namespace raytracer::object::light {
 
@@ -21,8 +21,7 @@ namespace raytracer::object::light {
         const double intensity = util::ObjectMiddleware::validate<double>(
             params, "intensity", "ALight");
 
-        util::Helpers::unsignedDouble(intensity, "intensity",
-                                               "ALight");
+        util::Helpers::unsignedDouble(intensity, "intensity", "ALight");
 
         _position = util::Helpers::toVector(position, "position", "ALight");
         _color = util::Helpers::toColor(color, "color", "ALight");

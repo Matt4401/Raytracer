@@ -7,9 +7,9 @@
 
 #pragma once
 
+#include "IScene.hpp"
 #include "math/Color.hpp"
 #include "math/Vector.hpp"
-#include "IScene.hpp"
 
 namespace raytracer::object::light {
 
