@@ -4,3 +4,4 @@ SET (CMAKE_CXX_STANDARD 20)
 project(libs)
 
 add_subdirectory(point)
+add_subdirectory(directional)

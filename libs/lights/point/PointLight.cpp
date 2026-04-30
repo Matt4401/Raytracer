@@ -13,32 +13,9 @@
 
 namespace raytracer::object::light {
     PointLight::PointLight(const std::map<std::string, std::any> &params)
-        : ALight() {
-        const auto &position = util::ObjectMiddleware::requireMap(
-            params, "position", "PointLight");
-        const auto &color =
-            util::ObjectMiddleware::requireMap(params, "color", "PointLight");
-        const double intensity = util::ObjectMiddleware::validate<double>(
-            params, "intensity", "PointLight");
-        const double radius = util::ObjectMiddleware::validate<double>(
+        : ALight(params) {
+        this->radius = util::ObjectMiddleware::validate<double>(
             params, "radius", "PointLight");
-
-        util::ObjectMiddleware::unsignedDouble(intensity, "intensity",
-                                               "PointLight");
-        util::ObjectMiddleware::unsignedDouble(radius, "radius", "PointLight");
-
-        setPosition(maths::Vector(util::ObjectMiddleware::validate<double>(
-                                      position, "x", "PointLight"),
-                                  util::ObjectMiddleware::validate<double>(
-                                      position, "y", "PointLight"),
-                                  util::ObjectMiddleware::validate<double>(
-                                      position, "z", "PointLight")));
-        setColor(maths::Color(
-            util::ObjectMiddleware::validate<int>(color, "r", "PointLight"),
-            util::ObjectMiddleware::validate<int>(color, "g", "PointLight"),
-            util::ObjectMiddleware::validate<int>(color, "b", "PointLight")));
-        setIntensity(intensity);
-        this->radius = radius;
     }
 
     maths::Vector PointLight::computeNEE(const scene::IScene &scene,

@@ -7,7 +7,40 @@
 
 #include "object/ALight.hpp"
 
+#include <any>
+#include <map>
+#include <string>
+
+#include "math/Color.hpp"
+#include "math/Vector.hpp"
+#include "object/ALight.hpp"
+#include "object/IScene.hpp"
+#include "util/ObjectMiddleware.hpp"
+
 namespace raytracer::object::light {
+
+    ALight::ALight(const std::map<std::string, std::any> &params)
+        : AObject(Type::LIGHT) {
+        const auto &position =
+            util::ObjectMiddleware::requireMap(params, "position", "ALight");
+        const auto &color =
+            util::ObjectMiddleware::requireMap(params, "color", "ALight");
+        const double intensity = util::ObjectMiddleware::validate<double>(
+            params, "intensity", "ALight");
+
+        util::ObjectMiddleware::unsignedDouble(intensity, "intensity",
+                                               "ALight");
+
+        setPosition(maths::Vector(
+            util::ObjectMiddleware::validate<double>(position, "x", "ALight"),
+            util::ObjectMiddleware::validate<double>(position, "y", "ALight"),
+            util::ObjectMiddleware::validate<double>(position, "z", "ALight")));
+        setColor(maths::Color(
+            util::ObjectMiddleware::validate<int>(color, "r", "ALight"),
+            util::ObjectMiddleware::validate<int>(color, "g", "ALight"),
+            util::ObjectMiddleware::validate<int>(color, "b", "ALight")));
+        setIntensity(intensity);
+    }
 
     void ALight::setPosition(const maths::Vector &position) {
         this->_position = position;
