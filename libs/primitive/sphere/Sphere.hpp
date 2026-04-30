@@ -22,6 +22,7 @@ namespace raytracer::object::primitive {
         explicit Sphere(const maths::Vector &vector, double radius);
         explicit Sphere(std::shared_ptr<raytracer::object::material::IMaterial> material,
             const maths::Vector &vector, double radius);
+
         ~Sphere() override = default;
 
         const double &radius() const noexcept;

@@ -21,7 +21,7 @@ namespace raytracer {
     }
 
     std::shared_ptr<object::IObject> ObjectFactory::build(
-        const std::string &name, const std::vector<std::any> &param) {
+        const std::string &name, const std::map<std::string, std::any> &param) {
         const auto iter = this->_builders.find(name);
 
         if (iter == this->_builders.end()) {

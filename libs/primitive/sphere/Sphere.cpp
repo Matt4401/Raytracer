@@ -10,7 +10,8 @@
 #include <any>
 #include <memory>
 #include <cmath>
-#include <vector>
+#include <map>
+#include <string>
 
 #include "math/Color.hpp"
 #include "math/Vector.hpp"
@@ -19,7 +20,7 @@
 #include "util/ObjectMiddleware.hpp"
 
 namespace raytracer::object::primitive {
-    Sphere::Sphere(const std::vector<std::any> &args)
+    Sphere::Sphere(const std::map<std::string, std::any> &params)
         : APrimitive("Sphere",
                      util::ObjectMiddleware::validate<maths::Vector>(
                          args, 1, "Sphere", EXPECTED_ARGS),
@@ -28,6 +29,7 @@ namespace raytracer::object::primitive {
           _radius(util::ObjectMiddleware::validate<double>(args, 2, "Sphere",
                                                            EXPECTED_ARGS)) {
         util::ObjectMiddleware::unsignedDouble(_radius, "radius", "Sphere");
+
     }
 
     Sphere::Sphere(const maths::Vector &vector, const double radius)
@@ -48,7 +50,7 @@ namespace raytracer::object::primitive {
         const double b = op.dot(ray.direction);
         const double a = ray.direction.dot(ray.direction);
         const double c = op.dot(op) - _radius * _radius;
-        double det = b * b - 4 * a * c;
+        const double det = b * b - 4 * a * c;
         if (det < 0) {
             return 0;
         }
