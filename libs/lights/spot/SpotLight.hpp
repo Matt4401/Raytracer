@@ -24,7 +24,7 @@ namespace raytracer::object::light {
         SpotLight(const std::map<std::string, std::any> &params);
         ~SpotLight() override = default;
 
-        /// @brief Compute the NEE contribution from this directional light.
+        /// @brief Compute the NEE contribution from this spot light.
         /// @param scene the scene containing geometry for visibility testing
         /// @param x the surface position
         /// @param nl the surface normal (oriented towards the hemisphere)
