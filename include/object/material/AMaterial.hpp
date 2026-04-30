@@ -16,9 +16,5 @@ namespace raytracer::object::material {
         AMaterial() : AObject(Type::MATERIAL) {
         }
         ~AMaterial() override = default;
-
-        Type type() const override {
-            return Type::MATERIAL;
-        }
     };
 }  // namespace raytracer::object::material
