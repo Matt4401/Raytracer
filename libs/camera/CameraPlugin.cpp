@@ -12,13 +12,8 @@
 #include "Camera.hpp"
 #include "object/IObject.hpp"
 
-extern "C" raytracer::object::IObject *CameraBuilder(
-    const std::map<std::string, std::any> &params) {
-    return new raytracer::object::camera::Camera(params);
-}
-
-extern "C" const char *type(void) {
-    return "camera";
+extern "C" raytracer::object::Type type(void) {
+    return raytracer::object::Type::CAMERA;
 }
 
 extern "C" const char *name(void) {
@@ -26,5 +21,8 @@ extern "C" const char *name(void) {
 }
 
 extern "C" raytracer::object::BuilderFunc builder(void) {
-    return &CameraBuilder;
+    return [](const std::map<std::string, std::any> &params)
+               -> raytracer::object::IObject * {
+        return new raytracer::object::camera::Camera(params);
+    };
 }

@@ -29,6 +29,8 @@ namespace raytracer {
                 std::string name = rawName ? rawName : "";
                 object::buildFunction builderPtr =
                     loader.get<raytracer::object::BuilderFunc>(ENTRY_BUILDER);
+                object::Type pluginType =
+                    loader.get<raytracer::object::Type>(ENTRY_TYPE);
 
                 if (name.empty()) {
                     return true;

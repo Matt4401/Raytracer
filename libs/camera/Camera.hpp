@@ -5,8 +5,7 @@
 ** Camera
 */
 
-#ifndef CAMERA_HPP_
-#define CAMERA_HPP_
+#pragma once
 
 #include <any>
 #include <map>
@@ -69,4 +68,3 @@ namespace raytracer::object::camera {
         double _aspectRatio;
     };
 }  // namespace raytracer::object::camera
-#endif /* !CAMERA_HPP_ */

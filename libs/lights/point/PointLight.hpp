@@ -5,8 +5,7 @@
 ** PointLight
 */
 
-#ifndef POINTLIGHT_HPP_
-#define POINTLIGHT_HPP_
+#pragma once
 
 #include <any>
 #include <map>
@@ -24,7 +23,7 @@ namespace raytracer::object::light {
             : ALight(maths::Vector(), maths::Color(), 0.0), _radius(0.0) {
         }
 
-        PointLight(const std::map<std::string, std::any> &params);
+        explicit PointLight(const std::map<std::string, std::any> &params);
 
         /// @brief Construct a point light with the given position, color, and
         /// intensity.
@@ -58,5 +57,3 @@ namespace raytracer::object::light {
         double _radius;
     };
 }  // namespace raytracer::object::light
-
-#endif /* !POINTLIGHT_HPP_ */
