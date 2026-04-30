@@ -29,10 +29,6 @@ namespace raytracer::object::primitive {
             return _wrapped->surfaceData(hitPoint);
         }
 
-        Type type() const override {
-            return _wrapped->type();
-        }
-
       protected:
         std::shared_ptr<IPrimitive> _wrapped;
     };

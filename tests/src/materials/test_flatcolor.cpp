@@ -8,7 +8,8 @@
 #include <gtest/gtest.h>
 #include <memory>
 #include <any>
-#include <vector>
+#include <map>
+#include <string>
 
 #include "plugin/ObjectFactory.hpp"
 #include "plugin/PluginManager.hpp"
@@ -31,20 +32,20 @@ TEST(MATERIAL, flatcolor_decorator) {
 #endif
     plugManager.fillFactory(objFactory);
 
-    std::vector<std::any> flatColorArgs = {
-        raytracer::maths::Color(255, 0, 0),
-        raytracer::maths::Vector(0, 0, 0),
-        raytracer::object::primitive::RefltT::DIFF
+    std::map<std::string, std::any> flatColorArgs = {
+        {"color", raytracer::maths::Color(255, 0, 0)},
+        {"emission", raytracer::maths::Vector(0, 0, 0)},
+        {"reflType", raytracer::object::primitive::RefltT::DIFF}
     };
     auto matObj = objFactory.build("flatcolor", flatColorArgs);
     ASSERT_NE(matObj, nullptr);
     auto matPtr = std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(matObj);
     ASSERT_NE(matPtr, nullptr);
 
-    std::vector<std::any> sphereArgs = {
-        matPtr,
-        raytracer::maths::Vector(0, 0, 0),
-        10.0
+    std::map<std::string, std::any> sphereArgs = {
+        {"material", matPtr},
+        {"center", raytracer::maths::Vector(0, 0, 0)},
+        {"radius", 10.0}
     };
     auto sphere = objFactory.build("sphere", sphereArgs);
     ASSERT_NE(sphere, nullptr);
@@ -71,20 +72,20 @@ TEST(MATERIAL, flatcolor_preserves_normal) {
     plugManager.fillFactory(objFactory);
 
     // Create a material and then a sphere using that material
-    std::vector<std::any> flatColorArgs = {
-        raytracer::maths::Color(100, 150, 200),
-        raytracer::maths::Vector(0, 0, 0),
-        raytracer::object::primitive::RefltT::DIFF
+    std::map<std::string, std::any> flatColorArgs = {
+        {"color", raytracer::maths::Color(100, 150, 200)},
+        {"emission", raytracer::maths::Vector(0, 0, 0)},
+        {"reflType", raytracer::object::primitive::RefltT::DIFF}
     };
     auto matObj = objFactory.build("flatcolor", flatColorArgs);
     ASSERT_NE(matObj, nullptr);
     auto matPtr = std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(matObj);
     ASSERT_NE(matPtr, nullptr);
 
-    std::vector<std::any> sphereArgs = {
-        matPtr,
-        raytracer::maths::Vector(5, 5, 5),
-        2.0
+    std::map<std::string, std::any> sphereArgs = {
+        {"material", matPtr},
+        {"center", raytracer::maths::Vector(5, 5, 5)},
+        {"radius", 2.0}
     };
     auto sphere = objFactory.build("sphere", sphereArgs);
     ASSERT_NE(sphere, nullptr);

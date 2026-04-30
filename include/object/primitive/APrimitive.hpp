@@ -11,7 +11,6 @@
 #include <string>
 #include <string_view>
 
-#include "math/Color.hpp"
 #include "math/Ray.hpp"
 #include "math/Vector.hpp"
 #include "object/AObject.hpp"
@@ -25,7 +24,8 @@ namespace raytracer::object::primitive {
         explicit APrimitive(const std::string_view name,
                             const maths::Vector &center,
                             std::shared_ptr<raytracer::object::material::IMaterial> material = nullptr)
-            : _material(std::move(material)),
+            : AObject(Type::PRIMITIVE),
+              _material(std::move(material)),
               _name(name),
               _center(center) {
 

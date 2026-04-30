@@ -12,7 +12,6 @@
 
 #include "math/Ray.hpp"
 #include "math/Color.hpp"
-#include "object/IObject.hpp"
 #include "object/primitive/ReflTypes.hpp"
 
 namespace raytracer::object::primitive {

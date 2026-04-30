@@ -8,8 +8,9 @@
 #pragma once
 
 #include <any>
-#include <vector>
+#include <map>
 #include <memory>
+#include <string>
 
 #include "math/Ray.hpp"
 #include "math/Vector.hpp"
@@ -18,7 +19,7 @@
 namespace raytracer::object::primitive {
     class Sphere : public APrimitive {
       public:
-        explicit Sphere(const std::vector<std::any> &args);
+        explicit Sphere(const std::map<std::string, std::any> &args);
         explicit Sphere(const maths::Vector &vector, double radius);
         explicit Sphere(std::shared_ptr<raytracer::object::material::IMaterial> material,
             const maths::Vector &vector, double radius);

@@ -13,12 +13,13 @@
 #include "object/primitive/ReflTypes.hpp"
 
 #include <any>
-#include <vector>
+#include <map>
+#include <string>
 
 namespace raytracer::object::material {
     class FlatColor : public IMaterial {
       public:
-        explicit FlatColor(const std::vector<std::any> &args);
+        explicit FlatColor(const std::map<std::string, std::any> &args);
         ~FlatColor() override = default;
 
         void apply(raytracer::object::primitive::SurfaceData& data, const maths::Vector& hitPoint) const override;
@@ -27,7 +28,5 @@ namespace raytracer::object::material {
         maths::Color _color;
         maths::Vector _emission;
         raytracer::object::primitive::RefltT _refl;
-
-        static constexpr std::size_t EXPECTED_ARGS = 3;
     };
 }

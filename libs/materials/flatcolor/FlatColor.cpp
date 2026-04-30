@@ -10,13 +10,13 @@
 
 namespace raytracer::object::material {
 
-    FlatColor::FlatColor(const std::vector<std::any> &args)
+    FlatColor::FlatColor(const std::map<std::string, std::any> &args)
         : _color(util::ObjectMiddleware::validate<maths::Color>(
-              args, 0, "FlatColor", EXPECTED_ARGS)),
+              args, "color", "FlatColor")),
           _emission(util::ObjectMiddleware::validate<maths::Vector>(
-              args, 1, "FlatColor", EXPECTED_ARGS)),
+              args, "emission", "FlatColor")),
           _refl(util::ObjectMiddleware::validate<raytracer::object::primitive::RefltT>(
-              args, 2, "FlatColor", EXPECTED_ARGS)) {
+              args, "reflType", "FlatColor")) {
 
         util::ObjectMiddleware::color(_color, "FlatColor");
     }

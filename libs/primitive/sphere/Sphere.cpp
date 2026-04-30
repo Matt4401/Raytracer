@@ -23,11 +23,10 @@ namespace raytracer::object::primitive {
     Sphere::Sphere(const std::map<std::string, std::any> &params)
         : APrimitive("Sphere",
                      util::ObjectMiddleware::validate<maths::Vector>(
-                         args, 1, "Sphere", EXPECTED_ARGS),
+                         params, "center", "Sphere"),
                      util::ObjectMiddleware::validate<std::shared_ptr<raytracer::object::material::IMaterial>>(
-                         args, 0, "Sphere", EXPECTED_ARGS)),
-          _radius(util::ObjectMiddleware::validate<double>(args, 2, "Sphere",
-                                                           EXPECTED_ARGS)) {
+                         params, "material", "Sphere")),
+          _radius(util::ObjectMiddleware::validate<double>(params, "radius", "Sphere")) {
         util::ObjectMiddleware::unsignedDouble(_radius, "radius", "Sphere");
 
     }
