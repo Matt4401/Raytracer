@@ -5,10 +5,15 @@
 ** ScenePlugin
 */
 
-#include "ScenePlugin.hpp"
+#include <any>
+#include <map>
+#include <string>
 
-extern "C" raytracer::object::Type type(void) {
-    return raytracer::object::Type::SCENE;
+#include "Scene.hpp"
+#include "object/IObject.hpp"
+
+extern "C" raytracer::object::AObject::Type type(void) {
+    return raytracer::object::AObject::Type::SCENE;
 }
 
 extern "C" const char *name(void) {

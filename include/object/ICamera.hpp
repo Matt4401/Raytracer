@@ -13,7 +13,7 @@ namespace raytracer::object::camera {
     class ICamera {
       public:
         ICamera() = default;
-        ~ICamera() = default;
+        virtual ~ICamera() = default;
         virtual maths::Ray ray(double u, double v) const = 0;
         virtual void setPosition(const maths::Vector &position) = 0;
         virtual void setRotation(const maths::Vector &rotation) = 0;

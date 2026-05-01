@@ -21,8 +21,8 @@
 #include "AObject.hpp"
 #include "ICamera.hpp"
 #include "ILight.hpp"
-#include "IPrimitive.hpp"
 #include "IScene.hpp"
+#include "primitive/IPrimitive.hpp"
 
 namespace raytracer::object::scene {
     class AScene : public IScene, public AObject {
@@ -32,21 +32,21 @@ namespace raytracer::object::scene {
         ~AScene() override = default;
 
         virtual bool intersect(const maths::Ray &ray, double &t,
-                               int &objectId) const = 0;
+                               int &objectId) const override = 0;
         virtual maths::Vector radiance(const maths::Ray &ray, int depth,
                                        unsigned short *Xi,
-                                       int emissive = 1) = 0;
+                                       int emissive = 1) override = 0;
 
-        void addObject(const IObject &object) override;
-        virtual void setAmbientLight(const maths::Color &color,
-                                     double intensity) = 0;
-        virtual void setDiffuseLight(const maths::Color &color,
-                                     double intensity) = 0;
-        virtual void setAmbientOcclusion(int samples, double radius) = 0;
+        void addObject(IObject &object) override;
+        void setAmbientLight(const maths::Color &color,
+                             double intensity) override;
+        void setDiffuseLight(const maths::Color &color,
+                             double intensity) override;
+        void setAmbientOcclusion(int samples, double radius) override;
 
-        virtual AmbiantOcclusion ambiantOcclusion() const = 0;
-        virtual AmbientLight ambientLight() const = 0;
-        virtual AmbientDiffuse ambientDiffuse() const = 0;
+        AmbiantOcclusion ambiantOcclusion() const override;
+        AmbientLight ambientLight() const override;
+        AmbientDiffuse ambientDiffuse() const override;
 
       protected:
         std::vector<std::unique_ptr<primitive::IPrimitive>> _primitives;
@@ -58,17 +58,17 @@ namespace raytracer::object::scene {
         AmbientDiffuse _ambientDiffuse;
 
       private:
-        void addPrimitive(const object::IObject &primitive);
-        void addLight(const object::IObject &light);
-        void addCamera(const object::IObject &camera);
-        std::map<object::IObject::Type, std::function<void(const IObject &)>>
+        void addPrimitive(object::AObject *primitive);
+        void addLight(object::AObject *light);
+        void addCamera(object::AObject *camera);
+        std::map<object::IObject::Type, std::function<void(AObject *)>>
             _addObjectHandlers = {
                 {object::IObject::Type::PRIMITIVE,
-                 [this](const IObject &obj) { addPrimitive(obj); }},
+                 [this](AObject *obj) { addPrimitive(obj); }},
                 {object::IObject::Type::LIGHT,
-                 [this](const IObject &obj) { addLight(obj); }},
+                 [this](AObject *obj) { addLight(obj); }},
                 {object::IObject::Type::CAMERA,
-                 [this](const IObject &obj) { addCamera(obj); }},
+                 [this](AObject *obj) { addCamera(obj); }},
             };
     };
 }  // namespace raytracer::object::scene

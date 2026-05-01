@@ -5,10 +5,10 @@
 ** AScene
 */
 
-#include "AScene.hpp"
+#include "object/AScene.hpp"
 
-#include "util/Helpers.hpp"
-#include "util/ObjectMiddleware.hpp"
+#include "util/middleware/Helpers.hpp"
+#include "util/middleware/ObjectMiddleware.hpp"
 
 namespace raytracer::object::scene {
     AScene::AScene(const std::map<std::string, std::any> &params)
@@ -33,36 +33,42 @@ namespace raytracer::object::scene {
                                       "ambientDiffuseIntensity", "Scene");
     }
 
-    void AScene::addPrimitive(const object::IObject &primitive) {
-        primitive::IPrimitive *primitive =
-            dynamic_cast<const primitive::IPrimitive *>(&primitive);
-        if (!primitive) {
+    void AScene::addPrimitive(object::AObject *primitive) {
+        primitive::IPrimitive *primPtr =
+            dynamic_cast<primitive::IPrimitive *>(primitive);
+        if (!primPtr) {
             throw std::runtime_error("Invalid primitive object added to scene");
         }
-        _primitives.push_back(
-            std::unique_ptr<primitive::IPrimitive>(primitive));
+        _primitives.push_back(std::unique_ptr<primitive::IPrimitive>(primPtr));
     }
 
-    void AScene::addLight(const object::IObject &light) {
-        light::ILight *light = dynamic_cast<const light::ILight *>(&light);
-        if (!light) {
-            throw std::runtime_error("Invalid light object added to scene");
+    void AScene::addLight(object::AObject *light) {
+        light::ILight *lightPtr = dynamic_cast<light::ILight *>(light);
+        if (!lightPtr) {
+            throw std::runtime_error("Failed to cast light object");
         }
-        _lights.push_back(std::unique_ptr<light::ILight>(light));
+        _lights.push_back(std::unique_ptr<light::ILight>(lightPtr));
     }
 
-    void AScene::addCamera(const object::IObject &camera) {
-        camera::ICamera *cam = dynamic_cast<const camera::ICamera *>(&camera);
-        if (!cam) {
+    void AScene::addCamera(object::AObject *camera) {
+        camera::ICamera *camPtr = dynamic_cast<camera::ICamera *>(camera);
+        if (!camPtr) {
             throw std::runtime_error("Invalid camera object added to scene");
         }
-        _cameras.push_back(std::unique_ptr<camera::ICamera>(cam));
+        _cameras.push_back(std::unique_ptr<camera::ICamera>(camPtr));
     }
 
-    void AScene::addObject(const IObject &object) {
-        auto it = _addObjectHandlers.find(object.getType());
+    void AScene::addObject(IObject &object) {
+        auto it = _addObjectHandlers.find(object.type());
         if (it != _addObjectHandlers.end()) {
-            it->second(object);
+            try {
+                object::AObject &objRef =
+                    dynamic_cast<object::AObject &>(object);
+                it->second(&objRef);
+            } catch (const std::bad_cast &) {
+                throw std::runtime_error(
+                    "Object type does not match expected type for handler");
+            }
         } else {
             throw std::runtime_error("Unsupported object type added to scene");
         }

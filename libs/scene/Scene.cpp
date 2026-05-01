@@ -51,26 +51,27 @@ namespace raytracer::object::scene {
 
         maths::Vector rayOrigin(ray.origin.x, ray.origin.y, ray.origin.z);
         maths::Vector x = rayOrigin + ray.direction * t;
-        maths::Vector n = (x - obj->position()).normalized();
+        primitive::SurfaceData surfData = obj->surfaceData(x);
+        maths::Vector n = (x - obj->center()).normalized();
         maths::Vector nl = n.dot(ray.direction) < 0 ? n : n * -1;
 
-        maths::Vector f = obj->color().toVector3() * (1.0 / 255.0);
+        maths::Vector f = surfData.color.toVector() * (1.0 / 255.0);
 
         double p = f.x > f.y && f.x > f.z ? f.x : f.y > f.z ? f.y : f.z;
         if (++depth > 5) {
             if (p <= 0.0)
-                return obj->emission() * emissive;
+                return surfData.emission * emissive;
             if (::erand48(Xi) < p)
                 f = f * (1.0 / p);
             else
-                return obj->emission() * emissive;
+                return surfData.emission * emissive;
         }
 
         RadianceContext ctx{x, n, nl, f, depth, Xi, emissive};
-        if (obj->reflectionType() == primitive::RefltT::DIFF) {
+        if (surfData.reflType == primitive::RefltT::DIFF) {
             return radianceDiffuse(ray, *obj, ctx);
         }
-        if (obj->reflectionType() == primitive::RefltT::SPEC) {
+        if (surfData.reflType == primitive::RefltT::SPEC) {
             return radianceSpecular(ray, *obj, ctx);
         }
         return radianceRefractive(ray, *obj, ctx);
@@ -104,15 +105,16 @@ namespace raytracer::object::scene {
         const maths::Vector &n = ctx.n;
         const maths::Vector &nl = ctx.nl;
         const maths::Vector &f = ctx.f;
+        primitive::SurfaceData surfData = obj.surfaceData(x);
         int depth = ctx.depth;
         unsigned short *Xi = ctx.Xi;
         int emissive = ctx.emissive;
         maths::Vector direct(0, 0, 0);
 
-        // Emmissive spheres (NEE)
+        /* TODO: Emmissive spheres (NEE)
         for (const auto &emmisiveObject : _primitives) {
-            // direct += emmisiveObject->computeNEE(*this, x, nl, f);
-        }
+            // TODO: direct += emmisiveObject->computeNEE(*this, x, nl, f);
+        }*/
 
         // Lights (NEE)
         for (const auto &light : _lights) {
@@ -153,7 +155,7 @@ namespace raytracer::object::scene {
         diffuseContrib = _ambientDiffuse.ambient.toVector() * f;
 
         maths::Vector d = randomCosineDir(nl, Xi);
-        return obj.emission() * emissive + direct + ambientContrib +
+        return surfData.emission * emissive + direct + ambientContrib +
                diffuseContrib + f * radiance(maths::Ray(x, d), depth, Xi, 0);
     }
 
@@ -163,10 +165,13 @@ namespace raytracer::object::scene {
         const maths::Vector &x = ctx.x;
         const maths::Vector &n = ctx.n;
         const maths::Vector &f = ctx.f;
+        primitive::SurfaceData surfData = obj.surfaceData(x);
+
         int depth = ctx.depth;
         unsigned short *Xi = ctx.Xi;
         int emissive = ctx.emissive;
-        return obj.emission() * emissive +
+        maths::Vector hitpoint = x + n * 1e-4;
+        return surfData.emission * emissive +
                f * radiance(maths::Ray(x, ray.direction -
                                               n * 2 * n.dot(ray.direction)),
                             depth, Xi, 1);
@@ -178,20 +183,25 @@ namespace raytracer::object::scene {
         const maths::Vector &x = ctx.x;
         const maths::Vector &n = ctx.n;
         const maths::Vector &f = ctx.f;
+        primitive::SurfaceData surfData = obj.surfaceData(x);
+
         int depth = ctx.depth;
         unsigned short *Xi = ctx.Xi;
         int emissive = ctx.emissive;
         maths::Ray reflRay(x, ray.direction - n * 2 * n.dot(ray.direction));
         bool into = n.dot(n * 1) > 0;
         double nc = 1.0;
-        double nt = obj.ior();
+        double nt = surfData.extraParams.count("ior") > 0
+                        ? surfData.extraParams.at("ior")
+                        : 1.5;
         double nnt = into ? nc / nt : nt / nc;
         double ddn = ray.direction.dot(n * (n.dot(ray.direction) < 0 ? 1 : -1));
         double cos2t = 1 - nnt * nnt * (1 - ddn * ddn);
 
-        if (cos2t < 0)
-            return obj.emission() * emissive +
+        if (cos2t < 0) {
+            return surfData.emission * emissive +
                    f * radiance(reflRay, depth, Xi, 1);
+        }
 
         maths::Vector tdir =
             (ray.direction * nnt -
@@ -208,13 +218,13 @@ namespace raytracer::object::scene {
 
         if (depth > 2) {
             if (::erand48(Xi) < P)
-                return obj.emission() * emissive +
+                return surfData.emission * emissive +
                        f * radiance(reflRay, depth, Xi, 1) * RP;
             else
-                return obj.emission() * emissive +
+                return surfData.emission * emissive +
                        f * radiance(maths::Ray(x, tdir), depth, Xi, 1) * TP;
         } else {
-            return obj.emission() * emissive +
+            return surfData.emission * emissive +
                    f * (radiance(reflRay, depth, Xi, 1) * Re +
                         radiance(maths::Ray(x, tdir), depth, Xi, 1) * Tr);
         }
