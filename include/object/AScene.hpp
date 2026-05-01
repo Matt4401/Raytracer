@@ -31,7 +31,7 @@ namespace raytracer::object::scene {
         explicit AScene(const std::map<std::string, std::any> &params);
         ~AScene() override = default;
 
-        virtual bool intersect(const maths::Ray &ray, double &t,
+                virtual bool intersect(const maths::Ray &ray, double &t,
                                int &objectId) const override = 0;
         virtual maths::Vector radiance(const maths::Ray &ray, int depth,
                                        unsigned short *Xi,
@@ -49,6 +49,13 @@ namespace raytracer::object::scene {
         AmbientDiffuse ambientDiffuse() const override;
 
       protected:
+        static constexpr int kMaxRadianceDepth = 10;
+        static constexpr int kDiffuseRussianRouletteDepth = 5;
+        static constexpr int kRefractiveRussianRouletteDepth = 2;
+        static constexpr double kColorScale = 1.0 / 255.0;
+        static constexpr double kOnbAxisThreshold = 0.1;
+        static constexpr double kDefaultIor = 1.5;
+
         std::vector<std::unique_ptr<primitive::IPrimitive>> _primitives;
         std::vector<std::unique_ptr<light::ILight>> _lights;
         std::vector<std::unique_ptr<camera::ICamera>> _cameras;

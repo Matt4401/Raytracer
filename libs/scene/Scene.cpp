@@ -46,7 +46,7 @@ namespace raytracer::object::scene {
             return maths::Vector();
 
         const std::unique_ptr<primitive::IPrimitive> &obj = _primitives.at(id);
-        if (depth > 10)
+        if (depth > kMaxRadianceDepth)
             return maths::Vector();
 
         maths::Vector rayOrigin(ray.origin.x, ray.origin.y, ray.origin.z);
@@ -55,10 +55,10 @@ namespace raytracer::object::scene {
         maths::Vector n = (x - obj->center()).normalized();
         maths::Vector nl = n.dot(ray.direction) < 0 ? n : n * -1;
 
-        maths::Vector f = surfData.color.toVector() * (1.0 / 255.0);
+        maths::Vector f = surfData.color.toVector() * kColorScale;
 
         double p = f.x > f.y && f.x > f.z ? f.x : f.y > f.z ? f.y : f.z;
-        if (++depth > 5) {
+        if (++depth > kDiffuseRussianRouletteDepth) {
             if (p <= 0.0)
                 return surfData.emission * emissive;
             if (::erand48(Xi) < p)
@@ -79,9 +79,9 @@ namespace raytracer::object::scene {
 
     void Scene::buildONB(const maths::Vector &w, maths::Vector &u,
                          maths::Vector &v) {
-        double ux = std::fabs(w.x) > 0.1 ? 0 : 1;
-        double uy = std::fabs(w.y) > 0.1 ? 0 : 1;
-        double uz = std::fabs(w.z) > 0.1 ? 0 : 1;
+        double ux = std::fabs(w.x) > kOnbAxisThreshold ? 0 : 1;
+        double uy = std::fabs(w.y) > kOnbAxisThreshold ? 0 : 1;
+        double uz = std::fabs(w.z) > kOnbAxisThreshold ? 0 : 1;
         u = maths::Vector(ux, uy, uz).cross(w).normalized();
         v = w.cross(u);
     }
@@ -133,9 +133,9 @@ namespace raytracer::object::scene {
             double unoccluded = 0.0;
             for (int k = 0; k < _ambiantOcclusion.samples; ++k) {
                 maths::Vector aoDir = randomCosineDir(nl, Xi);
-                maths::Ray aoRay(x + nl * 1e-4, aoDir);
-                double aoT;
-                int aoId;
+                maths::Ray aoRay(x + nl * kRayEpsilon, aoDir);
+                double aoT = 0.0;
+                int aoId = -1;
                 bool hit = intersect(aoRay, aoT, aoId);
                 if (!hit || aoT > _ambiantOcclusion.radius)
                     unoccluded += 1.0;
@@ -170,7 +170,7 @@ namespace raytracer::object::scene {
         int depth = ctx.depth;
         unsigned short *Xi = ctx.Xi;
         int emissive = ctx.emissive;
-        maths::Vector hitpoint = x + n * 1e-4;
+        maths::Vector hitpoint = x + n * kRayEpsilon;
         return surfData.emission * emissive +
                f * radiance(maths::Ray(x, ray.direction -
                                               n * 2 * n.dot(ray.direction)),
@@ -193,7 +193,7 @@ namespace raytracer::object::scene {
         double nc = 1.0;
         double nt = surfData.extraParams.count("ior") > 0
                         ? surfData.extraParams.at("ior")
-                        : 1.5;
+                        : kDefaultIor;
         double nnt = into ? nc / nt : nt / nc;
         double ddn = ray.direction.dot(n * (n.dot(ray.direction) < 0 ? 1 : -1));
         double cos2t = 1 - nnt * nnt * (1 - ddn * ddn);
@@ -216,7 +216,7 @@ namespace raytracer::object::scene {
         double P = 0.25 + 0.5 * Re;
         double RP = Re / P, TP = Tr / (1 - P);
 
-        if (depth > 2) {
+        if (depth > kRefractiveRussianRouletteDepth) {
             if (::erand48(Xi) < P)
                 return surfData.emission * emissive +
                        f * radiance(reflRay, depth, Xi, 1) * RP;

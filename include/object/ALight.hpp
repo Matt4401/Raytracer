@@ -49,7 +49,7 @@ namespace raytracer::object::light {
 
       protected:
         static constexpr double K_MIN_DISTANCE_EPSILON = 1e-6;
-        static constexpr double K_SHADOW_RAY_BIAS = 1e-4;
+        static constexpr double K_SHADOW_RAY_BIAS = kRayEpsilon;
         static constexpr double K_OCCLUSION_EPSILON = 1e-3;
 
         maths::Vector _position;
