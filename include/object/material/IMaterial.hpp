@@ -15,7 +15,8 @@ namespace raytracer::object::material {
       public:
         virtual ~IMaterial() = default;
 
-        virtual void apply(raytracer::object::primitive::SurfaceData& data,
-                           const maths::Vector& hitPoint) const = 0;
+        virtual raytracer::object::primitive::MaterialProperties evaluate(
+            const raytracer::object::primitive::SurfaceData& data,
+            const maths::Vector& hitPoint) const = 0;
     };
 }  // namespace raytracer::object::material
