@@ -13,10 +13,8 @@
 #include <memory>
 #include <string>
 
-#include "math/Color.hpp"
 #include "math/Vector.hpp"
 #include "object/primitive/APrimitive.hpp"
-#include "object/primitive/ReflTypes.hpp"
 #include "util/middleware/Helpers.hpp"
 #include "util/middleware/ObjectMiddleware.hpp"
 
@@ -88,13 +86,10 @@ namespace raytracer::object::primitive {
 
         SurfaceData data{.normal = normal,
                          .uv = maths::Vector(u, v, 0),
-                         .color = maths::Color(255, 255, 255),
-                         .emission = maths::Vector(0, 0, 0),
-                         .reflType = RefltT::DIFF,
-                         .extraParams = {}};
+                         .material = {}};
 
         if (this->_material) {
-            this->_material->apply(data, hitPoint);
+            data.material = this->_material->evaluate(data, hitPoint);
         }
 
         return data;
