@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "Ray.hpp"
+#include "math/Ray.hpp"
 
 namespace raytracer::object::camera {
     class ICamera {

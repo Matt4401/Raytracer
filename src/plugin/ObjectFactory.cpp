@@ -20,7 +20,7 @@ namespace raytracer {
         this->_builders.insert_or_assign(name, builder);
     }
 
-    std::unique_ptr<object::IObject> ObjectFactory::build(
+    std::shared_ptr<object::IObject> ObjectFactory::build(
         const std::string &name, const std::map<std::string, std::any> &param) {
         const auto iter = this->_builders.find(name);
 
@@ -32,7 +32,7 @@ namespace raytracer {
             if (rawObject == nullptr) {
                 return nullptr;
             }
-            return std::unique_ptr<object::IObject>(rawObject);
+            return std::shared_ptr<object::IObject>(rawObject);
         } catch (const raytracer::exception::PluginException &err) {
             std::cerr << err.what() << "\n";
             return nullptr;

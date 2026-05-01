@@ -9,8 +9,8 @@
 
 #include <numbers>
 
-#include "Ray.hpp"
-#include "Vector.hpp"
+#include "math/Ray.hpp"
+#include "math/Vector.hpp"
 
 namespace raytracer::object::camera {
     class ACamera {
