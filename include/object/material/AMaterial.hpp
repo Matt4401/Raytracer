@@ -13,8 +13,7 @@
 namespace raytracer::object::material {
     class AMaterial : public IMaterial, public AObject {
       public:
-        AMaterial() : AObject(Type::MATERIAL) {
-        }
+        AMaterial() : AObject(Type::MATERIAL) {}
         ~AMaterial() override = default;
     };
 }  // namespace raytracer::object::material

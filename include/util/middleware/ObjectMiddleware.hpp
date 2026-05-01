@@ -59,6 +59,15 @@ namespace raytracer::util {
             }
         }
 
+        /**
+         * @brief Retrieve an optional parameter from a parameter map.
+         * @tparam T The type of the parameter.
+         * @param params The parameter map.
+         * @param key The key of the parameter.
+         * @param defaultValue The default value if the key is not found.
+         * @param className The name of the class requesting the parameter.
+         * @return The value of the parameter or the default value.
+         */
         template <typename T>
         static T optional(const std::map<std::string, std::any> &params,
                           const std::string_view key, const T &defaultValue,
