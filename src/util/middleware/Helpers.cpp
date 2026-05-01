@@ -48,4 +48,24 @@ namespace raytracer::util {
             ObjectMiddleware::validate<double>(vectorMap, "y", className),
             ObjectMiddleware::validate<double>(vectorMap, "z", className));
     }
+
+    maths::Color Helpers::optionalColor(
+        const std::map<std::string, std::any> &params,
+        const std::string_view keyName, const maths::Color &defaultValue,
+        const std::string_view className) {
+        if (params.find(std::string(keyName)) == params.end()) {
+            return defaultValue;
+        }
+        return toColor(params, keyName, className);
+    }
+
+    maths::Vector Helpers::optionalVector(
+        const std::map<std::string, std::any> &params,
+        const std::string_view keyName, const maths::Vector &defaultValue,
+        const std::string_view className) {
+        if (params.find(std::string(keyName)) == params.end()) {
+            return defaultValue;
+        }
+        return toVector(params, keyName, className);
+    }
 }  // namespace raytracer::util

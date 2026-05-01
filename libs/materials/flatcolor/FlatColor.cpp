@@ -26,8 +26,8 @@ namespace raytracer::object::material {
           _ior(1.0),
           _roughness(0.0),
           _metalness(0.0) {
-        _emission = util::ObjectMiddleware::optional<maths::Vector>(
-            args, "emission", _emission, "FlatColor");
+        _emission = util::Helpers::optionalVector(args, "emission", _emission,
+                                                   "FlatColor");
         _reflectivity = util::ObjectMiddleware::optional<double>(
             args, "reflectivity", 0.0, "FlatColor");
         util::Helpers::unsignedDouble(_reflectivity, "reflectivity",
