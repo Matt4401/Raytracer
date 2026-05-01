@@ -34,40 +34,44 @@ namespace raytracer::object::scene {
                                       "ambientDiffuseIntensity", "Scene");
     }
 
-    void AScene::addPrimitive(object::AObject *primitive) {
-        primitive::IPrimitive *primPtr =
-            dynamic_cast<primitive::IPrimitive *>(primitive);
+    void AScene::addPrimitive(const std::shared_ptr<object::AObject> &primitive) {
+        auto primPtr = std::dynamic_pointer_cast<primitive::IPrimitive>(primitive);
         if (!primPtr) {
             throw exception::PluginException(
                 "Invalid primitive object added to scene");
         }
-        _primitives.push_back(std::unique_ptr<primitive::IPrimitive>(primPtr));
+        _primitives.push_back(primPtr);
     }
 
-    void AScene::addLight(object::AObject *light) {
-        light::ILight *lightPtr = dynamic_cast<light::ILight *>(light);
+    void AScene::addLight(const std::shared_ptr<object::AObject> &light) {
+        auto lightPtr = std::dynamic_pointer_cast<light::ILight>(light);
         if (!lightPtr) {
             throw exception::PluginException("Failed to cast light object");
         }
-        _lights.push_back(std::unique_ptr<light::ILight>(lightPtr));
+        _lights.push_back(lightPtr);
     }
 
-    void AScene::addCamera(object::AObject *camera) {
-        camera::ICamera *camPtr = dynamic_cast<camera::ICamera *>(camera);
+    void AScene::addCamera(const std::shared_ptr<object::AObject> &camera) {
+        auto camPtr = std::dynamic_pointer_cast<camera::ICamera>(camera);
         if (!camPtr) {
             throw exception::PluginException(
                 "Invalid camera object added to scene");
         }
-        _cameras.push_back(std::unique_ptr<camera::ICamera>(camPtr));
+        _cameras.push_back(camPtr);
     }
 
-    void AScene::addObject(IObject &object) {
-        auto it = _addObjectHandlers.find(object.type());
+    void AScene::addObject(std::shared_ptr<IObject> object) {
+        if (!object) {
+            throw exception::PluginException("Null object added to scene");
+        }
+        auto it = _addObjectHandlers.find(object->type());
         if (it != _addObjectHandlers.end()) {
             try {
-                object::AObject &objRef =
-                    dynamic_cast<object::AObject &>(object);
-                it->second(&objRef);
+                auto objRef = std::dynamic_pointer_cast<object::AObject>(object);
+                if (!objRef) {
+                    throw std::bad_cast();
+                }
+                it->second(objRef);
             } catch (const std::bad_cast &) {
                 throw exception::PluginException(
                     "Object type does not match expected type for handler");

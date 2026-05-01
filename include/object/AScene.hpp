@@ -37,7 +37,7 @@ namespace raytracer::object::scene {
                                        unsigned short *Xi,
                                        int emissive = 1) override = 0;
 
-        void addObject(IObject &object) override;
+        void addObject(std::shared_ptr<IObject> object) override;
         void setAmbientLight(const maths::Color &color,
                              double intensity) override;
         void setDiffuseLight(const maths::Color &color,
@@ -56,26 +56,27 @@ namespace raytracer::object::scene {
         static constexpr double kOnbAxisThreshold = 0.1;
         static constexpr double kDefaultIor = 1.5;
 
-        std::vector<std::unique_ptr<primitive::IPrimitive>> _primitives;
-        std::vector<std::unique_ptr<light::ILight>> _lights;
-        std::vector<std::unique_ptr<camera::ICamera>> _cameras;
+        std::vector<std::shared_ptr<primitive::IPrimitive>> _primitives;
+        std::vector<std::shared_ptr<light::ILight>> _lights;
+        std::vector<std::shared_ptr<camera::ICamera>> _cameras;
 
         AmbiantOcclusion _ambiantOcclusion;
         AmbientLight _ambientLight;
         AmbientDiffuse _ambientDiffuse;
 
       private:
-        void addPrimitive(object::AObject *primitive);
-        void addLight(object::AObject *light);
-        void addCamera(object::AObject *camera);
-        std::map<object::IObject::Type, std::function<void(AObject *)>>
+        void addPrimitive(const std::shared_ptr<object::AObject> &primitive);
+        void addLight(const std::shared_ptr<object::AObject> &light);
+        void addCamera(const std::shared_ptr<object::AObject> &camera);
+        std::map<object::IObject::Type,
+             std::function<void(const std::shared_ptr<AObject> &)>>
             _addObjectHandlers = {
                 {object::IObject::Type::PRIMITIVE,
-                 [this](AObject *obj) { addPrimitive(obj); }},
+             [this](const std::shared_ptr<AObject> &obj) { addPrimitive(obj); }},
                 {object::IObject::Type::LIGHT,
-                 [this](AObject *obj) { addLight(obj); }},
+             [this](const std::shared_ptr<AObject> &obj) { addLight(obj); }},
                 {object::IObject::Type::CAMERA,
-                 [this](AObject *obj) { addCamera(obj); }},
+             [this](const std::shared_ptr<AObject> &obj) { addCamera(obj); }},
             };
     };
 }  // namespace raytracer::object::scene
