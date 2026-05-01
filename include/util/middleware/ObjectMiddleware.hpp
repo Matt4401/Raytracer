@@ -11,12 +11,8 @@
 #include <map>
 #include <string>
 #include <string_view>
-#include <type_traits>
-#include <vector>
 
 #include "exception/PluginException.hpp"
-#include "math/Color.hpp"
-#include "math/Vector.hpp"
 
 namespace raytracer::util {
     class ObjectMiddleware {
@@ -53,6 +49,23 @@ namespace raytracer::util {
                 throw exception::PluginException{"{} requires parameter '{}'",
                                                  std::string(className),
                                                  std::string(key)};
+            }
+            try {
+                return std::any_cast<T>(it->second);
+            } catch (const std::bad_any_cast &) {
+                throw exception::PluginException{
+                    "{} parameter '{}' has invalid type",
+                    std::string{className}, std::string(key)};
+            }
+        }
+
+        template <typename T>
+        static T optional(const std::map<std::string, std::any> &params,
+                          const std::string_view key, const T &defaultValue,
+                          const std::string_view className) {
+            const auto it = params.find(std::string(key));
+            if (it == params.end()) {
+                return defaultValue;
             }
             try {
                 return std::any_cast<T>(it->second);
