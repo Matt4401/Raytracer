@@ -7,6 +7,7 @@
 
 #include "object/AScene.hpp"
 
+#include "exception/PluginException.hpp"
 #include "util/middleware/Helpers.hpp"
 #include "util/middleware/ObjectMiddleware.hpp"
 
@@ -37,7 +38,8 @@ namespace raytracer::object::scene {
         primitive::IPrimitive *primPtr =
             dynamic_cast<primitive::IPrimitive *>(primitive);
         if (!primPtr) {
-            throw std::runtime_error("Invalid primitive object added to scene");
+            throw exception::PluginException(
+                "Invalid primitive object added to scene");
         }
         _primitives.push_back(std::unique_ptr<primitive::IPrimitive>(primPtr));
     }
@@ -45,7 +47,7 @@ namespace raytracer::object::scene {
     void AScene::addLight(object::AObject *light) {
         light::ILight *lightPtr = dynamic_cast<light::ILight *>(light);
         if (!lightPtr) {
-            throw std::runtime_error("Failed to cast light object");
+            throw exception::PluginException("Failed to cast light object");
         }
         _lights.push_back(std::unique_ptr<light::ILight>(lightPtr));
     }
@@ -53,7 +55,8 @@ namespace raytracer::object::scene {
     void AScene::addCamera(object::AObject *camera) {
         camera::ICamera *camPtr = dynamic_cast<camera::ICamera *>(camera);
         if (!camPtr) {
-            throw std::runtime_error("Invalid camera object added to scene");
+            throw exception::PluginException(
+                "Invalid camera object added to scene");
         }
         _cameras.push_back(std::unique_ptr<camera::ICamera>(camPtr));
     }
@@ -66,11 +69,12 @@ namespace raytracer::object::scene {
                     dynamic_cast<object::AObject &>(object);
                 it->second(&objRef);
             } catch (const std::bad_cast &) {
-                throw std::runtime_error(
+                throw exception::PluginException(
                     "Object type does not match expected type for handler");
             }
         } else {
-            throw std::runtime_error("Unsupported object type added to scene");
+            throw exception::PluginException(
+                "Unsupported object type added to scene");
         }
     }
 
