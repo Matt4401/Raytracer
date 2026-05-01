@@ -15,28 +15,17 @@
 #include "ILight.hpp"
 #include "math/Color.hpp"
 #include "math/Vector.hpp"
+#include "object/primitive/IPrimitive.hpp"
 
 namespace raytracer::object::light {
     class ALight : public ILight, public object::AObject {
       public:
-        ALight()
-            : AObject(Type::LIGHT), _position(), _color(), _intensity(0.0) {
-        }
+        ALight();
         explicit ALight(const std::map<std::string, std::any> &params);
         explicit ALight(maths::Vector position, maths::Color color,
-                        double intensity)
-            : AObject(Type::LIGHT),
-              _position(position),
-              _color(color),
-              _intensity(intensity) {
-        }
+                        double intensity);
         explicit ALight(Type type, maths::Vector position, maths::Color color,
-                        double intensity)
-            : AObject(type),
-              _position(position),
-              _color(color),
-              _intensity(intensity) {
-        }
+                        double intensity);
         ~ALight() override = default;
 
         void setPosition(const maths::Vector &position) override;
@@ -51,6 +40,9 @@ namespace raytracer::object::light {
         static constexpr double K_MIN_DISTANCE_EPSILON = 1e-6;
         static constexpr double K_SHADOW_RAY_BIAS = kRayEpsilon;
         static constexpr double K_OCCLUSION_EPSILON = 1e-3;
+
+        static maths::Vector materialDiffuseResponse(
+            const primitive::MaterialProperties &material);
 
         maths::Vector _position;
         maths::Color _color;

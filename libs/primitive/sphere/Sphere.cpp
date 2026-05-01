@@ -84,9 +84,8 @@ namespace raytracer::object::primitive {
         double u = 0.5 + std::atan2(normal.z, normal.x) / (2 * M_PI);
         double v = 0.5 - std::asin(normal.y) / M_PI;
 
-        SurfaceData data{.normal = normal,
-                         .uv = maths::Vector(u, v, 0),
-                         .material = {}};
+        SurfaceData data{
+            .normal = normal, .uv = maths::Vector(u, v, 0), .material = {}};
 
         if (this->_material) {
             data.material = this->_material->evaluate(data, hitPoint);
