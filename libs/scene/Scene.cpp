@@ -126,7 +126,7 @@ namespace raytracer::object::scene {
 
         // Lights (NEE)
         for (const auto &light : _lights) {
-            direct += light->computeNEE(*this, x, nl, diffuseF);
+            direct += light->computeNEE(*this, x, nl, surfData.material);
         }
 
         // Ambient light
