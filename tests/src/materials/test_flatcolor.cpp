@@ -63,9 +63,9 @@ TEST(MATERIAL, flatcolor_decorator) {
 
     ASSERT_DOUBLE_EQ(finalData.normal.y, 1.0);
 
-    ASSERT_EQ(finalData.color.r, 255);
-    ASSERT_EQ(finalData.color.g, 0);
-    ASSERT_EQ(finalData.color.b, 0);
+    ASSERT_EQ(finalData.material.color.r, 255);
+    ASSERT_EQ(finalData.material.color.g, 0);
+    ASSERT_EQ(finalData.material.color.b, 0);
 }
 
 TEST(MATERIAL, flatcolor_preserves_normal) {
@@ -110,7 +110,7 @@ TEST(MATERIAL, flatcolor_preserves_normal) {
     ASSERT_NEAR(data.normal.y, 0.0, 1e-10);
     ASSERT_NEAR(data.normal.z, 0.0, 1e-10);
 
-    ASSERT_EQ(data.color.r, 100);
-    ASSERT_EQ(data.color.g, 150);
-    ASSERT_EQ(data.color.b, 200);
+    ASSERT_EQ(data.material.color.r, 100);
+    ASSERT_EQ(data.material.color.g, 150);
+    ASSERT_EQ(data.material.color.b, 200);
 }

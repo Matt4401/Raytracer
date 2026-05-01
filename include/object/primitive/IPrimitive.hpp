@@ -7,21 +7,33 @@
 
 #pragma once
 
+#include <optional>
 #include <string>
 #include <unordered_map>
 
 #include "math/Color.hpp"
 #include "math/Ray.hpp"
+#include "math/Vector.hpp"
 #include "object/primitive/ReflTypes.hpp"
 
 namespace raytracer::object::primitive {
-    struct SurfaceData {
-        maths::Vector normal;
-        maths::Vector uv;
+    struct MaterialProperties {
         maths::Color color;
         maths::Vector emission;
         RefltT reflType;
+        double reflectivity;
+        double transparency;
+        double ior;
+        double roughness;
+        double metalness;
+        std::optional<maths::Vector> perturbedNormal;
+    };
+
+    struct SurfaceData {
+        maths::Vector normal;
+        maths::Vector uv;
         std::unordered_map<std::string, double> extraParams;
+        MaterialProperties material;
     };
 
     class IPrimitive {

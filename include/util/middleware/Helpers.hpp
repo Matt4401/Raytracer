@@ -58,6 +58,38 @@ namespace raytracer::util {
             std::string_view keyName, std::string_view className);
 
         /**
+         @brief Convert an optional nested map parameter to a Color object.
+         * @param params The parameter map containing the color information.
+         * @param keyName The key to look up in the parameter map for the color
+         information.
+         * @param defaultValue Color to return if the key is not found.
+         * @param className The name of the class requesting the color
+         conversion, used for error messages.
+         * @return A Color object if key exists, otherwise the default value.
+         * @throws PluginException If the key exists but type/conversion fails.
+         */
+        static maths::Color optionalColor(
+            const std::map<std::string, std::any> &params,
+            std::string_view keyName, const maths::Color &defaultValue,
+            std::string_view className);
+
+        /**
+         @brief Convert an optional nested map parameter to a Vector object.
+         * @param params The parameter map containing the vector information.
+         * @param keyName The key to look up in the parameter map for the vector
+         information.
+         * @param defaultValue Vector to return if the key is not found.
+         * @param className The name of the class requesting the vector
+         conversion, used for error messages.
+         * @return A Vector object if key exists, otherwise the default value.
+         * @throws PluginException If the key exists but type/conversion fails.
+         */
+        static maths::Vector optionalVector(
+            const std::map<std::string, std::any> &params,
+            std::string_view keyName, const maths::Vector &defaultValue,
+            std::string_view className);
+
+        /**
              @brief Check if a double given value it negative or not.
              * @param value double to check if it is negative or not.
              * @param fieldName name of the double to check. For Example radius

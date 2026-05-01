@@ -22,12 +22,18 @@ namespace raytracer::object::material {
         explicit FlatColor(const std::map<std::string, std::any>& args);
         ~FlatColor() override = default;
 
-        void apply(raytracer::object::primitive::SurfaceData& data,
-                   const maths::Vector& hitPoint) const override;
+        primitive::MaterialProperties evaluate(
+            const primitive::SurfaceData& data,
+            const maths::Vector& hitPoint) const override;
 
       private:
         maths::Color _color;
         maths::Vector _emission;
-        raytracer::object::primitive::RefltT _refl;
+        primitive::RefltT _refl;
+        double _reflectivity;
+        double _transparency;
+        double _ior;
+        double _roughness;
+        double _metalness;
     };
 }  // namespace raytracer::object::material
