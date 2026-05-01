@@ -55,23 +55,23 @@ namespace raytracer::object::scene {
         maths::Vector n = (x - obj->center()).normalized();
         maths::Vector nl = n.dot(ray.direction) < 0 ? n : n * -1;
 
-        maths::Vector f = surfData.color.toVector() * kColorScale;
+        maths::Vector f = surfData.material.color.toVector() * kColorScale;
 
         double p = f.x > f.y && f.x > f.z ? f.x : f.y > f.z ? f.y : f.z;
         if (++depth > kDiffuseRussianRouletteDepth) {
             if (p <= 0.0)
-                return surfData.emission * emissive;
+                return surfData.material.emission * emissive;
             if (::erand48(Xi) < p)
                 f = f * (1.0 / p);
             else
-                return surfData.emission * emissive;
+                return surfData.material.emission * emissive;
         }
 
         RadianceContext ctx{x, n, nl, f, depth, Xi, emissive};
-        if (surfData.reflType == primitive::RefltT::DIFF) {
+        if (surfData.material.reflType == primitive::RefltT::DIFF) {
             return radianceDiffuse(ray, *obj, ctx);
         }
-        if (surfData.reflType == primitive::RefltT::SPEC) {
+        if (surfData.material.reflType == primitive::RefltT::SPEC) {
             return radianceSpecular(ray, *obj, ctx);
         }
         return radianceRefractive(ray, *obj, ctx);
@@ -155,7 +155,7 @@ namespace raytracer::object::scene {
         diffuseContrib = _ambientDiffuse.ambient.toVector() * f;
 
         maths::Vector d = randomCosineDir(nl, Xi);
-        return surfData.emission * emissive + direct + ambientContrib +
+        return surfData.material.emission * emissive + direct + ambientContrib +
                diffuseContrib + f * radiance(maths::Ray(x, d), depth, Xi, 0);
     }
 
@@ -171,7 +171,7 @@ namespace raytracer::object::scene {
         unsigned short *Xi = ctx.Xi;
         int emissive = ctx.emissive;
         maths::Vector hitpoint = x + n * kRayEpsilon;
-        return surfData.emission * emissive +
+        return surfData.material.emission * emissive +
                f * radiance(maths::Ray(x, ray.direction -
                                               n * 2 * n.dot(ray.direction)),
                             depth, Xi, 1);
@@ -191,15 +191,13 @@ namespace raytracer::object::scene {
         maths::Ray reflRay(x, ray.direction - n * 2 * n.dot(ray.direction));
         bool into = n.dot(n * 1) > 0;
         double nc = 1.0;
-        double nt = surfData.extraParams.count("ior") > 0
-                        ? surfData.extraParams.at("ior")
-                        : kDefaultIor;
+        double nt = surfData.material.ior > 0 ? surfData.material.ior : kDefaultIor;
         double nnt = into ? nc / nt : nt / nc;
         double ddn = ray.direction.dot(n * (n.dot(ray.direction) < 0 ? 1 : -1));
         double cos2t = 1 - nnt * nnt * (1 - ddn * ddn);
 
         if (cos2t < 0) {
-            return surfData.emission * emissive +
+            return surfData.material.emission * emissive +
                    f * radiance(reflRay, depth, Xi, 1);
         }
 
@@ -218,13 +216,13 @@ namespace raytracer::object::scene {
 
         if (depth > kRefractiveRussianRouletteDepth) {
             if (::erand48(Xi) < P)
-                return surfData.emission * emissive +
+                return surfData.material.emission * emissive +
                        f * radiance(reflRay, depth, Xi, 1) * RP;
             else
-                return surfData.emission * emissive +
+                return surfData.material.emission * emissive +
                        f * radiance(maths::Ray(x, tdir), depth, Xi, 1) * TP;
         } else {
-            return surfData.emission * emissive +
+            return surfData.material.emission * emissive +
                    f * (radiance(reflRay, depth, Xi, 1) * Re +
                         radiance(maths::Ray(x, tdir), depth, Xi, 1) * Tr);
         }
