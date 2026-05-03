@@ -47,12 +47,14 @@ namespace raytracer {
         sceneParams["aoRadius"] =
             0.0;  // Example: radius of 1.0 for ambient occlusion effect, 0 for
                   // no ambient occlusion
-        sceneParams["ambientLightColor"] = color(0, 0, 0);  // Example: white ambient light, 0 for no ambient light
+        sceneParams["ambientLightColor"] = color(
+            0, 0, 0);  // Example: white ambient light, 0 for no ambient light
         sceneParams["ambientLightIntensity"] =
             0.0;  // Example: low intensity for ambient light, 0 for no ambient
                   // light
-        sceneParams["ambientDiffuseColor"] = color(0, 0, 0);  // Example: white ambient diffuse light, 0
-                                                               // for no ambient diffuse light
+        sceneParams["ambientDiffuseColor"] =
+            color(0, 0, 0);  // Example: white ambient diffuse light, 0
+                             // for no ambient diffuse light
         sceneParams["ambientDiffuseIntensity"] =
             0.0;  // Example: low intensity for ambient diffuse light, 0 for no
                   // ambient diffuse light
@@ -60,8 +62,10 @@ namespace raytracer {
 
         // CAMERA
         std::map<std::string, std::any> cameraParams;
-        cameraParams["position"] = vec(50.0, 52.0, 295.6);  // Example: camera positioned at (0, 0, 5)
-        cameraParams["rotation"] = vec(0.0, -0.042612, -1.0);  // Example: no rotation (looking towards -Z)
+        cameraParams["position"] =
+            vec(50.0, 52.0, 295.6);  // Example: camera positioned at (0, 0, 5)
+        cameraParams["rotation"] = vec(
+            0.0, -0.042612, -1.0);  // Example: no rotation (looking towards -Z)
         cameraParams["fieldOfView"] =
             90.0;  // Example: 90 degree field of view, adjust as needed
         cameraParams["aspectRatio"] =
@@ -77,11 +81,11 @@ namespace raytracer {
         redMaterialParams["reflType"] =
             raytracer::object::primitive::RefltT::DIFF;  // Diffuse reflection
         redMaterialParams["emission"] = vec(0.0, 0.0, 0.0);  // No emission
-        redMaterialParams["reflectivity"] = 0.0;  // No reflection
-        redMaterialParams["transparency"] = 0.0;  // No transparency
-        redMaterialParams["ior"] = 1.0;           // Default index of refraction
-        redMaterialParams["roughness"] = 0.0;     // No roughness
-        redMaterialParams["metalness"] = 0.0;     // No metalness
+        redMaterialParams["reflectivity"] = 0.0;             // No reflection
+        redMaterialParams["transparency"] = 0.0;             // No transparency
+        redMaterialParams["ior"] = 1.0;        // Default index of refraction
+        redMaterialParams["roughness"] = 0.0;  // No roughness
+        redMaterialParams["metalness"] = 0.0;  // No metalness
         auto redMaterial =
             this->_objFactory.build("flatcolor", redMaterialParams);
         auto redMaterialPtr =
@@ -95,8 +99,8 @@ namespace raytracer {
         blueMaterialParams["reflType"] =
             raytracer::object::primitive::RefltT::DIFF;  // Diffuse reflection
         blueMaterialParams["emission"] = vec(0.0, 0.0, 0.0);  // No emission
-        blueMaterialParams["reflectivity"] = 0.0;  // No reflection
-        blueMaterialParams["transparency"] = 0.0;  // No transparency
+        blueMaterialParams["reflectivity"] = 0.0;             // No reflection
+        blueMaterialParams["transparency"] = 0.0;             // No transparency
         blueMaterialParams["ior"] = 1.0;        // Default index of refraction
         blueMaterialParams["roughness"] = 0.0;  // No roughness
         blueMaterialParams["metalness"] = 0.0;  // No metalness
@@ -112,7 +116,7 @@ namespace raytracer {
         whiteMaterialParams["reflType"] =
             raytracer::object::primitive::RefltT::DIFF;  // Diffuse reflection
         whiteMaterialParams["emission"] = vec(0.0, 0.0, 0.0);  // No emission
-        whiteMaterialParams["reflectivity"] = 0.0;  // No reflection
+        whiteMaterialParams["reflectivity"] = 0.0;             // No reflection
         whiteMaterialParams["transparency"] = 0.0;  // No transparency
         whiteMaterialParams["ior"] = 1.0;        // Default index of refraction
         whiteMaterialParams["roughness"] = 0.0;  // No roughness
@@ -143,10 +147,12 @@ namespace raytracer {
 
         // Basic Refractive material with white color
         std::map<std::string, std::any> refractiveMaterialParams;
-        refractiveMaterialParams["color"] = color(254, 254, 254);  // White color
+        refractiveMaterialParams["color"] =
+            color(254, 254, 254);  // White color
         refractiveMaterialParams["reflType"] =
             raytracer::object::primitive::RefltT::REFR;  // Refractive material
-        refractiveMaterialParams["emission"] = vec(0.0, 0.0, 0.0);  // No emission
+        refractiveMaterialParams["emission"] =
+            vec(0.0, 0.0, 0.0);                          // No emission
         refractiveMaterialParams["reflectivity"] = 0.0;  // No reflection
         refractiveMaterialParams["transparency"] = 1.0;  // Full transparency
         refractiveMaterialParams["ior"] =
@@ -189,8 +195,7 @@ namespace raytracer {
         floorSphereParams["center"] = vec(50.0, 1e5, 81.6);
         floorSphereParams["radius"] = 1e5;
         floorSphereParams["material"] = whiteMaterialPtr;
-        auto floorSphere =
-            this->_objFactory.build("sphere", floorSphereParams);
+        auto floorSphere = this->_objFactory.build("sphere", floorSphereParams);
 
         // Ceiling sphere
         std::map<std::string, std::any> ceilingSphereParams;
@@ -226,7 +231,8 @@ namespace raytracer {
 
         // Point Light
         std::map<std::string, std::any> pointLightParams;
-        pointLightParams["position"] = vec(50.0, 81.6 - 24.5, 81.6);  // Position above the scene
+        pointLightParams["position"] =
+            vec(50.0, 81.6 - 24.5, 81.6);  // Position above the scene
         pointLightParams["color"] = color(250, 230, 230);  // White light
         pointLightParams["intensity"] = 400.0;
         pointLightParams["radius"] = 2.0;
