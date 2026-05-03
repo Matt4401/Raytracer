@@ -8,45 +8,74 @@
 #pragma once
 
 #include <numbers>
+#include <string>
 
+#include "AObject.hpp"
+#include "ICamera.hpp"
 #include "math/Ray.hpp"
 #include "math/Vector.hpp"
 
 namespace raytracer::object::camera {
-    class ACamera {
+    class ACamera : public ICamera, public AObject {
       public:
         ACamera(maths::Vector origin, maths::Vector rotation,
                 double fov = std::numbers::pi / 2,
                 double aspectRatio = 16.0 / 9.0)
-            : _fov(fov),
+            : AObject(object::AObject::Type::CAMERA),
+              _fov(fov),
               _aspectRatio(aspectRatio),
               _position(origin),
-              _rotation(rotation) {};
+              _rotation(rotation),
+              _imageWidth(800),
+              _imageHeight(600) {};
+        ACamera()
+            : AObject(object::AObject::Type::CAMERA),
+              _fov(std::numbers::pi / 2),
+              _aspectRatio(16.0 / 9.0),
+              _position(),
+              _rotation(),
+              _imageWidth(800),
+              _imageHeight(600) {};
         ~ACamera() = default;
-        virtual maths::Ray ray(double u, double v) const = 0;
-        void setPosition(const maths::Vector &position) {
+        virtual maths::Ray ray(double u, double v) const override = 0;
+        virtual void setViewport(double fieldOfView,
+                                 double aspectRatio) override = 0;
+
+        void setImageWidth(int width) override {
+            _imageWidth = width;
+        }
+        void setImageHeight(int height) override {
+            _imageHeight = height;
+        }
+        void setPosition(const maths::Vector &position) override {
             _position = position;
         }
-        virtual void setRotation(const maths::Vector &rotation) {
+        void setRotation(const maths::Vector &rotation) override {
             _rotation = rotation;
         }
-        virtual void setFOV(double fov) {
+        void setFOV(double fov) override {
             _fov = fov;
         }
-        virtual void setAspectRatio(double aspectRatio) {
+        void setAspectRatio(double aspectRatio) override {
             _aspectRatio = aspectRatio;
         }
 
-        virtual double fov() const {
+        int imageWidth() const override {
+            return _imageWidth;
+        }
+        int imageHeight() const override {
+            return _imageHeight;
+        }
+        double fov() const override {
             return _fov;
         }
-        virtual double aspectRatio() const {
+        double aspectRatio() const override {
             return _aspectRatio;
         }
-        virtual maths::Vector position() const {
+        maths::Vector position() const override {
             return _position;
         }
-        virtual maths::Vector rotation() const {
+        maths::Vector rotation() const override {
             return _rotation;
         }
 
@@ -55,6 +84,8 @@ namespace raytracer::object::camera {
         double _aspectRatio = 16.0 / 9.0;
         maths::Vector _position;
         maths::Vector _rotation;
+        int _imageWidth = 800;
+        int _imageHeight = 600;
 
       private:
     };

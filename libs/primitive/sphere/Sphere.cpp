@@ -25,8 +25,8 @@ namespace raytracer::object::primitive {
               util::ObjectMiddleware::validate<
                   std::shared_ptr<raytracer::object::material::IMaterial>>(
                   params, "material", "Sphere")),
-          _radius(
-              util::ObjectMiddleware::validate<double>(params, "radius", "Sphere")) {
+          _radius(util::ObjectMiddleware::validate<double>(params, "radius",
+                                                           "Sphere")) {
         util::Helpers::unsignedDouble(_radius, "radius", "Sphere");
     }
 
@@ -46,15 +46,24 @@ namespace raytracer::object::primitive {
     }
 
     double Sphere::hits(const maths::Ray &ray) {
-        const maths::Vector op = _center - ray.origin;
-        const double b = op.dot(ray.direction);
-        const double a = ray.direction.dot(ray.direction);
-        const double c = op.dot(op) - _radius * _radius;
-        const double det = b * b - 4 * a * c;
-        if (det < 0) {
-            return 0;
+        if (ray.direction.magnitude() == 0) {
+            throw std::runtime_error("Ray direction cannot be a zero vector");
         }
-        const double sqrtDiscriminant = std::sqrt(det);
+        if (_radius <= 0) {
+            throw std::runtime_error("Sphere _radius must be positive");
+        }
+        maths::Vector oc = ray.origin - _center;
+        maths::Vector ocVec(oc.x, oc.y, oc.z);
+        double a = ray.direction.dot(ray.direction);
+        double b = 2.0 * ocVec.dot(ray.direction);
+        double c = ocVec.dot(ocVec) - _radius * _radius;
+        double discriminant = b * b - 4 * a * c;
+
+        if (discriminant < 0) {
+            return -1.0;
+        }
+
+        const double sqrtDiscriminant = std::sqrt(discriminant);
         const double t0 = (-b - sqrtDiscriminant) / (2.0 * a);
         const double t1 = (-b + sqrtDiscriminant) / (2.0 * a);
 
@@ -64,7 +73,7 @@ namespace raytracer::object::primitive {
         if (t1 > EPS) {
             return t1;
         }
-        return 0;
+        return -1.0;
     }
 
     IPrimitive::BoundingBox Sphere::boundingBox() {

@@ -22,10 +22,10 @@ namespace raytracer::object::light {
         _radius = radius;
     }
 
-    maths::Vector PointLight::computeNEE(
-        const scene::IScene &scene, const maths::Vector &x,
-        const maths::Vector &nl,
-        const primitive::MaterialProperties &material) const {
+    maths::Vector PointLight::computeNEE(const scene::IScene &scene,
+                                         const maths::Vector &x,
+                                         const maths::Vector &nl,
+                                         const maths::Vector &f) const {
         maths::Vector toL(position().x - x.x, position().y - x.y,
                           position().z - x.z);
         double dist = toL.magnitude();
@@ -43,21 +43,16 @@ namespace raytracer::object::light {
 
         if (_radius > 0.0) {
             if (!hit || sT > dist - _radius - K_OCCLUSION_EPSILON) {
-                const maths::Vector surfaceResponse =
-                    materialDiffuseResponse(material);
                 double cosAlpha = std::sqrt(
                     std::max(0.0, 1.0 - (_radius / dist) * (_radius / dist)));
                 double omega = 2 * M_PI * (1.0 - cosAlpha);
-                return color().toVector() * intensity() * surfaceResponse *
-                       cosTheta * (omega / (2.0 * M_PI));
+                return color().toVector() * intensity() * f * cosTheta *
+                       (omega / (2.0 * M_PI));
             }
         } else {
             if (!hit || sT > dist - K_OCCLUSION_EPSILON) {
-                const maths::Vector surfaceResponse =
-                    materialDiffuseResponse(material);
                 double att = 1.0 / (dist * dist);
-                return color().toVector() * intensity() * surfaceResponse *
-                       cosTheta * att;
+                return color().toVector() * intensity() * f * cosTheta * att;
             }
         }
         return maths::Vector(0, 0, 0);

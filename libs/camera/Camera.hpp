@@ -13,16 +13,16 @@
 #include "math/Ray.hpp"
 #include "math/Rectangle.hpp"
 #include "math/Vector.hpp"
+#include "object/ACamera.hpp"
 #include "object/AObject.hpp"
 
 namespace raytracer::object::camera {
-    class Camera : public raytracer::object::AObject {
+    class Camera : public ACamera {
       public:
         explicit Camera(const std::map<std::string, std::any> &params);
-        Camera(const maths::Vector &origin, const maths::Vector &position,
-               const maths::Vector &rotation, double fieldOfView,
-               double aspectRatio);
-        Camera();
+        Camera(const maths::Vector &position, const maths::Vector &rotation,
+               double fieldOfView, double aspectRatio);
+        Camera() = default;
         ~Camera() override = default;
 
         /// @brief Set the camera's viewport based on the given field of view
@@ -36,7 +36,7 @@ namespace raytracer::object::camera {
         /// radians
         /// @param aspectRatio the aspect ratio of the viewport, defined as the
         /// ratio of the viewport's width to its height
-        void setViewport(double fieldOfView, double aspectRatio);
+        void setViewport(double fieldOfView, double aspectRatio) override;
         /// @brief Generate a ray from the camera to the given u and v
         /// coordinates on the image plane. The camera is defined by its
         /// position, rotation, and field of view. The image plane is defined by
@@ -48,23 +48,10 @@ namespace raytracer::object::camera {
         /// the bottom edge and 1 corresponds to the top edge of the viewport
         /// @return return a ray, going from the camera to the coordinates and
         /// fov of the viewport.
-        maths::Ray ray(const double u, const double v) const;
-
-        void move(const maths::Vector &direction);
-        void rotate(const maths::Vector &rotation);
-        void setPosition(const maths::Vector &position);
-        void setRotation(const maths::Vector &rotation);
-        maths::Vector position() const;
-        maths::Vector rotation() const;
-        maths::Vector direction() const;
+        maths::Ray ray(const double u, const double v) const override;
 
       protected:
       private:
-        maths::Vector _origin;
-        maths::Vector _position;
-        maths::Vector _rotation;
         maths::Rectangle _viewport;
-        double _fov;
-        double _aspectRatio;
     };
 }  // namespace raytracer::object::camera

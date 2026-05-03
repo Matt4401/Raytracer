@@ -34,8 +34,10 @@ namespace raytracer::object::scene {
                                       "ambientDiffuseIntensity", "Scene");
     }
 
-    void AScene::addPrimitive(const std::shared_ptr<object::AObject> &primitive) {
-        auto primPtr = std::dynamic_pointer_cast<primitive::IPrimitive>(primitive);
+    void AScene::addPrimitive(
+        const std::shared_ptr<object::AObject> &primitive) {
+        auto primPtr =
+            std::dynamic_pointer_cast<primitive::IPrimitive>(primitive);
         if (!primPtr) {
             throw exception::PluginException(
                 "Invalid primitive object added to scene");
@@ -67,7 +69,8 @@ namespace raytracer::object::scene {
         auto it = _addObjectHandlers.find(object->type());
         if (it != _addObjectHandlers.end()) {
             try {
-                auto objRef = std::dynamic_pointer_cast<object::AObject>(object);
+                auto objRef =
+                    std::dynamic_pointer_cast<object::AObject>(object);
                 if (!objRef) {
                     throw std::bad_cast();
                 }
@@ -104,6 +107,20 @@ namespace raytracer::object::scene {
 
     AmbientDiffuse AScene::ambientDiffuse() const {
         return _ambientDiffuse;
+    }
+
+    const std::vector<std::shared_ptr<primitive::IPrimitive>> &
+    AScene::primitives() const {
+        return _primitives;
+    }
+
+    const std::vector<std::shared_ptr<light::ILight>> &AScene::lights() const {
+        return _lights;
+    }
+
+    const std::vector<std::shared_ptr<camera::ICamera>> &AScene::cameras()
+        const {
+        return _cameras;
     }
 
 }  // namespace raytracer::object::scene

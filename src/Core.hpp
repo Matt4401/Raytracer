@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "Render.hpp"
 #include "plugin/ObjectFactory.hpp"
 #include "plugin/PluginManager.hpp"
 
@@ -34,6 +35,9 @@ namespace raytracer {
       private:
         PluginManager _plugManager;
         ObjectFactory _objFactory;
+        Render _renderer;
+
+        std::shared_ptr<object::scene::IScene> _scene;
 
         static constexpr std::string_view PLUGINS_FOLDER_PATH = "./plugins/";
     };
