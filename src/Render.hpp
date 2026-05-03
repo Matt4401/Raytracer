@@ -15,6 +15,7 @@
 #include <memory>
 #include <thread>
 
+#include "object/ICamera.hpp"
 #include "object/IScene.hpp"
 
 namespace raytracer {
@@ -31,7 +32,6 @@ namespace raytracer {
         /// @param samples Number of samples per pixel.
         void render(const object::scene::IScene &scene, int pixel = 1,
                     int samples = 40);
-
         /// @brief Save the rendered image to a file in PPM format.
         void pixelToPPM(const object::scene::IScene &scene) const;
         /// @brief Save the rendered image to a file in PPM format.
@@ -44,6 +44,46 @@ namespace raytracer {
       private:
         void renderRows(const object::scene::IScene &scene,
                         unsigned int workerId, int yStart, int yEnd);
+
+        struct RenderState {
+            const object::scene::IScene *scene = nullptr;
+            const raytracer::object::camera::ICamera *cam = nullptr;
+            double invImageWidth = 0.0;
+            double invImageHeight = 0.0;
+            maths::Vector cx{0, 0, 0};
+            maths::Vector cy{0, 0, 0};
+            double sampleWeight = 0.0;
+            unsigned short *Xi = nullptr;
+        };
+
+        static constexpr double kCxFactor = 0.5135;
+
+        /// @brief Compute stratified jitter offsets for a sample.
+        void computeStratifiedSample(unsigned short *Xi, double &dx,
+                                     double &dy) const;
+
+        /// @brief Cast a primary ray for a pixel and subpixel.
+        maths::Ray castPrimaryRay(const RenderState &st, int x, int y, int sx,
+                                  int sy, double dx, double dy) const;
+
+        /// @brief Sample a subpixel and accumulate radiance.
+        maths::Vector sampleSubpixel(const RenderState &st, int x, int y,
+                                     int sx, int sy) const;
+
+        /// @brief Compute final pixel color from all subpixels.
+        maths::Color computePixelColor(const RenderState &st, int x,
+                                       int y) const;
+
+        void initRender(const object::scene::IScene &scene, int samples,
+                        int &imageWidth, int &imageHeight,
+                        unsigned int &workerCount, int &rowsPerWorker);
+        void startWorkers(const object::scene::IScene &scene,
+                          unsigned int workerCount, int rowsPerWorker,
+                          unsigned int &activeWorkers);
+        void finishRender(
+            unsigned int activeWorkers, int imageHeight,
+            const std::chrono::high_resolution_clock::time_point &startTotal);
+
         std::vector<maths::Color> _pixels;
 
         std::vector<std::thread> _workers;

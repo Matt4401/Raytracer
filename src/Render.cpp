@@ -23,6 +23,58 @@ namespace raytracer {
                   << static_cast<int>(color.b) << "\n";
     }
 
+    void Render::computeStratifiedSample(unsigned short *Xi, double &dx,
+                                         double &dy) const {
+        double r1 = 2 * ::erand48(Xi);
+        dx = r1 < 1 ? std::sqrt(r1) - 1 : 1 - std::sqrt(2 - r1);
+        double r2 = 2 * ::erand48(Xi);
+        dy = r2 < 1 ? std::sqrt(r2) - 1 : 1 - std::sqrt(2 - r2);
+    }
+
+    maths::Ray Render::castPrimaryRay(const Render::RenderState &st, int x,
+                                      int y, int sx, int sy, double dx,
+                                      double dy) const {
+        double px = ((sx + 0.5 + dx) / 2.0 + x) * st.invImageWidth - 0.5;
+        double py = ((sy + 0.5 + dy) / 2.0 + y) * st.invImageHeight - 0.5;
+        maths::Vector d = st.cx * px + st.cy * py + st.cam->rotation();
+        return maths::Ray(st.cam->position() + d * 140.0, d.normalized());
+    }
+
+    maths::Vector Render::sampleSubpixel(const Render::RenderState &st, int x,
+                                         int y, int sx, int sy) const {
+        maths::Vector radiance(0, 0, 0);
+        const int samplesPerSubpixel = std::max(1, _samples / 4);
+
+        for (int s = 0; s < samplesPerSubpixel; ++s) {
+            double dx, dy;
+            computeStratifiedSample(st.Xi, dx, dy);
+            maths::Ray primary = castPrimaryRay(st, x, y, sx, sy, dx, dy);
+            radiance = radiance +
+                       st.scene->radiance(primary, 0, st.Xi) * st.sampleWeight;
+        }
+        return radiance;
+    }
+
+    maths::Color Render::computePixelColor(const Render::RenderState &st, int x,
+                                           int y) const {
+        maths::Vector pixel(0, 0, 0);
+
+        for (int sy = 0; sy < 2; ++sy) {
+            for (int sx = 0; sx < 2; ++sx) {
+                maths::Vector subpixel = sampleSubpixel(st, x, y, sx, sy);
+                pixel =
+                    pixel + maths::Vector(std::clamp(subpixel.x, 0.0, 1.0),
+                                          std::clamp(subpixel.y, 0.0, 1.0),
+                                          std::clamp(subpixel.z, 0.0, 1.0)) *
+                                0.25;
+            }
+        }
+
+        return maths::Color(std::clamp(pixel.x * 255.0, 0.0, 255.0),
+                            std::clamp(pixel.y * 255.0, 0.0, 255.0),
+                            std::clamp(pixel.z * 255.0, 0.0, 255.0));
+    }
+
     std::thread Render::printProgress(int activeWorkers, int imageHeight) {
         return std::thread([this, activeWorkers, imageHeight]() {
             while (!_renderingFinished.load()) {
@@ -48,29 +100,49 @@ namespace raytracer {
     void Render::render(const object::scene::IScene &scene, int pixel,
                         int samples) {
         auto startTotal = std::chrono::high_resolution_clock::now();
+        int imageWidth = 0;
+        int imageHeight = 0;
+        unsigned int workerCount = 0;
+        int rowsPerWorker = 0;
+
+        initRender(scene, samples, imageWidth, imageHeight, workerCount,
+                   rowsPerWorker);
+
+        unsigned int activeWorkers = 0;
+        startWorkers(scene, workerCount, rowsPerWorker, activeWorkers);
+
+        finishRender(activeWorkers, imageHeight, startTotal);
+    }
+
+    void Render::initRender(const object::scene::IScene &scene, int samples,
+                            int &imageWidth, int &imageHeight,
+                            unsigned int &workerCount, int &rowsPerWorker) {
         _samples = samples;
-        int imageWidth = scene.cameras().at(0)->imageWidth();
-        int imageHeight = scene.cameras().at(0)->imageHeight();
+        imageWidth = scene.cameras().at(0)->imageWidth();
+        imageHeight = scene.cameras().at(0)->imageHeight();
         _pixels.assign(imageWidth * imageHeight, maths::Color());
 
-        const unsigned int workerCount =
-            std::max(1u, std::thread::hardware_concurrency());
-        const int rowsPerWorker = (imageHeight + workerCount - 1) / workerCount;
+        workerCount = std::max(1u, std::thread::hardware_concurrency());
+        rowsPerWorker = (imageHeight + workerCount - 1) / workerCount;
 
         this->_workers.clear();
         _workerDone = std::make_unique<std::atomic<int>[]>(workerCount);
         _workerRows = std::vector<int>(workerCount);
         _renderingFinished = false;
-        unsigned int activeWorkers = 0;
 
         std::atomic<int> *workerDone = _workerDone.get();
         for (unsigned int i = 0; i < workerCount; ++i) workerDone[i].store(0);
         _workers.reserve(workerCount);
+    }
 
+    void Render::startWorkers(const object::scene::IScene &scene,
+                              unsigned int workerCount, int rowsPerWorker,
+                              unsigned int &activeWorkers) {
         for (unsigned int w = 0; w < workerCount; ++w) {
             int yStart = w * rowsPerWorker;
-            int yEnd = std::min(imageHeight, yStart + rowsPerWorker);
-            if (yStart >= imageHeight)
+            int yEnd = std::min(scene.cameras().at(0)->imageHeight(),
+                                yStart + rowsPerWorker);
+            if (yStart >= scene.cameras().at(0)->imageHeight())
                 break;
             _workerRows[w] = yEnd - yStart;
             _workers.emplace_back([this, &scene, w, yStart, yEnd]() {
@@ -78,7 +150,11 @@ namespace raytracer {
             });
             ++activeWorkers;
         }
+    }
 
+    void Render::finishRender(
+        unsigned int activeWorkers, int imageHeight,
+        const std::chrono::high_resolution_clock::time_point &startTotal) {
         auto progressThread = printProgress(activeWorkers, imageHeight);
 
         for (auto &w : _workers) w.join();
@@ -118,53 +194,28 @@ namespace raytracer {
         const int samplesPerSubpixel = std::max(1, _samples / 4);
         const double sampleWeight = 1.0 / samplesPerSubpixel;
 
-        const maths::Vector cx((imageWidth * 0.5135) / imageHeight, 0, 0);
+        const maths::Vector cx((imageWidth * Render::kCxFactor) / imageHeight,
+                               0, 0);
         const maths::Vector cy =
-            cx.cross(scene.cameras().at(0)->rotation()).normalized() * 0.5135;
+            cx.cross(scene.cameras().at(0)->rotation()).normalized() *
+            Render::kCxFactor;
+
+        Render::RenderState st;
+        st.scene = &scene;
+        st.cam = scene.cameras().at(0).get();
+        st.invImageWidth = invImageWidth;
+        st.invImageHeight = invImageHeight;
+        st.cx = cx;
+        st.cy = cy;
+        st.sampleWeight = sampleWeight;
+
         for (int y = yStart; y < yEnd; ++y) {
             unsigned short Xi[3] = {
                 0, 0, (unsigned short)((y + 1) * (y + 1) * (y + 1))};
+            st.Xi = Xi;
             for (int x = 0; x < imageWidth; ++x) {
                 const int idx = (imageHeight - y - 1) * imageWidth + x;
-                maths::Vector pixel(0, 0, 0);
-
-                for (int sy = 0; sy < 2; sy++) {
-                    for (int sx = 0; sx < 2; sx++) {
-                        maths::Vector r(0, 0, 0);
-                        for (int s = 0; s < samplesPerSubpixel; s++) {
-                            double r1 = 2 * ::erand48(Xi);
-                            double dx = r1 < 1 ? std::sqrt(r1) - 1
-                                               : 1 - std::sqrt(2 - r1);
-                            double r2 = 2 * ::erand48(Xi);
-                            double dy = r2 < 1 ? std::sqrt(r2) - 1
-                                               : 1 - std::sqrt(2 - r2);
-
-                            double px =
-                                ((sx + 0.5 + dx) / 2.0 + x) * invImageWidth -
-                                0.5;
-                            double py =
-                                ((sy + 0.5 + dy) / 2.0 + y) * invImageHeight -
-                                0.5;
-                            maths::Vector d = cx * px + cy * py +
-                                              scene.cameras().at(0)->rotation();
-                            maths::Ray primary(
-                                scene.cameras().at(0)->position() + d * 140.0,
-                                d.normalized());
-
-                            r = r +
-                                scene.radiance(primary, 0, Xi) * sampleWeight;
-                        }
-                        pixel =
-                            pixel + maths::Vector(std::clamp(r.x, 0.0, 1.0),
-                                                  std::clamp(r.y, 0.0, 1.0),
-                                                  std::clamp(r.z, 0.0, 1.0)) *
-                                        0.25;
-                    }
-                }
-                _pixels[idx] =
-                    maths::Color(std::clamp(pixel.x * 255.0, 0.0, 255.0),
-                                 std::clamp(pixel.y * 255.0, 0.0, 255.0),
-                                 std::clamp(pixel.z * 255.0, 0.0, 255.0));
+                _pixels[idx] = computePixelColor(st, x, y);
             }
             std::atomic<int> *workerDone = _workerDone.get();
             workerDone[workerId].fetch_add(1);
