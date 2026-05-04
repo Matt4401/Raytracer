@@ -10,11 +10,16 @@
 
 #include <algorithm>
 #include <atomic>
+#include <chrono>
 #include <cmath>
 #include <fstream>
 #include <memory>
 #include <thread>
+#include <vector>
 
+#include "maths/Color.hpp"
+#include "maths/Ray.hpp"
+#include "maths/Vector.hpp"
 #include "object/ICamera.hpp"
 #include "object/IScene.hpp"
 
