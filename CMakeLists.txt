@@ -43,6 +43,7 @@ set(SRCS
         src/plugin/PluginManager.cpp
         src/plugin/ObjectFactory.cpp
         src/object/light/ALight.cpp
+        src/object/scene/AScene.cpp
 )
 
 set(HEADERS

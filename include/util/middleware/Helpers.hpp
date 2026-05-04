@@ -101,5 +101,18 @@ namespace raytracer::util {
              */
         static void unsignedDouble(double value, std::string_view fieldName,
                                    std::string_view className);
+        /**
+             @brief Check if an integer given value is negative or not.
+             * @param value integer to check if it is negative or not.
+             * @param fieldName name of the integer to check. For Example
+           samples for a Sphere.
+             * @param className name of the class of the value.
+             * @throws PluginException If the index is out of bounds or if the
+           type casting fails, with a message indicating the nature of the
+           error.
+             */
+        static void unsignedInt(const int value,
+                                const std::string_view fieldName,
+                                const std::string_view className);
     };
 }  // namespace raytracer::util

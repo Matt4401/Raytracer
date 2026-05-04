@@ -37,8 +37,8 @@ namespace raytracer::object::primitive {
         SurfaceData surfaceData(const maths::Vector &hitPoint) const override =
             0;
 
-        maths::Vector center() const noexcept;
-        const std::string &name() const noexcept;
+        maths::Vector center() const noexcept override;
+        const std::string &name() const noexcept override;
 
       protected:
         std::shared_ptr<raytracer::object::material::IMaterial> _material;
