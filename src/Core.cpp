@@ -68,9 +68,9 @@ namespace raytracer {
         cameraParams["fieldOfView"] =
             90.0;  // Example: 90 degree field of view, adjust as needed
         cameraParams["aspectRatio"] =
-            16.0 / 9.0;  // Example: standard widescreen aspect ratio
+            4.0 / 3.0;  // Example: standard widescreen aspect ratio
         cameraParams["resolution"] = std::map<std::string, std::any>{
-            {"width", 400}, {"height", 200}};  // Example: 400x200 resolution
+            {"width", 400}, {"height", 300}};  // Example: 400x300 resolution
         auto camera = this->_objFactory.build("camera", cameraParams);
 
         // PRIMITIVE
@@ -230,6 +230,30 @@ namespace raytracer {
         auto refractiveSphere =
             this->_objFactory.build("sphere", refractiveSphereParams);
 
+        // Mesh: cube in front-center of the scene
+        std::map<std::string, std::any> greenMaterialParams;
+        greenMaterialParams["color"] = color(63, 191, 63);  // Green color
+        greenMaterialParams["reflType"] =
+            raytracer::object::primitive::RefltT::DIFF;  // Diffuse
+        greenMaterialParams["emission"] = vec(0.0, 0.0, 0.0);
+        greenMaterialParams["reflectivity"] = 0.0;
+        greenMaterialParams["transparency"] = 0.0;
+        greenMaterialParams["ior"] = 1.0;
+        greenMaterialParams["roughness"] = 0.0;
+        greenMaterialParams["metalness"] = 0.0;
+        auto greenMaterial =
+            this->_objFactory.build("flatcolor", greenMaterialParams);
+        auto greenMaterialPtr =
+            std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(
+                greenMaterial);
+
+        std::map<std::string, std::any> cubeMeshParams;
+        cubeMeshParams["center"] = vec(50.0, 16.5, 60.0);
+        cubeMeshParams["scale"] = vec(30.0, 30.0, 30.0);  // size of the cube
+        cubeMeshParams["path"] = std::string("assets/models/octane.obj");
+        cubeMeshParams["material"] = greenMaterialPtr;
+        auto cubeMesh = this->_objFactory.build("mesh", cubeMeshParams);
+
         // Point Light
         std::map<std::string, std::any> pointLightParams;
         pointLightParams["position"] =
@@ -253,8 +277,9 @@ namespace raytracer {
             scenePtr->addObject(floorSphere);
             scenePtr->addObject(ceilingSphere);
             scenePtr->addObject(behindSphere);
-            scenePtr->addObject(mirrorSphere);
-            scenePtr->addObject(refractiveSphere);
+            // scenePtr->addObject(mirrorSphere);
+            // scenePtr->addObject(refractiveSphere);
+            scenePtr->addObject(cubeMesh);
             scenePtr->addObject(pointLight);
             scenePtr->addObject(camera);
         } else {
@@ -264,7 +289,7 @@ namespace raytracer {
     }
 
     void Core::run() {
-        this->_renderer.render(*_scene, 1, 100);
+        this->_renderer.render(*_scene, 1, 40);
         this->_renderer.pixelToPPM(*_scene);
     }
 

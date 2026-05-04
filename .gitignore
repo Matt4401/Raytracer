@@ -10,3 +10,4 @@ raytracer
 *.so
 .DS_Store
 *.ppm
+*.obj
