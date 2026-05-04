@@ -12,6 +12,8 @@
 #include "math/Vector.hpp"
 #include "object/IObject.hpp"
 
+#include <memory>
+
 namespace raytracer::object::scene {
 
     struct AmbientDiffuse {

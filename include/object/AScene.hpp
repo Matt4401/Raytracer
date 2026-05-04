@@ -13,7 +13,6 @@
 #include <functional>
 #include <limits>
 #include <map>
-#include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
