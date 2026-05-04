@@ -3,6 +3,7 @@ SET (CMAKE_CXX_STANDARD 20)
 
 SET (SRCS
     TrianglePlugin.cpp
+    Triangle.cpp
 )
 
 SET (HEADERS
