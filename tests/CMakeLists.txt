@@ -88,6 +88,9 @@ if (NOT SKIP_INTERNET)
             src/main.cpp
             src/primitives/test_plane.cpp
             ${CMAKE_SOURCE_DIR}/libs/primitive/plane/Plane.cpp
+            src/primitives/test_triangle.cpp
+            ${CMAKE_SOURCE_DIR}/src/plugin/ObjectFactory.cpp
+            ${CMAKE_SOURCE_DIR}/src/plugin/PluginManager.cpp
     )
 
     target_link_libraries(primitive_tests PRIVATE
@@ -97,9 +100,15 @@ if (NOT SKIP_INTERNET)
     )
 
     target_include_directories(primitive_tests PRIVATE
-            ${CMAKE_SOURCE_DIR}
             ${CMAKE_SOURCE_DIR}/include
             ${CMAKE_SOURCE_DIR}/src
+    )
+
+    target_compile_definitions(primitive_tests
+            PRIVATE
+            FIXTURES_PATH="${FIXTURES_DIR}"
+            TEST_PLUGINS_PATH="${TEST_PLUGINS_DIR}"
+            PROJECT_PLUGINS_PATH="${CMAKE_SOURCE_DIR}/plugins/"
     )
 
     gtest_discover_tests(primitive_tests)

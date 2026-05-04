@@ -42,6 +42,18 @@ namespace raytracer::util {
         normal.normalize();
         return normal;
     }
+  
+    void Helpers::notCollinearVector(const maths::Vector &v1,
+                                     const maths::Vector &v2,
+                                     std::string_view fieldName1,
+                                     std::string_view fieldName2,
+                                     const std::string_view className) {
+        if (const double crossProductMagnitude = v1.cross(v2).magnitude();
+            crossProductMagnitude == 0) {
+            throw exception::PluginException{"{} {} and {} can't be collinear",
+                                             className, fieldName1, fieldName2};
+        }
+    }
 
     maths::Color Helpers::toColor(const std::map<std::string, std::any> &params,
                                   const std::string_view keyName,
