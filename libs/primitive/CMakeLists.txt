@@ -5,3 +5,4 @@ project(primitives)
 
 #add_subdirectory(rectangle)
 add_subdirectory(sphere)
+add_subdirectory(plane)
