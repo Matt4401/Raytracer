@@ -44,7 +44,7 @@ namespace raytracer::object::scene {
                              double intensity) override;
         void setAmbientOcclusion(int samples, double radius) override;
 
-        AmbiantOcclusion ambiantOcclusion() const override;
+        AmbientOcclusion ambientOcclusion() const override;
         AmbientLight ambientLight() const override;
         AmbientDiffuse ambientDiffuse() const override;
 
@@ -60,7 +60,7 @@ namespace raytracer::object::scene {
         std::vector<std::unique_ptr<light::ILight>> _lights;
         std::vector<std::unique_ptr<camera::ICamera>> _cameras;
 
-        AmbiantOcclusion _ambiantOcclusion;
+        AmbientOcclusion _ambientOcclusion;
         AmbientLight _ambientLight;
         AmbientDiffuse _ambientDiffuse;
 

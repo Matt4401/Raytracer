@@ -14,11 +14,11 @@
 namespace raytracer::object::scene {
     AScene::AScene(const std::map<std::string, std::any> &params)
         : AObject(Type::SCENE) {
-        _ambiantOcclusion.samples =
+        _ambientOcclusion.samples =
             util::ObjectMiddleware::validate<int>(params, "aoSamples", "Scene");
-        _ambiantOcclusion.radius = util::ObjectMiddleware::validate<double>(
+        _ambientOcclusion.radius = util::ObjectMiddleware::validate<double>(
             params, "aoRadius", "Scene");
-        util::Helpers::unsignedDouble(_ambiantOcclusion.radius, "aoRadius",
+        util::Helpers::unsignedDouble(_ambientOcclusion.radius, "aoRadius",
                                       "Scene");
         _ambientLight.color =
             util::Helpers::toColor(params, "ambientLightColor", "Scene");
@@ -87,11 +87,11 @@ namespace raytracer::object::scene {
     }
 
     void AScene::setAmbientOcclusion(int samples, double radius) {
-        _ambiantOcclusion = {samples, radius};
+        _ambientOcclusion = {samples, radius};
     }
 
-    AmbiantOcclusion AScene::ambiantOcclusion() const {
-        return _ambiantOcclusion;
+    AmbientOcclusion AScene::ambientOcclusion() const {
+        return _ambientOcclusion;
     }
 
     AmbientLight AScene::ambientLight() const {
