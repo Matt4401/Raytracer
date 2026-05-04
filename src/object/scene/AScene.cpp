@@ -35,7 +35,8 @@ namespace raytracer::object::scene {
     }
 
     void AScene::addPrimitive(std::shared_ptr<object::IObject> primitive) {
-        auto primitiveObj = std::dynamic_pointer_cast<primitive::IPrimitive>(primitive);
+        auto primitiveObj =
+            std::dynamic_pointer_cast<primitive::IPrimitive>(primitive);
         if (!primitiveObj) {
             throw exception::PluginException("Failed to cast primitive object");
         }
@@ -61,12 +62,7 @@ namespace raytracer::object::scene {
     void AScene::addObject(std::shared_ptr<object::IObject> object) {
         auto it = _addObjectHandlers.find(object->type());
         if (it != _addObjectHandlers.end()) {
-            try {
-                it->second(object);
-            } catch (const std::bad_cast &) {
-                throw exception::PluginException(
-                    "Object type does not match expected type for handler");
-            }
+            it->second(object);
         } else {
             throw exception::PluginException(
                 "Unsupported object type added to scene");

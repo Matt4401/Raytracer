@@ -68,14 +68,21 @@ namespace raytracer::object::scene {
         void addPrimitive(std::shared_ptr<object::IObject> primitive);
         void addLight(std::shared_ptr<object::IObject> light);
         void addCamera(std::shared_ptr<object::IObject> camera);
-        std::map<object::IObject::Type, std::function<void(std::shared_ptr<object::IObject>)>>
+        std::map<object::IObject::Type,
+                 std::function<void(std::shared_ptr<object::IObject>)>>
             _addObjectHandlers = {
                 {object::IObject::Type::PRIMITIVE,
-                 [this](std::shared_ptr<object::IObject> obj) { addPrimitive(obj); }},
+                 [this](std::shared_ptr<object::IObject> obj) {
+                     addPrimitive(obj);
+                 }},
                 {object::IObject::Type::LIGHT,
-                 [this](std::shared_ptr<object::IObject> obj) { addLight(obj); }},
+                 [this](std::shared_ptr<object::IObject> obj) {
+                     addLight(obj);
+                 }},
                 {object::IObject::Type::CAMERA,
-                 [this](std::shared_ptr<object::IObject> obj) { addCamera(obj); }},
+                 [this](std::shared_ptr<object::IObject> obj) {
+                     addCamera(obj);
+                 }},
             };
     };
 }  // namespace raytracer::object::scene
