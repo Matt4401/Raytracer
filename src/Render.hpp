@@ -17,9 +17,9 @@
 #include <thread>
 #include <vector>
 
-#include "maths/Color.hpp"
-#include "maths/Ray.hpp"
-#include "maths/Vector.hpp"
+#include "math/Color.hpp"
+#include "math/Ray.hpp"
+#include "math/Vector.hpp"
 #include "object/ICamera.hpp"
 #include "object/IScene.hpp"
 
