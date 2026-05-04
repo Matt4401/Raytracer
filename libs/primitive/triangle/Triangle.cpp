@@ -35,6 +35,78 @@ namespace raytracer::object::primitive {
         : APrimitive("Triangle", center, std::move(material)),
           _v1(v1),
           _v2(v2) {
+        util::Helpers::notCollinearVector(_v1, _v2, "v1", "v2", "Triangle");
+    }
 
+    maths::Vector Triangle::v1() const noexcept {
+        return _v1;
+    }
+
+    maths::Vector Triangle::v2() const noexcept {
+        return _v2;
+    }
+
+    double Triangle::hits(const maths::Ray &ray) {
+        const maths::Vector edge1 = _v1 - _center;
+        const maths::Vector edge2 = _v2 - _center;
+        const maths::Vector rayCrossE2 = ray.direction.cross(edge2);
+        const double det = edge1.dot(rayCrossE2);
+
+        if (std::abs(det) < EPS) {
+            return -1;  // Ray is parallel to triangle
+        }
+
+        const double invDet = 1.0 / det;
+        const maths::Vector s = ray.origin - _center;
+        const double u = s.dot(rayCrossE2) * invDet;
+        if (u < -EPS || u - 1 > EPS) {
+            return -1;  // Ray pass outside edge2 bounds
+        }
+
+        const maths::Vector sCrossE1 = s.cross(edge1);
+        if (const double v = ray.direction.dot(sCrossE1) * invDet;
+            v < -EPS || u + v - 1 > EPS) {
+            return -1;  // Ray pass outside edge1 bounds
+        }
+
+        if (const double t = edge2.dot(sCrossE1) * invDet; t < EPS) {
+            return -1;  // Ray intersection behind the origin
+        } else {
+            return t;
+        }
+    }
+
+    IPrimitive::BoundingBox Triangle::boundingBox() {
+        const auto v0 = _center;
+        const auto v1 = _v1;
+        const auto v2 = _v2;
+        const auto minX = std::min({v0.x, v1.x, v2.x});
+        const auto minY = std::min({v0.y, v1.y, v2.y});
+        const auto minZ = std::min({v0.z, v1.z, v2.z});
+        const auto maxX = std::max({v0.x, v1.x, v2.x});
+        const auto maxY = std::max({v0.y, v1.y, v2.y});
+        const auto maxZ = std::max({v0.z, v1.z, v2.z});
+
+        return {.x = minX,
+                .y = minY,
+                .z = minZ,
+                .w = maxX - minX,
+                .h = maxY - minY,
+                .d = maxZ - minZ};
+    }
+
+    SurfaceData Triangle::surfaceData(const maths::Vector &hitPoint) const {
+        const auto edge1 = _v1 - _center;
+        const auto edge2 = _v2 - _center;
+        const auto normal = edge1.cross(edge2).normalized();
+        const double u = (hitPoint - _center).dot(edge1) / edge1.dot(edge1);
+        const double v = (hitPoint - _center).dot(edge2) / edge2.dot(edge2);
+
+        SurfaceData data{
+            .normal = normal, .uv = maths::Vector(u, v, 0), .material = {}};
+        if (this->_material) {
+            data.material = this->_material->evaluate(data, hitPoint);
+        }
+        return data;
     }
 }  // namespace raytracer::object::primitive
