@@ -19,14 +19,14 @@
 
 namespace raytracer {
 
-    static void writeColor(maths::Color color) {
+    static void writeColor(const maths::Color color) {
         std::cout << static_cast<int>(color.r) << " "
                   << static_cast<int>(color.g) << " "
                   << static_cast<int>(color.b) << "\n";
     }
 
     void Render::computeStratifiedSample(unsigned short *Xi, double &dx,
-                                         double &dy) const {
+                                         double &dy) {
         double r1 = 2 * ::erand48(Xi);
         dx = r1 < 1 ? std::sqrt(r1) - 1 : 1 - std::sqrt(2 - r1);
         double r2 = 2 * ::erand48(Xi);
@@ -35,7 +35,7 @@ namespace raytracer {
 
     maths::Ray Render::castPrimaryRay(const Render::RenderState &st, int x,
                                       int y, int sx, int sy, double dx,
-                                      double dy) const {
+                                      double dy) {
         double px = ((sx + 0.5 + dx) / 2.0 + x) * st.invImageWidth - 0.5;
         double py = ((sy + 0.5 + dy) / 2.0 + y) * st.invImageHeight - 0.5;
         maths::Vector d = st.cx * px + st.cy * py + st.cam->rotation();
@@ -213,7 +213,7 @@ namespace raytracer {
 
         for (int y = yStart; y < yEnd; ++y) {
             unsigned short Xi[3] = {
-                0, 0, (unsigned short)((y + 1) * (y + 1) * (y + 1))};
+                0, 0, static_cast<unsigned short>((y + 1) * (y + 1) * (y + 1))};
             st.Xi = Xi;
             for (int x = 0; x < imageWidth; ++x) {
                 const int idx = (imageHeight - y - 1) * imageWidth + x;

@@ -29,8 +29,6 @@ namespace raytracer {
         Render() = default;
         ~Render() = default;
 
-        std::thread printProgress(int activeWorkers, int imageHeight);
-
         /// @brief Render the scene and populate the internal pixel buffer.
         /// @param scene The scene to render.
         /// @param pixel Pixel parameter (unused).
@@ -47,6 +45,7 @@ namespace raytracer {
 
       protected:
       private:
+        std::thread printProgress(int activeWorkers, int imageHeight);
         void renderRows(const object::scene::IScene &scene,
                         unsigned int workerId, int yStart, int yEnd);
 
@@ -64,20 +63,20 @@ namespace raytracer {
         static constexpr double kCxFactor = 0.5135;
 
         /// @brief Compute stratified jitter offsets for a sample.
-        void computeStratifiedSample(unsigned short *Xi, double &dx,
-                                     double &dy) const;
+        static void computeStratifiedSample(unsigned short *Xi, double &dx,
+                                            double &dy);
 
         /// @brief Cast a primary ray for a pixel and subpixel.
-        maths::Ray castPrimaryRay(const RenderState &st, int x, int y, int sx,
-                                  int sy, double dx, double dy) const;
+        static maths::Ray castPrimaryRay(const RenderState &st, int x, int y,
+                                         int sx, int sy, double dx, double dy);
 
         /// @brief Sample a subpixel and accumulate radiance.
         maths::Vector sampleSubpixel(const RenderState &st, int x, int y,
-                                     int sx, int sy) const;
+                                            int sx, int sy) const;
 
         /// @brief Compute final pixel color from all subpixels.
         maths::Color computePixelColor(const RenderState &st, int x,
-                                       int y) const;
+                                              int y) const;
 
         void initRender(const object::scene::IScene &scene, int samples,
                         int &imageWidth, int &imageHeight,
