@@ -7,9 +7,10 @@
 
 #include "Render.hpp"
 
+#include <stdlib.h>
+
 #include <chrono>
 #include <iostream>
-#include <stdlib.h>
 
 #include "math/Color.hpp"
 #include "math/Ray.hpp"

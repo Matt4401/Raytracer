@@ -15,16 +15,17 @@ namespace raytracer::object::camera {
         ICamera() = default;
         virtual ~ICamera() = default;
 
-        virtual void setViewport(double fieldOfView, double aspectRatio) = 0;
-        virtual maths::Ray ray(double u, double v) const = 0;
+        virtual void setViewport(const double fieldOfView,
+                                 const double aspectRatio) = 0;
+        virtual maths::Ray ray(const double u, const double v) const = 0;
 
-        virtual void setImageWidth(int width) = 0;
-        virtual void setImageHeight(int height) = 0;
+        virtual void setImageWidth(const int width) = 0;
+        virtual void setImageHeight(const int height) = 0;
 
         virtual void setPosition(const maths::Vector &position) = 0;
         virtual void setRotation(const maths::Vector &rotation) = 0;
-        virtual void setFOV(double fov) = 0;
-        virtual void setAspectRatio(double aspectRatio) = 0;
+        virtual void setFOV(const double fov) = 0;
+        virtual void setAspectRatio(const double aspectRatio) = 0;
 
         virtual int imageWidth() const = 0;
         virtual int imageHeight() const = 0;

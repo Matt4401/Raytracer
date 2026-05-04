@@ -18,33 +18,34 @@
 namespace raytracer::object::camera {
     class ACamera : public ICamera, public AObject {
       public:
-        ACamera(maths::Vector origin, maths::Vector rotation,
-                double fov = std::numbers::pi / 2,
-                double aspectRatio = 16.0 / 9.0)
+        ACamera(const maths::Vector origin, const maths::Vector rotation,
+                const double fov = std::numbers::pi / 2,
+                const double aspectRatio = 16.0 / 9.0)
             : AObject(object::AObject::Type::CAMERA),
               _fov(fov),
               _aspectRatio(aspectRatio),
               _position(origin),
               _rotation(rotation),
-              _imageWidth(800),
-              _imageHeight(600) {};
+              _imageWidth(kImageWidth),
+              _imageHeight(kImageHeight) {};
         ACamera()
             : AObject(object::AObject::Type::CAMERA),
               _fov(std::numbers::pi / 2),
               _aspectRatio(16.0 / 9.0),
               _position(),
               _rotation(),
-              _imageWidth(800),
-              _imageHeight(600) {};
-        ~ACamera() = default;
-        virtual maths::Ray ray(double u, double v) const override = 0;
-        virtual void setViewport(double fieldOfView,
-                                 double aspectRatio) override = 0;
+              _imageWidth(kImageWidth),
+              _imageHeight(kImageHeight) {};
+        ~ACamera() override = default;
+        virtual maths::Ray ray(const double u,
+                               const double v) const override = 0;
+        virtual void setViewport(const double fieldOfView,
+                                 const double aspectRatio) override = 0;
 
-        void setImageWidth(int width) override {
+        void setImageWidth(const int width) override {
             _imageWidth = width;
         }
-        void setImageHeight(int height) override {
+        void setImageHeight(const int height) override {
             _imageHeight = height;
         }
         void setPosition(const maths::Vector &position) override {
@@ -53,10 +54,10 @@ namespace raytracer::object::camera {
         void setRotation(const maths::Vector &rotation) override {
             _rotation = rotation;
         }
-        void setFOV(double fov) override {
+        void setFOV(const double fov) override {
             _fov = fov;
         }
-        void setAspectRatio(double aspectRatio) override {
+        void setAspectRatio(const double aspectRatio) override {
             _aspectRatio = aspectRatio;
         }
 
@@ -80,12 +81,14 @@ namespace raytracer::object::camera {
         }
 
       protected:
+        static constexpr std::size_t kImageWidth = 800;
+        static constexpr std::size_t kImageHeight = 600;
         double _fov = std::numbers::pi / 2;
         double _aspectRatio = 16.0 / 9.0;
         maths::Vector _position;
         maths::Vector _rotation;
-        int _imageWidth = 800;
-        int _imageHeight = 600;
+        int _imageWidth = kImageWidth;
+        int _imageHeight = kImageHeight;
 
       private:
     };
