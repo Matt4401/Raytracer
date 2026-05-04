@@ -68,11 +68,7 @@ namespace raytracer::object::scene {
         auto it = _addObjectHandlers.find(object->type());
         if (it != _addObjectHandlers.end()) {
             try {
-                auto objRef = std::dynamic_pointer_cast<IObject>(object);
-                if (!objRef) {
-                    throw std::bad_cast();
-                }
-                it->second(objRef);
+                it->second(object);
             } catch (const std::bad_cast &) {
                 throw exception::PluginException(
                     "Object type does not match expected type for handler");
