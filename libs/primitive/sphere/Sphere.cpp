@@ -9,37 +9,36 @@
 
 #include <any>
 #include <cmath>
-#include <vector>
+#include <map>
+#include <memory>
+#include <string>
 
-#include "math/Color.hpp"
 #include "math/Vector.hpp"
 #include "object/primitive/APrimitive.hpp"
-#include "object/primitive/ReflTypes.hpp"
-#include "util/ObjectMiddleware.hpp"
+#include "util/middleware/Helpers.hpp"
+#include "util/middleware/ObjectMiddleware.hpp"
 
 namespace raytracer::object::primitive {
-    Sphere::Sphere(const std::vector<std::any> &args)
-        : APrimitive("Sphere",
-                     util::ObjectMiddleware::validate<maths::Vector>(
-                         args, 0, "Sphere", EXPECTED_ARGS),
-                     util::ObjectMiddleware::validate<maths::Vector>(
-                         args, 1, "Sphere", EXPECTED_ARGS),
-                     util::ObjectMiddleware::validate<maths::Color>(
-                         args, 2, "Sphere", EXPECTED_ARGS),
-                     util::ObjectMiddleware::validate<RefltT>(args, 4, "Sphere",
-                                                              EXPECTED_ARGS)),
-          _radius(util::ObjectMiddleware::validate<double>(args, 3, "Sphere",
-                                                           EXPECTED_ARGS)) {
-        util::ObjectMiddleware::unsignedDouble(_radius, "radius", "Sphere");
-        util::ObjectMiddleware::color(_color, "Sphere");
+    Sphere::Sphere(const std::map<std::string, std::any> &params)
+        : APrimitive(
+              "Sphere", util::Helpers::toVector(params, "center", "Sphere"),
+              util::ObjectMiddleware::validate<
+                  std::shared_ptr<raytracer::object::material::IMaterial>>(
+                  params, "material", "Sphere")),
+          _radius(
+              util::ObjectMiddleware::validate<double>(params, "r", "Sphere")) {
+        util::Helpers::unsignedDouble(_radius, "r", "Sphere");
     }
 
-    Sphere::Sphere(const maths::Vector &vector, const maths::Vector &emission,
-                   const maths::Color &color, const double radius,
-                   const RefltT refl)
-        : APrimitive("Sphere", vector, emission, color, refl), _radius(radius) {
-        util::ObjectMiddleware::unsignedDouble(_radius, "radius", "Sphere");
-        util::ObjectMiddleware::color(_color, "Sphere");
+    Sphere::Sphere(const maths::Vector &vector, const double radius)
+        : Sphere(nullptr, vector, radius) {
+    }
+
+    Sphere::Sphere(
+        std::shared_ptr<raytracer::object::material::IMaterial> material,
+        const maths::Vector &vector, const double radius)
+        : APrimitive("Sphere", vector, std::move(material)), _radius(radius) {
+        util::Helpers::unsignedDouble(_radius, "radius", "Sphere");
     }
 
     const double &Sphere::radius() const noexcept {
@@ -51,7 +50,7 @@ namespace raytracer::object::primitive {
         const double b = op.dot(ray.direction);
         const double a = ray.direction.dot(ray.direction);
         const double c = op.dot(op) - _radius * _radius;
-        double det = b * b - 4 * a * c;
+        const double det = b * b - 4 * a * c;
         if (det < 0) {
             return 0;
         }
@@ -77,5 +76,22 @@ namespace raytracer::object::primitive {
             .h = 2 * _radius,
             .d = 2 * _radius,
         };
+    }
+
+    SurfaceData Sphere::surfaceData(const maths::Vector &hitPoint) const {
+        maths::Vector normal = (hitPoint - _center).normalized();
+
+        double u = 0.5 + std::atan2(normal.z, normal.x) / (2 * M_PI);
+        double v = 0.5 - std::asin(normal.y) / M_PI;
+
+        SurfaceData data{.normal = normal,
+                         .uv = maths::Vector(u, v, 0),
+                         .material = {}};
+
+        if (this->_material) {
+            data.material = this->_material->evaluate(data, hitPoint);
+        }
+
+        return data;
     }
 }  // namespace raytracer::object::primitive

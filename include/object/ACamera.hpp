@@ -5,13 +5,12 @@
 ** ACamera
 */
 
-#ifndef ACAMERA_HPP_
-#define ACAMERA_HPP_
+#pragma once
 
 #include <numbers>
 
-#include "Ray.hpp"
-#include "Vector.hpp"
+#include "math/Ray.hpp"
+#include "math/Vector.hpp"
 
 namespace raytracer::object::camera {
     class ACamera {
@@ -60,5 +59,3 @@ namespace raytracer::object::camera {
       private:
     };
 }  // namespace raytracer::object::camera
-
-#endif /* !ACAMERA_HPP_ */

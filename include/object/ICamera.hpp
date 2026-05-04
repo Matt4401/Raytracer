@@ -5,10 +5,9 @@
 ** ICamera
 */
 
-#ifndef ICAMERA_HPP_
-#define ICAMERA_HPP_
+#pragma once
 
-#include "Ray.hpp"
+#include "math/Ray.hpp"
 
 namespace raytracer::object::camera {
     class ICamera {
@@ -30,5 +29,3 @@ namespace raytracer::object::camera {
       private:
     };
 }  // namespace raytracer::object::camera
-
-#endif /* !ICAMERA_HPP_ */

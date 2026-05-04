@@ -15,16 +15,4 @@ namespace raytracer::object::primitive {
     maths::Vector APrimitive::center() const noexcept {
         return _center;
     }
-
-    maths::Vector APrimitive::emission() const noexcept {
-        return _emission;
-    }
-
-    maths::Color APrimitive::color() const noexcept {
-        return _color;
-    }
-
-    RefltT APrimitive::refl() const noexcept {
-        return _refl;
-    }
 }  // namespace raytracer::object::primitive

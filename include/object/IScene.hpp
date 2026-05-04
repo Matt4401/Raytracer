@@ -5,8 +5,9 @@
 ** IScene
 */
 
-#ifndef ISCENE_HPP_
-#define ISCENE_HPP_
+#pragma once
+
+#include "math/Ray.hpp"
 
 namespace raytracer::object::scene {
     class IScene {
@@ -14,8 +15,10 @@ namespace raytracer::object::scene {
         IScene() = default;
         ~IScene() = default;
 
+        virtual bool intersect(const maths::Ray &ray, double &t,
+                               int &objectId) const = 0;
+
       protected:
       private:
     };
 }  // namespace raytracer::object::scene
-#endif /* !ISCENE_HPP_ */

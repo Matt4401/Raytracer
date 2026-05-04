@@ -5,8 +5,7 @@
 ** Color
 */
 
-#ifndef COLOR_HPP_
-#define COLOR_HPP_
+#pragma once
 
 #include "Vector.hpp"
 
@@ -50,5 +49,3 @@ namespace raytracer::maths {
       private:
     };
 }  // namespace raytracer::maths
-
-#endif /* !COLOR_HPP_ */

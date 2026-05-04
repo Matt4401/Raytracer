@@ -37,11 +37,13 @@ set(SRCS
         src/exception/Exception.cpp
         src/math/Color.cpp
         src/math/Vector.cpp
+        src/math/Rectangle.cpp
         src/object/primitive/APrimitive.cpp
-        src/util/ObjectMiddleware.cpp
+        src/util/middleware/Helpers.cpp
         src/plugin/PluginManager.cpp
         src/plugin/ObjectFactory.cpp
         src/parser/ConfigParser.cpp
+        src/object/light/ALight.cpp
 )
 
 set(HEADERS
@@ -71,6 +73,7 @@ set(HEADERS
 
 add_library(raytracer_core STATIC ${SRCS})
 set_target_properties(raytracer_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
 target_include_directories(raytracer_core PUBLIC
         ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_SOURCE_DIR}/src

@@ -41,6 +41,7 @@ if (NOT SKIP_INTERNET)
     target_link_libraries(exception_tests PRIVATE
             GTest::gtest
             GTest::gmock
+            raytracer_core
     )
 
     target_include_directories(exception_tests PRIVATE
@@ -55,8 +56,36 @@ if (NOT SKIP_INTERNET)
     )
 
     gtest_discover_tests(exception_tests)
+
+    add_executable(material_tests
+            src/main.cpp
+            src/materials/test_flatcolor.cpp
+            ${CMAKE_SOURCE_DIR}/src/plugin/ObjectFactory.cpp
+            ${CMAKE_SOURCE_DIR}/src/plugin/PluginManager.cpp
+    )
+
+    target_link_libraries(material_tests PRIVATE
+            GTest::gtest
+            GTest::gmock
+            raytracer_core
+    )
+
+    target_include_directories(material_tests PRIVATE
+            ${CMAKE_SOURCE_DIR}/include
+            ${CMAKE_SOURCE_DIR}/src
+    )
+
+    target_compile_definitions(material_tests
+            PRIVATE
+            FIXTURES_PATH="${FIXTURES_DIR}"
+            TEST_PLUGINS_PATH="${TEST_PLUGINS_DIR}"
+            PROJECT_PLUGINS_PATH="${CMAKE_SOURCE_DIR}/plugins/"
+    )
+
+    gtest_discover_tests(material_tests)
 else ()
     message(WARNING "GoogleTest not available. Unit tests will not be built.")
 endif ()
+
 
 add_subdirectory(libs)

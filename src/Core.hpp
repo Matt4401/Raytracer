@@ -5,8 +5,7 @@
 ** Core
 */
 
-#ifndef CORE_HPP_
-#define CORE_HPP_
+#pragma once
 
 #include <filesystem>
 
@@ -41,5 +40,3 @@ namespace raytracer {
         static constexpr std::string_view PLUGINS_FOLDER_PATH = "./plugins/";
     };
 }  // namespace raytracer
-
-#endif /* !CORE_HPP_ */

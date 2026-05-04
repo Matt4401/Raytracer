@@ -9,12 +9,7 @@
 
 namespace raytracer::maths {
 
-    Vector &Vector::operator=(const Vector &other) {
-        this->x = other.x;
-        this->y = other.y;
-        this->z = other.z;
-        return *this;
-    }
+    Vector &Vector::operator=(const Vector &other) = default;
     Vector Vector::operator+(const double &scalar) const {
         return Vector(this->x + scalar, this->y + scalar, this->z + scalar);
     }
