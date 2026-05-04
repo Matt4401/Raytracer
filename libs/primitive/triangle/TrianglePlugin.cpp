@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** RayTracer
 ** File description:
-** SpherePlugin
+** TrianglePlugin
 */
 
 #include <any>
@@ -17,7 +17,7 @@ extern "C" raytracer::object::AObject::Type type(void) {
 }
 
 extern "C" const char *name(void) {
-    return "traingle";
+    return "triangle";
 }
 
 extern "C" raytracer::object::BuilderFunc builder(void) {

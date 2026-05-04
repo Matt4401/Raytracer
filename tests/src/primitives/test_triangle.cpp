@@ -66,7 +66,7 @@ namespace {
                                              {"z", v2.z}}},
         };
 
-        auto obj = factory.build("traingle", args);
+        auto obj = factory.build("triangle", args);
         EXPECT_NE(obj, nullptr);
         return std::dynamic_pointer_cast<
             raytracer::object::primitive::IPrimitive>(obj);
