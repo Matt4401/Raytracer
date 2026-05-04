@@ -106,8 +106,15 @@ namespace raytracer::object::primitive {
         const auto edge1 = _v1 - _center;
         const auto edge2 = _v2 - _center;
         const auto normal = edge1.cross(edge2).normalized();
-        const double u = (hitPoint - _center).dot(edge1) / edge1.dot(edge1);
-        const double v = (hitPoint - _center).dot(edge2) / edge2.dot(edge2);
+        const auto hitVector = hitPoint - _center;
+        const double d00 = edge1.dot(edge1);
+        const double d01 = edge1.dot(edge2);
+        const double d11 = edge2.dot(edge2);
+        const double d20 = hitVector.dot(edge1);
+        const double d21 = hitVector.dot(edge2);
+        const double denom = d00 * d11 - d01 * d01;
+        const double u = (d20 * d11 - d21 * d01) / denom;
+        const double v = (d21 * d00 - d20 * d01) / denom;
 
         SurfaceData data{
             .normal = normal, .uv = maths::Vector(u, v, 0), .material = {}};
