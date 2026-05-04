@@ -32,7 +32,7 @@ namespace raytracer::object::scene {
                        int &objectId) const override;
         maths::Vector radiance(const maths::Ray &ray, int depth,
                                unsigned short *Xi,
-                               const int emissive = 1) override;
+                               int emissive = 1) const override;
 
       private:
         /// @brief build an orthonormal basis (u, v, w) given a normal vector w.
@@ -45,8 +45,8 @@ namespace raytracer::object::scene {
         /// w.
         /// @param v the second vector of the orthonormal basis, perpendicular
         /// to both w and u.
-        static void buildONB(const maths::Vector &w, maths::Vector &u,
-                             maths::Vector &v);
+        void buildONB(const maths::Vector &w, maths::Vector &u,
+                      maths::Vector &v) const;
         /// @brief generate a random direction in the hemisphere around the
         /// normal vector nl, with a cosine-weighted distribution. This is used
         /// for diffuse reflection to simulate the way light scatters off rough
@@ -60,16 +60,16 @@ namespace raytracer::object::scene {
         /// @return a random direction vector in the hemisphere around nl, with
         /// a cosine-weighted distribution.
         maths::Vector randomCosineDir(const maths::Vector &nl,
-                                      unsigned short *Xi);
+                                      unsigned short *Xi) const;
         maths::Vector radianceDiffuse(const maths::Ray &ray,
                                       const primitive::IPrimitive &obj,
-                                      const RadianceContext &ctx);
+                                      const RadianceContext &ctx) const;
         maths::Vector radianceSpecular(const maths::Ray &ray,
                                        const primitive::IPrimitive &obj,
-                                       const RadianceContext &ctx);
+                                       const RadianceContext &ctx) const;
         maths::Vector radianceRefractive(const maths::Ray &ray,
                                          const primitive::IPrimitive &obj,
-                                         const RadianceContext &ctx);
+                                         const RadianceContext &ctx) const;
     };
 }  // namespace raytracer::object::scene
 

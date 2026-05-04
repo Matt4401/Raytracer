@@ -34,35 +34,45 @@ namespace raytracer::object::scene {
                                       "ambientDiffuseIntensity", "Scene");
     }
 
-    void AScene::addPrimitive(std::shared_ptr<object::IObject> primitive) {
-        auto primitiveObj =
+    void AScene::addPrimitive(const std::shared_ptr<IObject> &primitive) {
+        auto primPtr =
             std::dynamic_pointer_cast<primitive::IPrimitive>(primitive);
-        if (!primitiveObj) {
-            throw exception::PluginException("Failed to cast primitive object");
+        if (!primPtr) {
+            throw exception::PluginException(
+                "Invalid primitive object added to scene");
         }
-        _primitives.push_back(primitiveObj);
+        _primitives.push_back(primPtr);
     }
 
-    void AScene::addLight(std::shared_ptr<object::IObject> light) {
-        auto lightObj = std::dynamic_pointer_cast<light::ILight>(light);
-        if (!lightObj) {
+    void AScene::addLight(const std::shared_ptr<IObject> &light) {
+        auto lightPtr = std::dynamic_pointer_cast<light::ILight>(light);
+        if (!lightPtr) {
             throw exception::PluginException("Failed to cast light object");
         }
-        _lights.push_back(lightObj);
+        _lights.push_back(lightPtr);
     }
 
-    void AScene::addCamera(std::shared_ptr<object::IObject> camera) {
-        auto cameraObj = std::dynamic_pointer_cast<camera::ICamera>(camera);
-        if (!cameraObj) {
-            throw exception::PluginException("Failed to cast camera object");
+    void AScene::addCamera(const std::shared_ptr<IObject> &camera) {
+        auto camPtr = std::dynamic_pointer_cast<camera::ICamera>(camera);
+        if (!camPtr) {
+            throw exception::PluginException(
+                "Invalid camera object added to scene");
         }
-        _cameras.push_back(cameraObj);
+        _cameras.push_back(camPtr);
     }
 
-    void AScene::addObject(std::shared_ptr<object::IObject> object) {
+    void AScene::addObject(std::shared_ptr<IObject> object) {
+        if (!object) {
+            throw exception::PluginException("Null object added to scene");
+        }
         auto it = _addObjectHandlers.find(object->type());
         if (it != _addObjectHandlers.end()) {
-            it->second(object);
+            try {
+                it->second(object);
+            } catch (const std::bad_cast &) {
+                throw exception::PluginException(
+                    "Object type does not match expected type for handler");
+            }
         } else {
             throw exception::PluginException(
                 "Unsupported object type added to scene");
@@ -91,6 +101,20 @@ namespace raytracer::object::scene {
 
     AmbientDiffuse AScene::ambientDiffuse() const {
         return _ambientDiffuse;
+    }
+
+    const std::vector<std::shared_ptr<primitive::IPrimitive>> &
+    AScene::primitives() const {
+        return _primitives;
+    }
+
+    const std::vector<std::shared_ptr<light::ILight>> &AScene::lights() const {
+        return _lights;
+    }
+
+    const std::vector<std::shared_ptr<camera::ICamera>> &AScene::cameras()
+        const {
+        return _cameras;
     }
 
 }  // namespace raytracer::object::scene
