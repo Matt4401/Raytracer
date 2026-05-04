@@ -52,24 +52,24 @@ namespace raytracer::object::primitive {
         const maths::Vector rayCrossE2 = ray.direction.cross(edge2);
         const double det = edge1.dot(rayCrossE2);
 
-        if (std::abs(det) < EPS) {
+        if (std::abs(det) < kRayEpsilon) {
             return -1;  // Ray is parallel to triangle
         }
 
         const double invDet = 1.0 / det;
         const maths::Vector s = ray.origin - _center;
         const double u = s.dot(rayCrossE2) * invDet;
-        if (u < -EPS || u - 1 > EPS) {
+        if (u < -kRayEpsilon || u - 1 > kRayEpsilon) {
             return -1;  // Ray pass outside edge2 bounds
         }
 
         const maths::Vector sCrossE1 = s.cross(edge1);
         if (const double v = ray.direction.dot(sCrossE1) * invDet;
-            v < -EPS || u + v - 1 > EPS) {
+            v < -kRayEpsilon || u + v - 1 > kRayEpsilon) {
             return -1;  // Ray pass outside edge1 bounds
         }
 
-        if (const double t = edge2.dot(sCrossE1) * invDet; t < EPS) {
+        if (const double t = edge2.dot(sCrossE1) * invDet; t < kRayEpsilon) {
             return -1;  // Ray intersection behind the origin
         } else {
             return t;

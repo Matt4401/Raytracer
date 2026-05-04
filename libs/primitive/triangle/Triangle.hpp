@@ -41,6 +41,5 @@ namespace raytracer::object::primitive {
         maths::Vector _v2;
 
         static constexpr std::size_t EXPECTED_ARGS = 4;
-        static constexpr double EPS = kRayEpsilon;
     };
 }  // namespace raytracer::object::primitive
