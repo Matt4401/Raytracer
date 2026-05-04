@@ -42,7 +42,8 @@ namespace raytracer::object::camera {
 
         _imageWidth = width;
         _imageHeight = height;
-        setViewport(fieldOfViewRadians, width / height);
+        setViewport(fieldOfViewRadians, static_cast<double>(width) /
+                           static_cast<double>(height));
     }
 
     Camera::Camera(const maths::Vector &position, const maths::Vector &rotation,
