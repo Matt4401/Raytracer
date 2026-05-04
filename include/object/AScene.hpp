@@ -61,6 +61,7 @@ namespace raytracer::object::scene {
         static constexpr double kColorScale = 1.0 / 255.0;
         static constexpr double kOnbAxisThreshold = 0.1;
         static constexpr double kDefaultIor = 1.5;
+        static constexpr double kDielectricF0 = 0.04;
         static constexpr double kProbabilityNormalizationThreshold = 1e-12;
 
         std::vector<std::shared_ptr<primitive::IPrimitive>> _primitives;

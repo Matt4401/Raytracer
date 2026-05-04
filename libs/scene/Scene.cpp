@@ -203,7 +203,9 @@ namespace raytracer::object::scene {
         }
 
         const maths::Vector baseF0 =
-            maths::Vector(0.04, 0.04, 0.04) * (1.0 - metalness) + f * metalness;
+            maths::Vector(kDielectricF0, kDielectricF0, kDielectricF0) *
+                (1.0 - metalness) +
+            f * metalness;
         const double cosTheta =
             std::clamp(-(ray.direction.dot(ctx.nl)), 0.0, 1.0);
         const double oneMinusCos5 = std::pow(1.0 - cosTheta, 5.0);
