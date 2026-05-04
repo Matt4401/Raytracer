@@ -116,7 +116,7 @@ namespace raytracer::object::scene {
         /* Emmissive spheres (NEE)
         TODO: Implement NEE for primitives
         for (const auto &p : _primitives) {
-             
+
             if (p->emission().magnitude() > 0) {
                 direct += p->computeNEE(scene, x, nl, f);
             }

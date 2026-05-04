@@ -45,19 +45,19 @@ namespace raytracer {
         sceneParams["aoSamples"] = 0;  // Example: 16 samples for ambient
                                        // occlusion 0 for no ambient occlusion
         sceneParams["aoRadius"] =
-            0.0;  // Example: radius of 1.0 for ambient occlusion effect, 0 for
-                  // no ambient occlusion
+            0.0;  // Example: radius of 1.0 for ambient occlusion effect, 0
+                  // for no ambient occlusion
         sceneParams["ambientLightColor"] = color(
             0, 0, 0);  // Example: white ambient light, 0 for no ambient light
         sceneParams["ambientLightIntensity"] =
-            0.0;  // Example: low intensity for ambient light, 0 for no ambient
-                  // light
+            0.0;  // Example: low intensity for ambient light, 0
+                  // for no ambient light
         sceneParams["ambientDiffuseColor"] =
             color(0, 0, 0);  // Example: white ambient diffuse light, 0
                              // for no ambient diffuse light
         sceneParams["ambientDiffuseIntensity"] =
-            0.0;  // Example: low intensity for ambient diffuse light, 0 for no
-                  // ambient diffuse light
+            0.0;  // Example: low intensity for ambient diffuse
+                  // light, 0 for no ambient diffuse light
         auto scene = this->_objFactory.build("scene", sceneParams);
 
         // CAMERA
