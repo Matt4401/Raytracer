@@ -100,6 +100,7 @@ if (NOT SKIP_INTERNET)
     )
 
     target_include_directories(primitive_tests PRIVATE
+            ${CMAKE_SOURCE_DIR}
             ${CMAKE_SOURCE_DIR}/include
             ${CMAKE_SOURCE_DIR}/src
     )
