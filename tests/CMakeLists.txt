@@ -83,6 +83,26 @@ if (NOT SKIP_INTERNET)
     )
 
     gtest_discover_tests(material_tests)
+
+    add_executable(primitive_tests
+            src/main.cpp
+            src/primitives/test_plane.cpp
+            ${CMAKE_SOURCE_DIR}/libs/primitive/plane/Plane.cpp
+    )
+
+    target_link_libraries(primitive_tests PRIVATE
+            GTest::gtest
+            GTest::gmock
+            raytracer_core
+    )
+
+    target_include_directories(primitive_tests PRIVATE
+            ${CMAKE_SOURCE_DIR}
+            ${CMAKE_SOURCE_DIR}/include
+            ${CMAKE_SOURCE_DIR}/src
+    )
+
+    gtest_discover_tests(primitive_tests)
 else ()
     message(WARNING "GoogleTest not available. Unit tests will not be built.")
 endif ()
