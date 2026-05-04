@@ -18,7 +18,7 @@ namespace raytracer::object::primitive {
     Plane::Plane(const std::map<std::string, std::any> &args)
         : APrimitive("Plane", util::Helpers::toVector(args, "center", "Plane"),
                      util::ObjectMiddleware::validate<
-                         std::shared_ptr<material::IMaterial>>(args, "material",
+                         std::shared_ptr<raytracer::object::material::IMaterial>>(args, "material",
                                                                "Plane")),
           _normal(util::Helpers::toVector(args, "normal", "Plane")) {
         _normal = util::Helpers::normalVector(_normal);
@@ -28,7 +28,7 @@ namespace raytracer::object::primitive {
         : Plane(nullptr, vector, normal) {
     }
 
-    Plane::Plane(std::shared_ptr<material::IMaterial> material,
+    Plane::Plane(std::shared_ptr<raytracer::object::material::IMaterial> material,
                  const maths::Vector &vector, const maths::Vector &normal)
         : APrimitive("Plane", vector, std::move(material)), _normal(normal) {
         _normal = util::Helpers::normalVector(_normal);

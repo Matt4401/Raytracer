@@ -35,11 +35,11 @@ namespace raytracer::util {
     }
 
     maths::Vector Helpers::normalVector(maths::Vector &normal) {
-        normal.normalize();
         if (normal == maths::Vector(0, 0, 0)) {
             throw exception::PluginException{
                 "Normal vector cannot be the zero"};
         }
+        normal.normalize();
         return normal;
     }
 
