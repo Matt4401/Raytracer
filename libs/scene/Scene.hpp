@@ -44,7 +44,7 @@ namespace raytracer::object::scene {
         /// w.
         /// @param v the second vector of the orthonormal basis, perpendicular
         /// to both w and u.
-        void buildONB(const maths::Vector &w, maths::Vector &u,
+        static void buildONB(const maths::Vector &w, maths::Vector &u,
                       maths::Vector &v);
         /// @brief generate a random direction in the hemisphere around the
         /// normal vector nl, with a cosine-weighted distribution. This is used
