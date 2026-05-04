@@ -86,6 +86,8 @@ if (NOT SKIP_INTERNET)
 
     add_executable(primitive_tests
             src/main.cpp
+            src/primitives/test_plane.cpp
+            ${CMAKE_SOURCE_DIR}/libs/primitive/plane/Plane.cpp
             src/primitives/test_triangle.cpp
             ${CMAKE_SOURCE_DIR}/src/plugin/ObjectFactory.cpp
             ${CMAKE_SOURCE_DIR}/src/plugin/PluginManager.cpp
@@ -98,6 +100,7 @@ if (NOT SKIP_INTERNET)
     )
 
     target_include_directories(primitive_tests PRIVATE
+            ${CMAKE_SOURCE_DIR}
             ${CMAKE_SOURCE_DIR}/include
             ${CMAKE_SOURCE_DIR}/src
     )
