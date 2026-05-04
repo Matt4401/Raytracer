@@ -19,6 +19,8 @@ namespace raytracer::object {
         };
 
       protected:
+        static constexpr double kRayEpsilon = 1e-4;
+
         Type _type;
     };
 }  // namespace raytracer::object

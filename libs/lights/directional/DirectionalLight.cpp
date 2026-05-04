@@ -24,10 +24,10 @@ namespace raytracer::object::light {
         _direction.normalize();
     }
 
-    maths::Vector DirectionalLight::computeNEE(const scene::IScene &scene,
-                                               const maths::Vector &x,
-                                               const maths::Vector &nl,
-                                               const maths::Vector &f) const {
+    maths::Vector DirectionalLight::computeNEE(
+        const scene::IScene &scene, const maths::Vector &x,
+        const maths::Vector &nl,
+        const primitive::MaterialProperties &material) const {
         double cosTheta = nl.dot(_direction);
         if (cosTheta <= 0)
             return maths::Vector(0, 0, 0);
@@ -37,7 +37,8 @@ namespace raytracer::object::light {
         int sId;
         bool occluded = scene.intersect(shadowRay, sT, sId);
         if (!occluded) {
-            return _color.toVector() * _intensity * f * cosTheta;
+            return _color.toVector() * _intensity *
+                   materialDiffuseResponse(material) * cosTheta;
         }
         return maths::Vector(0, 0, 0);
     }

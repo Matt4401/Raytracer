@@ -20,10 +20,10 @@ namespace raytracer::object::light {
         _exponent = exponent;
     }
 
-    maths::Vector SpotLight::computeNEE(const scene::IScene &scene,
-                                        const maths::Vector &x,
-                                        const maths::Vector &nl,
-                                        const maths::Vector &f) const {
+    maths::Vector SpotLight::computeNEE(
+        const scene::IScene &scene, const maths::Vector &x,
+        const maths::Vector &nl,
+        const primitive::MaterialProperties &material) const {
         maths::Vector toL(_position.x - x.x, _position.y - x.y,
                           _position.z - x.z);
         double dist = toL.magnitude();
@@ -43,7 +43,8 @@ namespace raytracer::object::light {
             double spotEffect =
                 std::pow(std::max(0.0, ldir.dot(_direction * -1.0)), _exponent);
             double att = spotEffect / (dist * dist);
-            return _color.toVector() * _intensity * f * cosTheta * att;
+            return _color.toVector() * _intensity *
+                   materialDiffuseResponse(material) * cosTheta * att;
         }
         return maths::Vector(0, 0, 0);
     }

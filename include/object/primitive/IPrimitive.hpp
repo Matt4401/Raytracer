@@ -86,6 +86,9 @@ namespace raytracer::object::primitive {
          * primitive itself.
          */
         virtual BoundingBox boundingBox() = 0;
+
+        virtual const std::string &name() const noexcept = 0;
+        virtual maths::Vector center() const noexcept = 0;
     };
 
 }  // namespace raytracer::object::primitive

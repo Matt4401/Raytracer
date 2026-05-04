@@ -10,6 +10,7 @@
 #include "IScene.hpp"
 #include "math/Color.hpp"
 #include "math/Vector.hpp"
+#include "object/primitive/IPrimitive.hpp"
 
 namespace raytracer::object::light {
 
@@ -17,10 +18,10 @@ namespace raytracer::object::light {
       public:
         virtual ~ILight() = default;
 
-        virtual maths::Vector computeNEE(const scene::IScene &scene,
-                                         const maths::Vector &x,
-                                         const maths::Vector &nl,
-                                         const maths::Vector &f) const = 0;
+        virtual maths::Vector computeNEE(
+            const scene::IScene &scene, const maths::Vector &x,
+            const maths::Vector &nl,
+            const primitive::MaterialProperties &material) const = 0;
         virtual void setPosition(const maths::Vector &position) = 0;
         virtual void setColor(const maths::Color &color) = 0;
         virtual void setIntensity(const double intensity) = 0;
