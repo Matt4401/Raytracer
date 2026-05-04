@@ -138,7 +138,7 @@ namespace raytracer::object::scene {
         // Ambient light
         maths::Vector ambientContrib(0, 0, 0);
         if (emissive) {
-            ambientContrib = _ambientLight.color.toVector() * diffuseF;
+            ambientContrib = _ambientLight.color.toVector() * f;
         }
 
         // Ambient Occlusion
@@ -170,8 +170,7 @@ namespace raytracer::object::scene {
 
         maths::Vector d = randomCosineDir(nl, Xi);
         return surfData.material.emission * emissive + direct + ambientContrib +
-               diffuseContrib +
-               diffuseF * radiance(maths::Ray(x, d), depth, Xi, 0);
+               diffuseContrib + f * radiance(maths::Ray(x, d), depth, Xi, 0);
     }
 
     maths::Vector Scene::radianceSpecular(const maths::Ray &ray,
@@ -220,6 +219,7 @@ namespace raytracer::object::scene {
                                             const RadianceContext &ctx) const {
         const maths::Vector &x = ctx.x;
         const maths::Vector &n = ctx.n;
+        const maths::Vector &nl = ctx.nl;
         const maths::Vector &f = ctx.f;
         primitive::SurfaceData surfData = obj.surfaceData(x);
 
@@ -227,7 +227,7 @@ namespace raytracer::object::scene {
         unsigned short *Xi = ctx.Xi;
         int emissive = ctx.emissive;
         maths::Ray reflRay(x, ray.direction - n * 2 * n.dot(ray.direction));
-        bool into = n.dot(n * 1) > 0;
+        bool into = n.dot(nl) > 0;
         double nc = 1.0;
         double nt =
             surfData.material.ior > 0 ? surfData.material.ior : kDefaultIor;
