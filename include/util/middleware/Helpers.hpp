@@ -111,8 +111,26 @@ namespace raytracer::util {
            type casting fails, with a message indicating the nature of the
            error.
              */
-        static void unsignedInt(const int value,
-                                const std::string_view fieldName,
-                                const std::string_view className);
+        static void unsignedInt(int value, std::string_view fieldName,
+                                std::string_view className);
+
+        /**
+         @brief Check if two vectors are collinear.
+         * @param v1 First vector to check.
+         * @param v2 Second vector to check.
+         * @param fieldName1 Name of the first vector field, used for error
+         messages.
+         * @param fieldName2 Name of the second vector field, used for error
+         messages.
+         * @param className Name of the class where the vectors are used,
+         used for error messages.
+         * @throws PluginException If the vectors are collinear, with a
+         message indicating the nature of the error.
+         */
+        static void notCollinearVector(const maths::Vector &v1,
+                                       const maths::Vector &v2,
+                                       std::string_view fieldName1,
+                                       std::string_view fieldName2,
+                                       std::string_view className);
     };
 }  // namespace raytracer::util
