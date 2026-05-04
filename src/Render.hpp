@@ -72,11 +72,11 @@ namespace raytracer {
 
         /// @brief Sample a subpixel and accumulate radiance.
         maths::Vector sampleSubpixel(const RenderState &st, int x, int y,
-                                            int sx, int sy) const;
+                                     int sx, int sy) const;
 
         /// @brief Compute final pixel color from all subpixels.
         maths::Color computePixelColor(const RenderState &st, int x,
-                                              int y) const;
+                                       int y) const;
 
         void initRender(const object::scene::IScene &scene, int samples,
                         int &imageWidth, int &imageHeight,
