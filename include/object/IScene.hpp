@@ -38,7 +38,7 @@ namespace raytracer::object::scene {
                                int &objectId) const = 0;
         virtual maths::Vector radiance(const maths::Ray &ray, int depth,
                                        unsigned short *Xi,
-                                       int emissive = 1) = 0;
+                                       const int emissive = 1) = 0;
 
         virtual void addObject(std::shared_ptr<object::IObject> object) = 0;
         virtual void setAmbientLight(const maths::Color &color,

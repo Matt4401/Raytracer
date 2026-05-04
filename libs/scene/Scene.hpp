@@ -19,7 +19,7 @@ namespace raytracer::object::scene {
         maths::Vector f;
         int depth;
         unsigned short *Xi;
-        int emissive;
+        const int emissive;
     };
 
     class Scene : public AScene {
@@ -31,7 +31,7 @@ namespace raytracer::object::scene {
         bool intersect(const maths::Ray &ray, double &t,
                        int &objectId) const override;
         maths::Vector radiance(const maths::Ray &ray, int depth,
-                               unsigned short *Xi, int emissive = 1) override;
+                               unsigned short *Xi, const int emissive = 1) override;
 
       private:
         /// @brief build an orthonormal basis (u, v, w) given a normal vector w.

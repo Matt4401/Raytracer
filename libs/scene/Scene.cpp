@@ -41,7 +41,7 @@ namespace raytracer::object::scene {
     }
 
     maths::Vector Scene::radiance(const maths::Ray &ray, int depth,
-                                  unsigned short *Xi, int emissive) {
+                                  unsigned short *Xi, const int emissive) {
         double t = -1.0;
         int id = -1;
         if (!intersect(ray, t, id))
