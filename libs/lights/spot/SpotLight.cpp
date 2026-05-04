@@ -47,5 +47,4 @@ namespace raytracer::object::light {
         }
         return maths::Vector(0, 0, 0);
     }
-
 }  // namespace raytracer::object::light

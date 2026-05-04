@@ -28,9 +28,9 @@ namespace raytracer::object::light {
         /// @param scene the scene containing geometry for visibility testing
         /// @param x the surface position
         /// @param nl the surface normal (oriented towards the hemisphere)
-        /// @param f the surface color / BRDF (albedo for diffuse surfaces)
+        /// @param f the surface color / BRDF
         /// @return the contribution from this light
-        maths::Vector computeNEE(const scene::IScene &scene,
+        maths::Vector computeNEE(const object::scene::IScene &scene,
                                  const maths::Vector &x,
                                  const maths::Vector &nl,
                                  const maths::Vector &f) const override;

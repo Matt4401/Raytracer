@@ -27,7 +27,7 @@ namespace raytracer::object::material {
           _roughness(0.0),
           _metalness(0.0) {
         _emission = util::Helpers::optionalVector(args, "emission", _emission,
-                                                   "FlatColor");
+                                                  "FlatColor");
         _reflectivity = util::ObjectMiddleware::optional<double>(
             args, "reflectivity", 0.0, "FlatColor");
         util::Helpers::unsignedDouble(_reflectivity, "reflectivity",
@@ -46,13 +46,13 @@ namespace raytracer::object::material {
         if (_ior <= 0.0)
             _ior = 1.0;
 
-        _roughness = util::ObjectMiddleware::optional<double>(
-            args, "roughness", 0.0, "FlatColor");
+        _roughness = util::ObjectMiddleware::optional<double>(args, "roughness",
+                                                              0.0, "FlatColor");
         util::Helpers::unsignedDouble(_roughness, "roughness", "FlatColor");
         _roughness = std::min(_roughness, 1.0);
 
-        _metalness = util::ObjectMiddleware::optional<double>(
-            args, "metalness", 0.0, "FlatColor");
+        _metalness = util::ObjectMiddleware::optional<double>(args, "metalness",
+                                                              0.0, "FlatColor");
         util::Helpers::unsignedDouble(_metalness, "metalness", "FlatColor");
         _metalness = std::min(_metalness, 1.0);
     }

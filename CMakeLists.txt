@@ -34,6 +34,7 @@ endif ()
 
 set(SRCS
         src/Core.cpp
+        src/Render.cpp
         src/exception/Exception.cpp
         src/math/Color.cpp
         src/math/Vector.cpp
@@ -44,10 +45,12 @@ set(SRCS
         src/plugin/ObjectFactory.cpp
         src/parser/ConfigParser.cpp
         src/object/light/ALight.cpp
+        src/object/scene/AScene.cpp
 )
 
 set(HEADERS
         src/Core.hpp
+        src/Render.hpp
         src/plugin/PluginManager.hpp
         src/plugin/ObjectFactory.hpp
         src/plugin/DlLoader.hpp
@@ -68,7 +71,6 @@ set(HEADERS
         include/object/primitive/IPrimitive.hpp
         include/object/primitive/APrimitive.hpp
         include/object/primitive/ReflTypes.hpp
-        include/util/ObjectMiddleware.hpp
 )
 
 add_library(raytracer_core STATIC ${SRCS})

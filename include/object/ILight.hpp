@@ -7,9 +7,13 @@
 
 #pragma once
 
-#include "IScene.hpp"
 #include "math/Color.hpp"
 #include "math/Vector.hpp"
+#include "object/primitive/IPrimitive.hpp"
+
+namespace raytracer::object::scene {
+    class IScene;
+}  // namespace raytracer::object::scene
 
 namespace raytracer::object::light {
 
@@ -17,7 +21,13 @@ namespace raytracer::object::light {
       public:
         virtual ~ILight() = default;
 
-        virtual maths::Vector computeNEE(const scene::IScene &scene,
+        /// @brief Compute the NEE contribution from this spot light.
+        /// @param scene the scene containing geometry for visibility testing
+        /// @param x the surface position
+        /// @param nl the surface normal (oriented towards the hemisphere)
+        /// @param f the surface color / BRDF
+        /// @return the contribution from this light
+        virtual maths::Vector computeNEE(const object::scene::IScene &scene,
                                          const maths::Vector &x,
                                          const maths::Vector &nl,
                                          const maths::Vector &f) const = 0;

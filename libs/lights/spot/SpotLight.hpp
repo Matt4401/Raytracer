@@ -23,13 +23,13 @@ namespace raytracer::object::light {
         explicit SpotLight(const std::map<std::string, std::any> &params);
         ~SpotLight() override = default;
 
-        /// @brief Compute the NEE contribution from this spot light.
+        /// @brief Compute the NEE contribution from this point light.
         /// @param scene the scene containing geometry for visibility testing
         /// @param x the surface position
         /// @param nl the surface normal (oriented towards the hemisphere)
         /// @param f the surface color / BRDF
         /// @return the contribution from this light
-        maths::Vector computeNEE(const scene::IScene &scene,
+        maths::Vector computeNEE(const object::scene::IScene &scene,
                                  const maths::Vector &x,
                                  const maths::Vector &nl,
                                  const maths::Vector &f) const override;

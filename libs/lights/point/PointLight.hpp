@@ -47,7 +47,7 @@ namespace raytracer::object::light {
         /// @param nl the surface normal (oriented towards the hemisphere)
         /// @param f the surface color / BRDF
         /// @return the contribution from this light
-        maths::Vector computeNEE(const scene::IScene &scene,
+        maths::Vector computeNEE(const object::scene::IScene &scene,
                                  const maths::Vector &x,
                                  const maths::Vector &nl,
                                  const maths::Vector &f) const override;
