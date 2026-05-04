@@ -7,12 +7,12 @@
 
 #pragma once
 
+#include <memory>
+
 #include "math/Color.hpp"
 #include "math/Ray.hpp"
 #include "math/Vector.hpp"
 #include "object/IObject.hpp"
-
-#include <memory>
 
 namespace raytracer::object::scene {
 

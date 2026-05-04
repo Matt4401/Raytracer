@@ -31,7 +31,8 @@ namespace raytracer::object::scene {
         bool intersect(const maths::Ray &ray, double &t,
                        int &objectId) const override;
         maths::Vector radiance(const maths::Ray &ray, int depth,
-                               unsigned short *Xi, const int emissive = 1) override;
+                               unsigned short *Xi,
+                               const int emissive = 1) override;
 
       private:
         /// @brief build an orthonormal basis (u, v, w) given a normal vector w.
@@ -45,7 +46,7 @@ namespace raytracer::object::scene {
         /// @param v the second vector of the orthonormal basis, perpendicular
         /// to both w and u.
         static void buildONB(const maths::Vector &w, maths::Vector &u,
-                      maths::Vector &v);
+                             maths::Vector &v);
         /// @brief generate a random direction in the hemisphere around the
         /// normal vector nl, with a cosine-weighted distribution. This is used
         /// for diffuse reflection to simulate the way light scatters off rough
