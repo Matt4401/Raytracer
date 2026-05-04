@@ -71,7 +71,7 @@ namespace raytracer {
         cameraParams["aspectRatio"] =
             16.0 / 9.0;  // Example: standard widescreen aspect ratio
         cameraParams["resolution"] = std::map<std::string, std::any>{
-            {"width", 800}, {"height", 600}};  // Example: 800x600 resolution
+            {"width", 400}, {"height", 200}};  // Example: 400x200 resolution
         auto camera = this->_objFactory.build("camera", cameraParams);
 
         // PRIMITIVE
@@ -134,7 +134,7 @@ namespace raytracer {
             raytracer::object::primitive::RefltT::SPEC;  // Specular reflection
         mirrorMaterialParams["emission"] = vec(0.0, 0.0, 0.0);  // No emission
         mirrorMaterialParams["reflectivity"] = 1.0;  // Full reflection
-        mirrorMaterialParams["transparency"] = 0.0;  // No transparency
+        mirrorMaterialParams["transparency"] = 0.0;  // Opaque mirror
         mirrorMaterialParams["ior"] = 1.0;  // Default index of refraction
         mirrorMaterialParams["roughness"] =
             0.0;  // No roughness for perfect mirror
@@ -152,9 +152,11 @@ namespace raytracer {
         refractiveMaterialParams["reflType"] =
             raytracer::object::primitive::RefltT::REFR;  // Refractive material
         refractiveMaterialParams["emission"] =
-            vec(0.0, 0.0, 0.0);                          // No emission
-        refractiveMaterialParams["reflectivity"] = 0.0;  // No reflection
-        refractiveMaterialParams["transparency"] = 1.0;  // Full transparency
+            vec(0.0, 0.0, 0.0);  // No emission
+        // For physical glass, let Fresnel (IOR) drive reflectance.
+        refractiveMaterialParams["reflectivity"] =
+            0.0;  // don't force reflection
+        refractiveMaterialParams["transparency"] = 1.0;  // allow transmission
         refractiveMaterialParams["ior"] =
             1.5;  // Example index of refraction for glass
         refractiveMaterialParams["roughness"] =
@@ -263,7 +265,7 @@ namespace raytracer {
     }
 
     void Core::run() {
-        this->_renderer.render(*_scene, 1, 200);
+        this->_renderer.render(*_scene, 1, 100);
         this->_renderer.pixelToPPM(*_scene);
     }
 

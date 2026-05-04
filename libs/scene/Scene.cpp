@@ -111,6 +111,15 @@ namespace raytracer::object::scene {
         int depth = ctx.depth;
         unsigned short *Xi = ctx.Xi;
         int emissive = ctx.emissive;
+        const double reflectivity =
+            std::clamp(surfData.material.reflectivity, 0.0, 1.0);
+        const double transparency =
+            std::clamp(surfData.material.transparency, 0.0, 1.0);
+        const double metalness =
+            std::clamp(surfData.material.metalness, 0.0, 1.0);
+        const double diffuseWeight =
+            (1.0 - metalness) * (1.0 - reflectivity) * (1.0 - transparency);
+        const maths::Vector diffuseF = f * diffuseWeight;
         maths::Vector direct(0, 0, 0);
 
         /* Emmissive spheres (NEE)
@@ -123,13 +132,13 @@ namespace raytracer::object::scene {
         }*/
 
         for (const auto &light : _lights) {
-            direct += light->computeNEE(*this, x, nl, f);
+            direct += light->computeNEE(*this, x, nl, diffuseF);
         }
 
         // Ambient light
         maths::Vector ambientContrib(0, 0, 0);
         if (emissive) {
-            ambientContrib = _ambientLight.color.toVector() * f;
+            ambientContrib = _ambientLight.color.toVector() * diffuseF;
         }
 
         // Ambient Occlusion
@@ -151,32 +160,58 @@ namespace raytracer::object::scene {
                 _ambientLight.color.toVector().magnitude() > 0
                     ? _ambientLight.color.toVector()
                     : maths::Vector(1, 1, 1);
-            aoContrib = aoBase * f * aoFactor;
+            aoContrib = aoBase * diffuseF * aoFactor;
             ambientContrib += aoContrib;
         }
 
         // Diffuse contribution (indirect)
         maths::Vector diffuseContrib(0, 0, 0);
-        diffuseContrib = _ambientDiffuse.ambient.toVector() * f;
+        diffuseContrib = _ambientDiffuse.ambient.toVector() * diffuseF;
 
         maths::Vector d = randomCosineDir(nl, Xi);
         return surfData.material.emission * emissive + direct + ambientContrib +
-               diffuseContrib + f * radiance(maths::Ray(x, d), depth, Xi, 0);
+               diffuseContrib +
+               diffuseF * radiance(maths::Ray(x, d), depth, Xi, 0);
     }
 
     maths::Vector Scene::radianceSpecular(const maths::Ray &ray,
                                           const primitive::IPrimitive &obj,
                                           const RadianceContext &ctx) const {
         const maths::Vector &x = ctx.x;
-        primitive::SurfaceData surfData = obj.surfaceData(x);
         const maths::Vector &n = ctx.n;
         const maths::Vector &f = ctx.f;
         int depth = ctx.depth;
         unsigned short *Xi = ctx.Xi;
         int emissive = ctx.emissive;
+        primitive::SurfaceData surfData = obj.surfaceData(x);
+
+        const double reflectivity =
+            std::clamp(surfData.material.reflectivity, 0.0, 1.0);
+        const double roughness =
+            std::clamp(surfData.material.roughness, 0.0, 1.0);
+        const double metalness =
+            std::clamp(surfData.material.metalness, 0.0, 1.0);
+
+        maths::Vector reflectionDir =
+            ray.direction - n * 2 * n.dot(ray.direction);
+        if (roughness > 0.0) {
+            reflectionDir = (reflectionDir * (1.0 - roughness) +
+                             randomCosineDir(n, Xi) * roughness)
+                                .normalized();
+        }
+
+        const maths::Vector baseF0 =
+            maths::Vector(0.04, 0.04, 0.04) * (1.0 - metalness) + f * metalness;
+        const double cosTheta =
+            std::clamp(-(ray.direction.dot(ctx.nl)), 0.0, 1.0);
+        const double oneMinusCos5 = std::pow(1.0 - cosTheta, 5.0);
+        const maths::Vector fresnel =
+            baseF0 + (maths::Vector(1, 1, 1) - baseF0) * oneMinusCos5;
+        const maths::Vector specularWeight = fresnel * reflectivity;
+
         return surfData.material.emission * emissive +
-               f * radiance(maths::Ray(x, ray.direction -
-                                              n * 2 * n.dot(ray.direction)),
+               specularWeight *
+                   radiance(maths::Ray(x + n * kRayEpsilon, reflectionDir),
                             depth, Xi, 1);
     }
 
@@ -184,9 +219,10 @@ namespace raytracer::object::scene {
                                             const primitive::IPrimitive &obj,
                                             const RadianceContext &ctx) const {
         const maths::Vector &x = ctx.x;
-        primitive::SurfaceData surfData = obj.surfaceData(x);
         const maths::Vector &n = ctx.n;
         const maths::Vector &f = ctx.f;
+        primitive::SurfaceData surfData = obj.surfaceData(x);
+
         int depth = ctx.depth;
         unsigned short *Xi = ctx.Xi;
         int emissive = ctx.emissive;
@@ -199,9 +235,10 @@ namespace raytracer::object::scene {
         double ddn = ray.direction.dot(n * (n.dot(ray.direction) < 0 ? 1 : -1));
         double cos2t = 1 - nnt * nnt * (1 - ddn * ddn);
 
-        if (cos2t < 0)
+        if (cos2t < 0) {
             return surfData.material.emission * emissive +
                    f * radiance(reflRay, depth, Xi, 1);
+        }
 
         maths::Vector tdir =
             (ray.direction * nnt -

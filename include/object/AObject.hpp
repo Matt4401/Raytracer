@@ -20,6 +20,7 @@ namespace raytracer::object {
 
       protected:
         static constexpr double kRayEpsilon = 1e-4;
+        static constexpr double kOnbAxisThreshold = 0.1;
 
         Type _type;
     };
