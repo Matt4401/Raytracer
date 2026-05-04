@@ -151,20 +151,11 @@ TEST_F(ExceptionTest, PluginExceptionSimpleMessage) {
 }
 
 TEST_F(ExceptionTest, PluginExceptionWithPrefix) {
-    raytracer::exception::PluginException exc(
-        raytracer::exception::PluginException::PREFIX,
-        "Plugin {} version mismatch", "sphere");
+    raytracer::exception::PluginException exc("Plugin {} version mismatch",
+                                              "sphere");
     std::string message(exc.what());
     ASSERT_TRUE(message.find("[Plugin error]:") != std::string::npos);
     ASSERT_TRUE(message.find("sphere") != std::string::npos);
-}
-
-TEST_F(ExceptionTest, PluginExceptionWithCustomPrefix) {
-    raytracer::exception::PluginException exc("[Custom]: ", "Error code: {}",
-                                              99);
-    std::string message(exc.what());
-    ASSERT_TRUE(message.find("[Custom]:") != std::string::npos);
-    ASSERT_TRUE(message.find("99") != std::string::npos);
 }
 
 TEST_F(ExceptionTest, PluginExceptionThrow) {
