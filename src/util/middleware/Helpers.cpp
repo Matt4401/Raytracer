@@ -34,6 +34,15 @@ namespace raytracer::util {
         }
     }
 
+    maths::Vector Helpers::normalVector(maths::Vector &normal) {
+        normal.normalize();
+        if (normal == maths::Vector(0, 0, 0)) {
+            throw exception::PluginException{
+                "Normal vector cannot be the zero"};
+        }
+        return normal;
+    }
+
     maths::Color Helpers::toColor(const std::map<std::string, std::any> &params,
                                   const std::string_view keyName,
                                   const std::string_view className) {
@@ -63,7 +72,7 @@ namespace raytracer::util {
         const std::map<std::string, std::any> &params,
         const std::string_view keyName, const maths::Color &defaultValue,
         const std::string_view className) {
-        if (params.find(std::string(keyName)) == params.end()) {
+        if (!params.contains(std::string(keyName))) {
             return defaultValue;
         }
         return toColor(params, keyName, className);
@@ -73,7 +82,7 @@ namespace raytracer::util {
         const std::map<std::string, std::any> &params,
         const std::string_view keyName, const maths::Vector &defaultValue,
         const std::string_view className) {
-        if (params.find(std::string(keyName)) == params.end()) {
+        if (!params.contains(std::string(keyName))) {
             return defaultValue;
         }
         return toVector(params, keyName, className);
