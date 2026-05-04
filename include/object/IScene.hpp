@@ -32,7 +32,7 @@ namespace raytracer::object::scene {
     class IScene {
       public:
         IScene() = default;
-        ~IScene() = default;
+        virtual ~IScene() = default;
 
         virtual bool intersect(const maths::Ray &ray, double &t,
                                int &objectId) const = 0;
