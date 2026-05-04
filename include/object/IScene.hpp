@@ -35,7 +35,7 @@ namespace raytracer::object::scene {
         double intensity;
     };
 
-    struct AmbiantOcclusion {
+    struct AmbientOcclusion {
         int samples;
         double radius;
     };
@@ -43,7 +43,7 @@ namespace raytracer::object::scene {
     class IScene {
       public:
         IScene() = default;
-        ~IScene() = default;
+        virtual ~IScene() = default;
 
         virtual bool intersect(const maths::Ray &ray, double &t,
                                int &objectId) const = 0;
@@ -58,7 +58,7 @@ namespace raytracer::object::scene {
                                      double intensity) = 0;
         virtual void setAmbientOcclusion(int samples, double radius) = 0;
 
-        virtual AmbiantOcclusion ambiantOcclusion() const = 0;
+        virtual AmbientOcclusion ambientOcclusion() const = 0;
         virtual AmbientLight ambientLight() const = 0;
         virtual AmbientDiffuse ambientDiffuse() const = 0;
 

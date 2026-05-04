@@ -133,19 +133,19 @@ namespace raytracer::object::scene {
 
         // Ambient Occlusion
         maths::Vector aoContrib(0, 0, 0);
-        if (_ambiantOcclusion.samples > 0) {
+        if (_ambientOcclusion.samples > 0) {
             double unoccluded = 0.0;
-            for (int k = 0; k < _ambiantOcclusion.samples; ++k) {
+            for (int k = 0; k < _ambientOcclusion.samples; ++k) {
                 maths::Vector aoDir = randomCosineDir(nl, Xi);
                 maths::Ray aoRay(x + nl * kRayEpsilon, aoDir);
                 double aoT;
                 int aoId;
                 bool hit = intersect(aoRay, aoT, aoId);
-                if (!hit || aoT > _ambiantOcclusion.radius)
+                if (!hit || aoT > _ambientOcclusion.radius)
                     unoccluded += 1.0;
             }
             double aoFactor =
-                unoccluded / static_cast<double>(_ambiantOcclusion.samples);
+                unoccluded / static_cast<double>(_ambientOcclusion.samples);
             maths::Vector aoBase =
                 _ambientLight.color.toVector().magnitude() > 0
                     ? _ambientLight.color.toVector()

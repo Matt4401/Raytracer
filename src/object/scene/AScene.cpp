@@ -14,11 +14,11 @@
 namespace raytracer::object::scene {
     AScene::AScene(const std::map<std::string, std::any> &params)
         : AObject(Type::SCENE) {
-        _ambiantOcclusion.samples =
+        _ambientOcclusion.samples =
             util::ObjectMiddleware::validate<int>(params, "aoSamples", "Scene");
-        _ambiantOcclusion.radius = util::ObjectMiddleware::validate<double>(
+        _ambientOcclusion.radius = util::ObjectMiddleware::validate<double>(
             params, "aoRadius", "Scene");
-        util::Helpers::unsignedDouble(_ambiantOcclusion.radius, "aoRadius",
+        util::Helpers::unsignedDouble(_ambientOcclusion.radius, "aoRadius",
                                       "Scene");
         _ambientLight.color =
             util::Helpers::toColor(params, "ambientLightColor", "Scene");
@@ -34,8 +34,7 @@ namespace raytracer::object::scene {
                                       "ambientDiffuseIntensity", "Scene");
     }
 
-    void AScene::addPrimitive(
-        const std::shared_ptr<object::AObject> &primitive) {
+    void AScene::addPrimitive(const std::shared_ptr<IObject> &primitive) {
         auto primPtr =
             std::dynamic_pointer_cast<primitive::IPrimitive>(primitive);
         if (!primPtr) {
@@ -45,7 +44,7 @@ namespace raytracer::object::scene {
         _primitives.push_back(primPtr);
     }
 
-    void AScene::addLight(const std::shared_ptr<object::AObject> &light) {
+    void AScene::addLight(const std::shared_ptr<IObject> &light) {
         auto lightPtr = std::dynamic_pointer_cast<light::ILight>(light);
         if (!lightPtr) {
             throw exception::PluginException("Failed to cast light object");
@@ -53,7 +52,7 @@ namespace raytracer::object::scene {
         _lights.push_back(lightPtr);
     }
 
-    void AScene::addCamera(const std::shared_ptr<object::AObject> &camera) {
+    void AScene::addCamera(const std::shared_ptr<IObject> &camera) {
         auto camPtr = std::dynamic_pointer_cast<camera::ICamera>(camera);
         if (!camPtr) {
             throw exception::PluginException(
@@ -69,8 +68,7 @@ namespace raytracer::object::scene {
         auto it = _addObjectHandlers.find(object->type());
         if (it != _addObjectHandlers.end()) {
             try {
-                auto objRef =
-                    std::dynamic_pointer_cast<object::AObject>(object);
+                auto objRef = std::dynamic_pointer_cast<IObject>(object);
                 if (!objRef) {
                     throw std::bad_cast();
                 }
@@ -94,11 +92,11 @@ namespace raytracer::object::scene {
     }
 
     void AScene::setAmbientOcclusion(int samples, double radius) {
-        _ambiantOcclusion = {samples, radius};
+        _ambientOcclusion = {samples, radius};
     }
 
-    AmbiantOcclusion AScene::ambiantOcclusion() const {
-        return _ambiantOcclusion;
+    AmbientOcclusion AScene::ambientOcclusion() const {
+        return _ambientOcclusion;
     }
 
     AmbientLight AScene::ambientLight() const {

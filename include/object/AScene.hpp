@@ -13,7 +13,6 @@
 #include <functional>
 #include <limits>
 #include <map>
-#include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -44,7 +43,7 @@ namespace raytracer::object::scene {
                              double intensity) override;
         void setAmbientOcclusion(int samples, double radius) override;
 
-        AmbiantOcclusion ambiantOcclusion() const override;
+        AmbientOcclusion ambientOcclusion() const override;
         AmbientLight ambientLight() const override;
         AmbientDiffuse ambientDiffuse() const override;
 
@@ -67,27 +66,27 @@ namespace raytracer::object::scene {
         std::vector<std::shared_ptr<light::ILight>> _lights;
         std::vector<std::shared_ptr<camera::ICamera>> _cameras;
 
-        AmbiantOcclusion _ambiantOcclusion;
+        AmbientOcclusion _ambientOcclusion;
         AmbientLight _ambientLight;
         AmbientDiffuse _ambientDiffuse;
 
       private:
-        void addPrimitive(const std::shared_ptr<object::AObject> &primitive);
-        void addLight(const std::shared_ptr<object::AObject> &light);
-        void addCamera(const std::shared_ptr<object::AObject> &camera);
+        void addPrimitive(const std::shared_ptr<IObject> &primitive);
+        void addLight(const std::shared_ptr<IObject> &light);
+        void addCamera(const std::shared_ptr<IObject> &camera);
         std::map<object::IObject::Type,
-                 std::function<void(const std::shared_ptr<AObject> &)>>
+                 std::function<void(const std::shared_ptr<IObject> &)>>
             _addObjectHandlers = {
                 {object::IObject::Type::PRIMITIVE,
-                 [this](const std::shared_ptr<AObject> &obj) {
+                 [this](const std::shared_ptr<IObject> &obj) {
                      addPrimitive(obj);
                  }},
                 {object::IObject::Type::LIGHT,
-                 [this](const std::shared_ptr<AObject> &obj) {
+                 [this](const std::shared_ptr<IObject> &obj) {
                      addLight(obj);
                  }},
                 {object::IObject::Type::CAMERA,
-                 [this](const std::shared_ptr<AObject> &obj) {
+                 [this](const std::shared_ptr<IObject> &obj) {
                      addCamera(obj);
                  }},
             };

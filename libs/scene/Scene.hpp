@@ -19,7 +19,7 @@ namespace raytracer::object::scene {
         maths::Vector f;
         int depth;
         unsigned short *Xi;
-        int emissive;
+        const int emissive;
     };
 
     class Scene : public AScene {
