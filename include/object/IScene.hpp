@@ -13,6 +13,15 @@
 #include "math/Ray.hpp"
 #include "math/Vector.hpp"
 #include "object/IObject.hpp"
+#include "object/primitive/IPrimitive.hpp"
+
+namespace raytracer::object::light {
+    class ILight;
+}  // namespace raytracer::object::light
+
+namespace raytracer::object::camera {
+    class ICamera;
+}  // namespace raytracer::object::camera
 
 namespace raytracer::object::scene {
 
@@ -40,9 +49,9 @@ namespace raytracer::object::scene {
                                int &objectId) const = 0;
         virtual maths::Vector radiance(const maths::Ray &ray, int depth,
                                        unsigned short *Xi,
-                                       const int emissive = 1) = 0;
+                                       int emissive = 1) const = 0;
 
-        virtual void addObject(std::shared_ptr<object::IObject> object) = 0;
+        virtual void addObject(std::shared_ptr<IObject> object) = 0;
         virtual void setAmbientLight(const maths::Color &color,
                                      double intensity) = 0;
         virtual void setDiffuseLight(const maths::Color &color,
@@ -52,6 +61,13 @@ namespace raytracer::object::scene {
         virtual AmbientOcclusion ambientOcclusion() const = 0;
         virtual AmbientLight ambientLight() const = 0;
         virtual AmbientDiffuse ambientDiffuse() const = 0;
+
+        virtual const std::vector<std::shared_ptr<primitive::IPrimitive>> &
+        primitives() const = 0;
+        virtual const std::vector<std::shared_ptr<light::ILight>> &lights()
+            const = 0;
+        virtual const std::vector<std::shared_ptr<camera::ICamera>> &cameras()
+            const = 0;
 
       protected:
       private:

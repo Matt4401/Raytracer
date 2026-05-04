@@ -25,9 +25,9 @@ namespace raytracer::object::primitive {
               util::ObjectMiddleware::validate<
                   std::shared_ptr<raytracer::object::material::IMaterial>>(
                   params, "material", "Sphere")),
-          _radius(
-              util::ObjectMiddleware::validate<double>(params, "r", "Sphere")) {
-        util::Helpers::unsignedDouble(_radius, "r", "Sphere");
+          _radius(util::ObjectMiddleware::validate<double>(params, "radius",
+                                                           "Sphere")) {
+        util::Helpers::unsignedDouble(_radius, "radius", "Sphere");
     }
 
     Sphere::Sphere(const maths::Vector &vector, const double radius)
@@ -46,25 +46,28 @@ namespace raytracer::object::primitive {
     }
 
     double Sphere::hits(const maths::Ray &ray) {
-        const maths::Vector op = _center - ray.origin;
-        const double b = op.dot(ray.direction);
+        const maths::Vector oc = ray.origin - _center;
+        const maths::Vector ocVec(oc.x, oc.y, oc.z);
         const double a = ray.direction.dot(ray.direction);
-        const double c = op.dot(op) - _radius * _radius;
-        const double det = b * b - 4 * a * c;
-        if (det < 0) {
-            return 0;
+        const double b = 2.0 * ocVec.dot(ray.direction);
+        const double c = ocVec.dot(ocVec) - _radius * _radius;
+        const double discriminant = b * b - 4 * a * c;
+
+        if (discriminant < 0) {
+            return -1.0;
         }
-        const double sqrtDiscriminant = std::sqrt(det);
+
+        const double sqrtDiscriminant = std::sqrt(discriminant);
         const double t0 = (-b - sqrtDiscriminant) / (2.0 * a);
         const double t1 = (-b + sqrtDiscriminant) / (2.0 * a);
 
-        if (t0 > EPS) {
+        if (t0 > kRayEpsilon) {
             return t0;
         }
-        if (t1 > EPS) {
+        if (t1 > kRayEpsilon) {
             return t1;
         }
-        return 0;
+        return -1.0;
     }
 
     IPrimitive::BoundingBox Sphere::boundingBox() {

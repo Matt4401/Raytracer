@@ -34,9 +34,9 @@ namespace raytracer::object::scene {
                                int &objectId) const override = 0;
         virtual maths::Vector radiance(const maths::Ray &ray, int depth,
                                        unsigned short *Xi,
-                                       const int emissive = 1) override = 0;
+                                       int emissive = 1) const override = 0;
 
-        void addObject(std::shared_ptr<object::IObject> object) override;
+        void addObject(std::shared_ptr<IObject> object) override;
         void setAmbientLight(const maths::Color &color,
                              double intensity) override;
         void setDiffuseLight(const maths::Color &color,
@@ -47,6 +47,13 @@ namespace raytracer::object::scene {
         AmbientLight ambientLight() const override;
         AmbientDiffuse ambientDiffuse() const override;
 
+        const std::vector<std::shared_ptr<primitive::IPrimitive>> &primitives()
+            const override;
+        const std::vector<std::shared_ptr<light::ILight>> &lights()
+            const override;
+        const std::vector<std::shared_ptr<camera::ICamera>> &cameras()
+            const override;
+
       protected:
         static constexpr int kMaxRadianceDepth = 10;
         static constexpr int kDiffuseRussianRouletteDepth = 5;
@@ -54,6 +61,8 @@ namespace raytracer::object::scene {
         static constexpr double kColorScale = 1.0 / 255.0;
         static constexpr double kOnbAxisThreshold = 0.1;
         static constexpr double kDefaultIor = 1.5;
+        static constexpr double kDielectricF0 = 0.04;
+        static constexpr double kProbabilityNormalizationThreshold = 1e-12;
 
         std::vector<std::shared_ptr<primitive::IPrimitive>> _primitives;
         std::vector<std::shared_ptr<light::ILight>> _lights;
@@ -64,22 +73,22 @@ namespace raytracer::object::scene {
         AmbientDiffuse _ambientDiffuse;
 
       private:
-        void addPrimitive(std::shared_ptr<object::IObject> primitive);
-        void addLight(std::shared_ptr<object::IObject> light);
-        void addCamera(std::shared_ptr<object::IObject> camera);
+        void addPrimitive(const std::shared_ptr<IObject> &primitive);
+        void addLight(const std::shared_ptr<IObject> &light);
+        void addCamera(const std::shared_ptr<IObject> &camera);
         std::map<object::IObject::Type,
-                 std::function<void(std::shared_ptr<object::IObject>)>>
+                 std::function<void(const std::shared_ptr<IObject> &)>>
             _addObjectHandlers = {
                 {object::IObject::Type::PRIMITIVE,
-                 [this](std::shared_ptr<object::IObject> obj) {
+                 [this](const std::shared_ptr<IObject> &obj) {
                      addPrimitive(obj);
                  }},
                 {object::IObject::Type::LIGHT,
-                 [this](std::shared_ptr<object::IObject> obj) {
+                 [this](const std::shared_ptr<IObject> &obj) {
                      addLight(obj);
                  }},
                 {object::IObject::Type::CAMERA,
-                 [this](std::shared_ptr<object::IObject> obj) {
+                 [this](const std::shared_ptr<IObject> &obj) {
                      addCamera(obj);
                  }},
             };
