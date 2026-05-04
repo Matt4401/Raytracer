@@ -75,7 +75,7 @@ namespace raytracer::object::scene {
         maths::Vector rayOrigin(ray.origin.x, ray.origin.y, ray.origin.z);
         maths::Vector x = rayOrigin + ray.direction * t;
         primitive::SurfaceData surfData = obj->surfaceData(x);
-        maths::Vector n = (x - obj->center()).normalized();
+        maths::Vector n = surfData.normal;
         maths::Vector nl = n.dot(ray.direction) < 0 ? n : n * -1;
 
         maths::Vector f = surfData.material.color.toVector();
@@ -113,13 +113,14 @@ namespace raytracer::object::scene {
         int emissive = ctx.emissive;
         maths::Vector direct(0, 0, 0);
 
-        // Emmissive spheres (NEE)
+        /* Emmissive spheres (NEE)
+        TODO: Implement NEE for primitives
         for (const auto &p : _primitives) {
-            /* TODO:
+             
             if (p->emission().magnitude() > 0) {
                 direct += p->computeNEE(scene, x, nl, f);
-            }*/
-        }
+            }
+        }*/
 
         for (const auto &light : _lights) {
             direct += light->computeNEE(*this, x, nl, f);
@@ -215,13 +216,17 @@ namespace raytracer::object::scene {
         double P = 0.25 + 0.5 * Re;
         double RP = Re / P, TP = Tr / (1 - P);
 
-        return surfData.material.emission * emissive +
-               f * (depth > kRefractiveRussianRouletteDepth
-                        ? (::erand48(Xi) < P
-                               ? radiance(reflRay, depth, Xi, 1) * RP
-                               : radiance(maths::Ray(x, tdir), depth, Xi, 1) *
-                                     TP)
-                        : radiance(reflRay, depth, Xi, 1) * Re +
-                              radiance(maths::Ray(x, tdir), depth, Xi, 1) * Tr);
+        if (depth > kRefractiveRussianRouletteDepth) {
+            if (::erand48(Xi) < P)
+                return surfData.material.emission * emissive +
+                       f * radiance(reflRay, depth, Xi, 1) * RP;
+            else
+                return surfData.material.emission * emissive +
+                       f * radiance(maths::Ray(x, tdir), depth, Xi, 1) * TP;
+        } else {
+            return surfData.material.emission * emissive +
+                   f * (radiance(reflRay, depth, Xi, 1) * Re +
+                        radiance(maths::Ray(x, tdir), depth, Xi, 1) * Tr);
+        }
     }
 }  // namespace raytracer::object::scene
