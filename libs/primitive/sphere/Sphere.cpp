@@ -46,12 +46,6 @@ namespace raytracer::object::primitive {
     }
 
     double Sphere::hits(const maths::Ray &ray) {
-        if (ray.direction.magnitude() == 0) {
-            throw std::runtime_error("Ray direction cannot be a zero vector");
-        }
-        if (_radius <= 0) {
-            throw std::runtime_error("Sphere _radius must be positive");
-        }
         maths::Vector oc = ray.origin - _center;
         maths::Vector ocVec(oc.x, oc.y, oc.z);
         double a = ray.direction.dot(ray.direction);
