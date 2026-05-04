@@ -46,12 +46,12 @@ namespace raytracer::object::primitive {
     }
 
     double Sphere::hits(const maths::Ray &ray) {
-        maths::Vector oc = ray.origin - _center;
-        maths::Vector ocVec(oc.x, oc.y, oc.z);
-        double a = ray.direction.dot(ray.direction);
-        double b = 2.0 * ocVec.dot(ray.direction);
-        double c = ocVec.dot(ocVec) - _radius * _radius;
-        double discriminant = b * b - 4 * a * c;
+        const maths::Vector oc = ray.origin - _center;
+        const maths::Vector ocVec(oc.x, oc.y, oc.z);
+        const double a = ray.direction.dot(ray.direction);
+        const double b = 2.0 * ocVec.dot(ray.direction);
+        const double c = ocVec.dot(ocVec) - _radius * _radius;
+        const double discriminant = b * b - 4 * a * c;
 
         if (discriminant < 0) {
             return -1.0;
