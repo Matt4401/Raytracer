@@ -11,6 +11,8 @@
 #include "math/Ray.hpp"
 #include "math/Vector.hpp"
 
+#include "object/IObject.hpp"
+
 namespace raytracer::object::scene {
 
     struct AmbientDiffuse {
@@ -39,7 +41,7 @@ namespace raytracer::object::scene {
                                        unsigned short *Xi,
                                        int emissive = 1) = 0;
 
-        virtual void addObject(IObject &object) = 0;
+        virtual void addObject(std::shared_ptr<object::IObject> object) = 0;
         virtual void setAmbientLight(const maths::Color &color,
                                      double intensity) = 0;
         virtual void setDiffuseLight(const maths::Color &color,

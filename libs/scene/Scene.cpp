@@ -47,7 +47,7 @@ namespace raytracer::object::scene {
         if (!intersect(ray, t, id))
             return maths::Vector();
 
-        const std::unique_ptr<primitive::IPrimitive> &obj = _primitives.at(id);
+        const std::shared_ptr<primitive::IPrimitive> &obj = _primitives.at(id);
         if (depth > kMaxRadianceDepth)
             return maths::Vector();
 
