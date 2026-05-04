@@ -9,7 +9,6 @@
 
 #include <iostream>
 
-#include "math/Color.hpp"
 #include "object/ALight.hpp"
 #include "object/AObject.hpp"
 #include "object/AScene.hpp"
