@@ -53,8 +53,7 @@ jobs:
         timeout-minutes: 5
 
       - name: Compile tests
-        run: cd build && cmake --build . --target exception_tests material_tests
-          primitive_tests -j$(nproc)
+        run: cd build && cmake --build . -j$(nproc)
         timeout-minutes: 5
 
       - name: Run tests

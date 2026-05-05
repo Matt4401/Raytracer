@@ -2,6 +2,8 @@ set(FIXTURES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/fixtures")
 set(TEST_PLUGINS_DIR "${CMAKE_SOURCE_DIR}/tests/plugins/")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
+add_subdirectory(libs)
+
 include(FetchContent)
 
 FetchContent_Declare(
