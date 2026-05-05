@@ -4,299 +4,335 @@ This document explains how to write valid configuration files for the RayTracer 
 
 ## Overview
 
-The configuration parser processes `.cfg` files and creates objects based on the file structure. The parser uses the following principles:
+The configuration parser processes `.cfg` files and creates a scene by:
 
-1. **Root-level groups** are treated as object types (e.g., `camera`, `primitives`, `lights`)
-2. **Lists** within a type create multiple objects of the same kind
-3. **Groups** within a type create unique/singleton objects
-4. **Parser errors** throw `raytracer::exception::ParsingException`
+1. **Loading `sceneParameters`** - Required base configuration for the scene
+2. **Creating objects** - Using explicit name and parameters structure
+3. **Assigning materials** - Optional material definitions with their own parameters
+4. **Type safety** - All values must have explicit types (strings with `""`, floats with `.0`, etc.)
+5. **Enum handling** - Enum values represented as strings and converted by plugins
 
 ## Core Rules
 
-### Rule 1: Root-Level Names Define Types
+### Rule 1: SceneParameters is Mandatory
 
-The names at the root level of your configuration file represent object types:
+Every configuration file must start with a `sceneParameters` group. This is the foundation for creating the scene and contains all required lighting and rendering settings.
 
 ```cfg
-camera { ... }        # Type: camera
-primitives { ... }    # Type: primitives
-lights { ... }        # Type: lights
+sceneParameters:
+{
+    ambiantOcclution: {
+        samples = 0;
+        radius = 0.0;
+    };
+    ambientLight: {
+        color: { r = 0; g = 0; b = 0; };
+        intensity = 0.0;
+    };
+    ambientDiffuse: {
+        color: { r = 0; g = 0; b = 0; };
+        intensity = 0.0;
+    };
+};
 ```
 
-Each root-level group will be processed as a separate type.
+**All fields in `sceneParameters` are mandatory** and required to initialize the scene properly.
 
-### Rule 2: Groups Without Lists are Single Objects
+### Rule 2: Objects Have Name and Parameters
 
-If a type contains **no lists** `()`, it is treated as a single object and built immediately.
+Objects are defined with two mandatory components:
+- **`name`**: A string identifying the object type (e.g., `"sphere"`, `"plane"`)
+- **`parameters`**: A group containing all object-specific properties
 
 ```cfg
-camera:
 {
-    resolution = { width = 1920; height = 1080; };
-    position = { x = 0; y = -100; z = 20; };
-    fieldOfView = 72.0;
+    name = "sphere";
+    parameters: {
+        center: { x = 50.0; y = 40.8; z = 81.6; };
+        radius = 100000.0;
+    };
+}
+```
+
+Objects can optionally include a **`material`** section with the same structure:
+
+```cfg
+material: {
+    name = "flatcolor";
+    parameters: {
+        color: { r = 191; g = 63; b = 63; };
+        reflType = "DIFF";
+        emission: { x = 0.0; y = 0.0; z = 0.0; };
+        reflectivity = 0.0;
+        transparency = 0.0;
+        ior = 1.0;
+        roughness = 0.0;
+        metalness = 0.0;
+    };
+};
+```
+
+### Rule 3: Two Ways to Define Objects
+
+#### Method 1: Individual Objects (Group Style)
+
+Each object is a complete group with `name` and `parameters`:
+
+```cfg
+primitives:
+(
+    {
+        name = "sphere";
+        parameters: {
+            center: { x = 100001.0; y = 40.8; z = 81.6; };
+            radius = 100000.0;
+        };
+        material: {
+            name = "flatcolor";
+            parameters: {
+                color: { r = 191; g = 63; b = 63; };
+                reflType = "DIFF";
+                reflectivity = 0.0;
+            };
+        };
+    },
+    {
+        name = "sphere";
+        parameters: {
+            center: { x = -99901.0; y = 40.8; z = 81.6; };
+            radius = 100000.0;
+        };
+        material: {
+            name = "flatcolor";
+            parameters: {
+                color: { r = 63; g = 63; b = 191; };
+                reflType = "DIFF";
+                reflectivity = 0.0;
+            };
+        };
+    }
+);
+```
+
+#### Method 2: List Parameters (Direct Style)
+
+For certain object types (like lights), each list element directly contains the object parameters without a wrapper `name` field. The type is inferred from the list name (singular form):
+
+```cfg
+lights:
+{
+    point_light = (
+        {
+            position: { x = 50.0; y = 57.1; z = 81.6; };
+            color: { r = 250; g = 230; b = 230; };
+            intensity = 400.0;
+            radius = 2.0;
+        },
+        {
+            position: { x = 100.0; y = 100.0; z = 100.0; };
+            color: { r = 255; g = 255; b = 255; };
+            intensity = 200.0;
+            radius = 3.0;
+        }
+    );
 };
 ```
 
 In this example:
-- The type is `camera`
-- All properties are collected into a map
-- A single object is built with the type name `"camera"`
+- List name: `point_light`
+- Object type: `point_light` (used by the plugin constructor)
+- One object created per list element
 
-### Rule 3: Lists Create Multiple Objects
+Be carefull this second method to not allow materials
 
-Lists (denoted with `()`) within a type create multiple objects of the same kind:
+### Rule 4: Type Safety - Explicit Type Declarations
+
+All values must be explicitly typed. The parser and plugins rely on correct type representation:
+
+| Type | Example | Format |
+|------|---------|--------|
+| String | `"sphere"` | Always with double quotes |
+| Float/Double | `100000.0` or `3.14` | Must include `.0` for floats |
+| Integer | `42` or `0` | No decimal point |
+| Boolean | `true` or `false` | Lowercase |
+| Vector/Group | `{ x = 0.0; y = 0.0; z = 0.0; }` | Semicolons between fields |
+| Enum (as string) | `"DIFF"`, `"SPEC"`, `"REFR"` | Quoted strings |
+
+**Correct Examples:**
+```cfg
+radius = 100000.0;           # ✓ Float
+samples = 0;                 # ✓ Integer
+color = "red";               # ✓ String
+reflType = "DIFF";           # ✓ Enum as string
+emission: { x = 0.0; y = 0.0; z = 0.0; };  # ✓ Vector
+```
+
+**Incorrect Examples:**
+```cfg
+radius = 100000;             # ✗ Missing .0 for float
+samples = 0.0;               # ✗ Should be integer
+color = red;                 # ✗ Missing quotes
+reflType = DIFF;             # ✗ Enum must be quoted
+emission: { x = 0; y = 0; z = 0; };  # ✗ Floats need .0
+```
+
+### Rule 5: Enum Values as Strings
+
+Some material parameters accept enum values. These must be represented as **quoted strings**, and the plugin constructor will convert them to the appropriate enum type.
+
+**Common Enum Examples:**
+- Reflection type: `"DIFF"` (diffuse), `"SPEC"` (specular), `"REFR"` (refraction)
 
 ```cfg
-primitives:
-{
-    spheres = (
-        { x = 60; y = 5; z = 40; r = 25; },
-        { x = -40; y = 20; z = -10; r = 35; }
-    );
+material: {
+    name = "flatcolor";
+    parameters: {
+        color: { r = 191; g = 63; b = 63; };
+        reflType = "DIFF";      # Converted to enum by plugin
+        reflectivity = 0.0;
+        transparency = 0.0;
+    };
 };
 ```
 
-In this example:
-- The type is `primitives`
-- The list name is `spheres`
-- Two objects are created, each with type name `"sphere"` (singular form of the list name)
-- Each object in the list is passed to the builder
+### Rule 6: Unused Parameters are Ignored
 
-### Rule 4: Mixed Content (Lists + Groups)
-
-When a type contains **both lists and non-list groups**, the parser enters mixed mode:
+Parameters that are not handled by a plugin constructor are safely ignored. This allows for flexible configuration files where some optional parameters can be present but unused.
 
 ```cfg
-lights:
-{
-    ambient = { multiplier = 0.4; };
-    diffuse = { multiplier = 0.6; };
-    
-    point = (
-        { x = 400; y = 100; z = 500; },
-        { x = 500; y = 200; z = 600; }
-    );
+material: {
+    name = "simpleMaterial";
+    parameters: {
+        color: { r = 255; g = 0; b = 0; };
+        
+        # These fields might not be used by all plugins
+        roughness = 0.5;        # Ignored if not supported
+        metalness = 0.8;        # Ignored if not supported
+        customParam = "value";  # Ignored if not supported
+    };
 };
 ```
 
-**Behavior:**
-1. Lists are processed first (e.g., `point` creates objects with type name `"point"`)
-2. Non-list groups are then processed as separate unique objects with their own names
-3. In this example:
-   - Two objects of type `"point"` are created (one for each list element)
-   - One object of type `"ambient"` is created
-   - One object of type `"diffuse"` is created
+## Small Error Cases and Corrections
 
-### Rule 5: Error Handling
+### ❌ Error Case 1: Missing SceneParameters
 
-Any parsing error will throw a `raytracer::exception::ParsingException` with a descriptive message. Common errors include:
-
-- **Invalid file path**: File doesn't exist or can't be read
-- **Invalid syntax**: Malformed libconfig syntax
-- **Invalid type casting**: Non-group value in mixed mode (Rule 4)
-- **Build failure**: Object builder returns nullptr
-
-## Configuration Examples
-
-### Example 1: Simple Single Object (Camera)
-
+**WRONG:**
 ```cfg
 camera:
-{
-    resolution = { width = 1920; height = 1080; };
-    position = { x = 0; y = -100; z = 20; };
-    rotation = { x = 0; y = 0; z = 0; };
-    fieldOfView = 72.0;
-};
+(
+    { resolution: { width = 400; height = 200; }; }
+);
 ```
 
-**Parsing Result:**
-- Type name: `"camera"`
-- Parameters passed to builder:
-  ```
-  {
-    "resolution": { width: 1920, height: 1080 },
-    "position": { x: 0, y: -100, z: 20 },
-    "rotation": { x: 0, y: 0, z: 0 },
-    "fieldOfView": 72.0
-  }
-  ```
+**Why:** The scene cannot be initialized without `sceneParameters`.
 
-### Example 2: Multiple Objects from a List (Spheres)
-
+**CORRECT:**
 ```cfg
-primitives:
+sceneParameters:
 {
-    spheres = (
-        {
-            x = 60;
-            y = 5;
-            z = 40;
-            r = 25;
-            color = { r = 255; g = 64; b = 64; };
-        },
-        {
-            x = -40;
-            y = 20;
-            z = -10;
-            r = 35;
-            color = { r = 64; g = 255; b = 64; };
-        }
-    );
+    ambiantOcclution: { samples = 0; radius = 0.0; };
+    ambientLight: { color: { r = 0; g = 0; b = 0; }; intensity = 0.0; };
+    ambientDiffuse: { color: { r = 0; g = 0; b = 0; }; intensity = 0.0; };
 };
-```
 
-**Parsing Result:**
-- Two objects are created
-- Both have type name: `"sphere"` (singular)
-- Each receives its respective parameters
-
-### Example 3: Mixed Lists and Groups (Lights)
-
-```cfg
-lights:
-{
-    ambient = { multiplier = 0.4; };
-    diffuse = { multiplier = 0.6; };
-    
-    point = (
-        { x = 400; y = 100; z = 500; },
-        { x = 500; y = 200; z = 600; }
-    );
-};
-```
-
-**Parsing Result:**
-1. Process lists first:
-   - Two objects of type `"point"` (singular) are created
-2. Process groups:
-   - One object of type `"ambient"` is created with `{ "multiplier": 0.4 }`
-   - One object of type `"diffuse"` is created with `{ "multiplier": 0.6 }`
-
-### Example 4: Complete Configuration File
-
-```cfg
 camera:
-{
-    resolution = { width = 1920; height = 1080; };
-    position = { x = 0; y = -100; z = 20; };
-    rotation = { x = 0; y = 0; z = 0; };
-    fieldOfView = 72.0;
-};
+(
+    { resolution: { width = 400; height = 200; }; }
+);
+```
 
+### ❌ Error Case 2: Incorrect Type (Missing Float Indicator)
+
+**WRONG:**
+```cfg
 primitives:
-{
-    spheres = (
-        {
-            x = 60;
-            y = 5;
-            z = 40;
-            r = 25;
-            color = { r = 255; g = 64; b = 64; };
-        },
-        {
-            x = -40;
-            y = 20;
-            z = -10;
-            r = 35;
-            color = { r = 64; g = 255; b = 64; };
-        }
-    );
+(
+    {
+        name = "sphere";
+        parameters: {
+            center: { x = 50; y = 40; z = 80; };      # Missing .0
+            radius = 16.5;
+        };
+    }
+);
+```
 
-    planes = (
-        {
-            axis = "Z";
-            position = -20;
-            color = { r = 64; g = 64; b = 255; };
-        }
-    );
-};
+**Why:** Integer values are treated differently than floats. Coordinates should be floats.
 
+**CORRECT:**
+```cfg
+primitives:
+(
+    {
+        name = "sphere";
+        parameters: {
+            center: { x = 50.0; y = 40.0; z = 80.0; };
+            radius = 16.5;
+        };
+    }
+);
+```
+
+### ❌ Error Case 3: Mixing Styles (Group Style Inside List Parameters)
+
+**WRONG:**
+```cfg
 lights:
 {
-    ambient = { multiplier = 0.4; };
-    diffuse = { multiplier = 0.6; };
-
-    point = (
-        { x = 400; y = 100; z = 500; }
+    point_light = (
+        {
+            name = "point_light";        # Wrong! List parameters don't use name
+            parameters: {
+                position: { x = 50.0; y = 57.1; z = 81.6; };
+                intensity = 400.0;
+            };
+        }
     );
 };
 ```
 
-## Supported Value Types
+**Why:** List parameters (Method 2) don't use the `name`/`parameters` wrapper. Each element is directly the parameters.
 
-The parser supports the following libconfig value types:
-
-| Type | Example | Parsed As |
-|------|---------|-----------|
-| Integer | `42` | `int` |
-| 64-bit Integer | `9223372036854775807` | `long long` |
-| Float/Double | `3.14` or `72.0` | `double` |
-| String | `"text"` | `std::string` |
-| Boolean | `true` or `false` | `bool` |
-| Group | `{ key = value; }` | `std::map<std::string, std::any>` |
-| Array | `[1, 2, 3]` | `std::vector<std::any>` |
-| List | `(...)` | Processed as multiple objects |
-
-## Naming Conventions
-
-- **Type names** (root level): Use descriptive names that match your object factory registrations
-- **List names**: The singular form will be used as the type name for each object in the list
-  - `spheres` → type name `"sphere"`
-  - `lights` → type name `"light"`
-  - `cameras` → type name `"camera"`
-
-## Common Mistakes to Avoid
-
-### ❌ Mistake 1: Mixing List and Non-List Elements Incorrectly
-
+**CORRECT:**
 ```cfg
-# WRONG - This will cause an error because "color" is not a group
-primitives:
+lights:
 {
-    color = 255;
-    spheres = ( { x = 0; y = 0; z = 0; } );
+    point_light = (
+        {
+            position: { x = 50.0; y = 57.1; z = 81.6; };
+            color: { r = 250; g = 230; b = 230; };
+            intensity = 400.0;
+            radius = 2.0;
+        }
+    );
 };
 ```
 
-**Why:** In mixed mode, all non-list elements must be groups.
+### ❌ Error Case 4: Inconsistent Type Casting
 
-### ❌ Mistake 2: Forgetting the Colon in Libconfig Syntax
-
+**WRONG:**
 ```cfg
-# WRONG - Missing colon after key
-camera { ... }
-
-# CORRECT
-camera: { ... }
-```
-
-### ❌ Mistake 3: Using Array Instead of List
-
-```cfg
-# WRONG - Arrays don't create multiple objects
-primitives:
-{
-    spheres = [ { x = 0 }, { x = 1 } ];
-};
-
-# CORRECT - Use lists
-primitives:
-{
-    spheres = ( { x = 0 }, { x = 1 } );
+material: {
+    name = "flatcolor";
+    parameters: {
+        color: { r = 191.0; g = 63.0; b = 63.0; };  # Should be integers
+        reflectivity = 0;                           # Should be 0.0
+        transparency = true;                        # Should be 0.0 or 1.0
+    };
 };
 ```
 
-### ❌ Mistake 4: Invalid Nested Syntax
+**Why:** Color values are typically integers (0-255), and floats should be explicitly declared.
 
+**CORRECT:**
 ```cfg
-# WRONG - Cannot use semicolons inside {} at libconfig array level
-primitives: { spheres = ( x = 0; ); };
-
-# CORRECT - Each element must be a complete group
-primitives:
-{
-    spheres = ( { x = 0; } );
+material: {
+    name = "flatcolor";
+    parameters: {
+        color: { r = 191; g = 63; b = 63; };
+        reflectivity = 0.0;
+        transparency = 0.0;
+    };
 };
 ```
