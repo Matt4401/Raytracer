@@ -28,10 +28,8 @@ namespace raytracer {
     }
 
     void Core::run() {
-        if (!this->_scenes.empty()) {
-            this->_renderer.render(*(this->_scenes.at(0)), 1, 50);
-            this->_renderer.pixelToPPM(*(this->_scenes.at(0)));
-        }
+        this->_renderer.render(*(this->_scenes.at(0)), 1, 50);
+        this->_renderer.pixelToPPM(*(this->_scenes.at(0)));
     }
 
 }  // namespace raytracer

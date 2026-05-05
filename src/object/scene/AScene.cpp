@@ -128,4 +128,8 @@ namespace raytracer::object::scene {
         return _cameras;
     }
 
+    bool AScene::haveCamera() {
+        return this->_cameras.size() > 0;
+    }
+
 }  // namespace raytracer::object::scene

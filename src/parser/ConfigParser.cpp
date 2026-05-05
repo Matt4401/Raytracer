@@ -8,7 +8,6 @@
 #include "parser/ConfigParser.hpp"
 
 #include <any>
-#include <exception>
 #include <libconfig.h++>
 #include <map>
 #include <memory>
@@ -184,6 +183,10 @@ namespace raytracer::parsing {
             if (objectsTheme.isList()) {
                 this->parseObjectList(objectsTheme);
             }
+        }
+        if (!this->_scenes.at(0)->haveCamera()) {
+            throw exception::ParsingException(
+                "Scene in {} do not have any cameras", filepath.string());
         }
         return this->_scenes;
     }
