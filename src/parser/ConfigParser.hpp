@@ -106,8 +106,10 @@ namespace raytracer::parsing {
          */
         void parseGroups(const libconfig::Setting &list);
 
-        std::shared_ptr<object::scene::IScene> makeScene(
-            libconfig::Setting &root);
+        void computeMaterial(ObjectInfo &info,
+                             const libconfig::Setting &objectData);
+
+        void makeScene(libconfig::Setting &root);
     };
 
 }  // namespace raytracer::parsing

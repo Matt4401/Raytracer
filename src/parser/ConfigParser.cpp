@@ -8,6 +8,7 @@
 #include "parser/ConfigParser.hpp"
 
 #include <any>
+#include <iostream>
 #include <libconfig.h++>
 #include <map>
 #include <memory>
@@ -15,8 +16,10 @@
 #include <vector>
 
 #include "exception/ParsingException.hpp"
+#include "exception/PluginException.hpp"
 #include "object/IObject.hpp"
 #include "object/IScene.hpp"
+#include "object/material/IMaterial.hpp"
 #include "parser/LibCfgUtils.hpp"
 
 namespace raytracer::parsing {
@@ -74,6 +77,25 @@ namespace raytracer::parsing {
         return info;
     }
 
+    void ConfigParser::computeMaterial(ObjectInfo &info,
+                                       const libconfig::Setting &objectData) {
+        const libconfig::Setting &materialConfig =
+            objectData.lookup(std::string(K_MATERIAL_KEYWORD));
+        ObjectInfo materialInfo = this->getObjectInfo(materialConfig);
+
+        this->buildAndAssign(
+            materialInfo, [&info](std::shared_ptr<object::IObject> &object) {
+                auto castedObj =
+                    std::dynamic_pointer_cast<object::material::IMaterial>(
+                        object);
+
+                if (!castedObj) {
+                    throw exception::PluginException("Invalid material object");
+                }
+                info.params.emplace(K_MATERIAL_KEYWORD, castedObj);
+            });
+    }
+
     void ConfigParser::computeObject(const std::string &parentName,
                                      const libconfig::Setting &objectData) {
         ObjectInfo info = this->getObjectInfo(objectData);
@@ -83,18 +105,9 @@ namespace raytracer::parsing {
         if (info.name.empty()) {
             info.name = parentName;
         }
-        try {
-            const libconfig::Setting &materialConfig =
-                objectData.lookup(std::string(K_MATERIAL_KEYWORD));
-            ObjectInfo materialInfo = this->getObjectInfo(materialConfig);
 
-            this->buildAndAssign(
-                materialInfo,
-                [&info](std::shared_ptr<object::IObject> &object) {
-                    info.params.emplace(K_MATERIAL_KEYWORD, object);
-                });
-
-        } catch (...) {
+        if (objectData.exists(std::string(K_MATERIAL_KEYWORD))) {
+            this->computeMaterial(info, objectData);
         }
         this->buildAndAssign(info,
                              [this](std::shared_ptr<object::IObject> &object) {
@@ -118,27 +131,28 @@ namespace raytracer::parsing {
         }
     }
 
-    std::shared_ptr<object::scene::IScene> ConfigParser::makeScene(
-        libconfig::Setting &root) {
-        try {
-            const libconfig::Setting &sceneCfg =
-                root.lookup(std::string(K_SCENE_PARAMETERS));
-            std::map<std::string, std::any> params =
-                LibCfgUtils::groupToMap(sceneCfg);
-            std::shared_ptr<raytracer::object::IObject> objectScene =
-                this->_buildCallback("scene", params);
-
-            if (objectScene == nullptr)
-                return nullptr;
-            if (auto scene = std::dynamic_pointer_cast<object::scene::IScene>(
-                    objectScene)) {
-                root.remove(sceneCfg.getName());
-                return scene;
-            }
-        } catch (...) {
-            return nullptr;
+    void ConfigParser::makeScene(libconfig::Setting &root) {
+        if (!root.exists(std::string(K_SCENE_PARAMETERS))) {
+            throw raytracer::exception::ParsingException(
+                "failed to make the scene");
         }
-        return nullptr;
+
+        const libconfig::Setting &sceneCfg =
+            root.lookup(std::string(K_SCENE_PARAMETERS));
+        std::map<std::string, std::any> params =
+            LibCfgUtils::groupToMap(sceneCfg);
+        std::shared_ptr<raytracer::object::IObject> objectScene =
+            this->_buildCallback("scene", params);
+
+        if (objectScene == nullptr) {
+            throw raytracer::exception::ParsingException(
+                "failed to make the scene");
+        }
+        if (auto scene =
+                std::dynamic_pointer_cast<object::scene::IScene>(objectScene)) {
+            root.remove(sceneCfg.getName());
+            this->_scenes.emplace_back(scene);
+        }
     }
 
     std::vector<std::shared_ptr<object::scene::IScene>> ConfigParser::parse(
@@ -147,11 +161,10 @@ namespace raytracer::parsing {
             throw raytracer::exception::ParsingException(
                 "Parsing parameter not set");
         }
+
         this->loadConfig(filepath);
-        if (std::shared_ptr<object::scene::IScene> scene =
-                this->makeScene(this->_cfg.getRoot())) {
-            this->_scenes.emplace_back(scene);
-        }
+        this->makeScene(this->_cfg.getRoot());
+
         for (const auto &objectsTheme : this->_cfg.getRoot()) {
             if (objectsTheme.isGroup()) {
                 this->parseGroups(objectsTheme);

@@ -7,6 +7,8 @@
 
 #include "object/AScene.hpp"
 
+#include <iostream>
+
 #include "exception/PluginException.hpp"
 #include "util/middleware/Helpers.hpp"
 #include "util/middleware/ObjectMiddleware.hpp"
@@ -14,24 +16,35 @@
 namespace raytracer::object::scene {
     AScene::AScene(const std::map<std::string, std::any> &params)
         : AObject(Type::SCENE) {
-        _ambientOcclusion.samples =
-            util::ObjectMiddleware::validate<int>(params, "aoSamples", "Scene");
-        _ambientOcclusion.radius = util::ObjectMiddleware::validate<double>(
-            params, "aoRadius", "Scene");
-        util::Helpers::unsignedDouble(_ambientOcclusion.radius, "aoRadius",
+        const auto &ambiantOcclution = util::ObjectMiddleware::requireMap(
+            params, "ambiantOcclution", "Scene");
+        const auto &ambientLight =
+            util::ObjectMiddleware::requireMap(params, "ambientLight", "Scene");
+        const auto &ambientDiffuse = util::ObjectMiddleware::requireMap(
+            params, "ambientDiffuse", "Scene");
+
+        this->_ambientOcclusion.samples = util::ObjectMiddleware::validate<int>(
+            ambiantOcclution, "samples", "Scene");
+        this->_ambientOcclusion.radius =
+            util::ObjectMiddleware::validate<double>(ambiantOcclution, "radius",
+                                                     "Scene");
+        util::Helpers::unsignedDouble(_ambientOcclusion.radius, "radius",
                                       "Scene");
-        _ambientLight.color =
-            util::Helpers::toColor(params, "ambientLightColor", "Scene");
-        _ambientLight.intensity = util::ObjectMiddleware::validate<double>(
-            params, "ambientLightIntensity", "Scene");
-        util::Helpers::unsignedDouble(_ambientLight.intensity,
-                                      "ambientLightIntensity", "Scene");
+
+        this->_ambientLight.color =
+            util::Helpers::toColor(ambientLight, "color", "Scene");
+        this->_ambientLight.intensity =
+            util::ObjectMiddleware::validate<double>(ambientLight, "intensity",
+                                                     "Scene");
+        util::Helpers::unsignedDouble(_ambientLight.intensity, "intensity",
+                                      "Scene");
+
         _ambientDiffuse.ambient =
-            util::Helpers::toColor(params, "ambientDiffuseColor", "Scene");
+            util::Helpers::toColor(ambientDiffuse, "color", "Scene");
         _ambientDiffuse.intensity = util::ObjectMiddleware::validate<double>(
-            params, "ambientDiffuseIntensity", "Scene");
-        util::Helpers::unsignedDouble(_ambientDiffuse.intensity,
-                                      "ambientDiffuseIntensity", "Scene");
+            ambientDiffuse, "intensity", "Scene");
+        util::Helpers::unsignedDouble(_ambientDiffuse.intensity, "intensity",
+                                      "Scene");
     }
 
     void AScene::addPrimitive(const std::shared_ptr<IObject> &primitive) {

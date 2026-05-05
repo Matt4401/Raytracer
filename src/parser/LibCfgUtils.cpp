@@ -55,6 +55,7 @@ namespace raytracer::parsing {
 
         for (const auto &value : group) {
             try {
+                // std::cout << value.getName() << "\n";
                 data.emplace(value.getName(), resolveValue(value));
             } catch (const std::exception &err) {
                 std::cerr << "Warning: Failed to resolve the value of "
@@ -66,8 +67,9 @@ namespace raytracer::parsing {
     }
 
     std::any LibCfgUtils::resolveValue(const libconfig::Setting &value) {
-        if (value.isGroup())
+        if (value.isGroup()) {
             return groupToMap(value);
+        }
         if (value.isArray())
             return arrayToVector(value);
         return extractValue(value);
