@@ -44,6 +44,7 @@ set(SRCS
         src/plugin/PluginManager.cpp
         src/plugin/ObjectFactory.cpp
         src/parser/ConfigParser.cpp
+		src/parser/LibCfgUtils.cpp
         src/object/light/ALight.cpp
         src/object/scene/AScene.cpp
 )
@@ -55,6 +56,7 @@ set(HEADERS
         src/plugin/ObjectFactory.hpp
         src/plugin/DlLoader.hpp
         src/parser/ConfigParser.hpp
+		src/parser/LibCfgUtils.hpp
         include/exception/Exception.hpp
         include/exception/ParsingException.hpp
         include/exception/CoreException.hpp
@@ -74,7 +76,7 @@ set(HEADERS
 )
 
 add_library(raytracer_core STATIC ${SRCS})
-set_target_properties(raytracer_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_property(TARGET raytracer_core PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 target_include_directories(raytracer_core PUBLIC
         ${CMAKE_SOURCE_DIR}/include
@@ -92,4 +94,4 @@ target_link_libraries(${NAME} PRIVATE raytracer_core)
 target_link_libraries(${NAME} PRIVATE ${LIBCONFIG_LIBRARIES})
 target_include_directories(${NAME} PRIVATE ${LIBCONFIG_INCLUDE_DIRS})
 
-# add_subdirectory(libs)
+add_subdirectory(libs)

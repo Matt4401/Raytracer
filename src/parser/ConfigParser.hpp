@@ -9,12 +9,15 @@
 
 #include <any>
 #include <filesystem>
+#include <functional>
 #include <libconfig.h++>
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
+#include <vector>
 
-#include "object/IObject.hpp"
+#include "object/IScene.hpp"
 
 namespace raytracer::parsing {
 
@@ -26,17 +29,9 @@ namespace raytracer::parsing {
          * @param param A map of parameters for object construction.
          * @return A unique pointer to the newly constructed object.
          */
-        using buildCallback = std::function<std::unique_ptr<object::IObject>(
+        using buildCallback = std::function<std::shared_ptr<object::IObject>(
             const std::string &name,
             const std::map<std::string, std::any> &param)>;
-
-        /**
-         * @brief Callback function type used to assign constructed objects to
-         * the scene.
-         * @param object The constructed object ready to be added.
-         */
-        using AssignCallback =
-            std::function<void(std::unique_ptr<raytracer::object::IObject>)>;
 
       public:
         ConfigParser() = default;
@@ -50,22 +45,31 @@ namespace raytracer::parsing {
         void setBuildCallback(const buildCallback &callback);
 
         /**
-         * @brief Sets the callback used to assign objects successfully built.
-         * @param callback The function to call when an object has been built.
-         */
-        void setAssignCallback(const AssignCallback &callback);
-
-        /**
          * @brief Parses a configuration file.
          * @param filepath The path to the configuration file.
+         * @return list of scene parsed in the file. The first of the list will
+         * be the filepath scene. The others will be the others defined in it
          */
-        void parse(const std::filesystem::path &filepath);
+        std::vector<std::shared_ptr<object::scene::IScene>> parse(
+            const std::filesystem::path &filepath);
 
       private:
-        buildCallback _buildCallback = nullptr;
-        AssignCallback _assignCallback = nullptr;
+        struct ObjectInfo {
+            std::map<std::string, std::any> params;
+            std::string name = "";
+        };
 
+        buildCallback _buildCallback = nullptr;
         libconfig::Config _cfg;
+        std::vector<std::shared_ptr<object::scene::IScene>> _scenes = {};
+
+        static constexpr std::string_view K_SCENE_PARAMETERS =
+            "sceneParameters";
+        static constexpr std::string_view K_PARAMETERS_KEYWORD = "parameters";
+        static constexpr std::string_view K_NAME_KEYWORD = "name";
+        static constexpr std::string_view K_MATERIAL_KEYWORD = "material";
+
+        ObjectInfo getObjectInfo(const libconfig::Setting &objectName);
 
         /**
          * @brief Opens and reads the libconfig file.
@@ -74,45 +78,15 @@ namespace raytracer::parsing {
         void loadConfig(const std::filesystem::path &filepath);
 
         /**
-         * @brief Extracts a single value from a setting and converts it to
-         * std::any.
-         * @param setting The libconfig setting to extract.
-         * @return The extracted value as std::any.
-         */
-        static std::any extractValue(const libconfig::Setting &setting);
-
-        /**
-         * @brief Resolves a setting to its appropriate type, acting recursively
-         * if needed.
-         * @param value The libconfig setting to resolve.
-         * @return The resolved value.
-         */
-        static std::any resolveValue(const libconfig::Setting &value);
-
-        /**
-         * @brief Parses a libconfig group setting into a map.
-         * @param group The setting group.
-         * @return A map linking names to their corresponding extracted values.
-         */
-        static std::map<std::string, std::any> parseGroup(
-            const libconfig::Setting &group);
-
-        /**
-         * @brief Parses a libconfig array setting into a vector.
-         * @param array The setting array.
-         * @return A vector containing the extracted elements.
-         */
-        static std::vector<std::any> parseArray(
-            const libconfig::Setting &array);
-
-        /**
          * @brief Triggers the build callback and, if successful, the assign
          * callback.
          * @param stringName Name element indicating the targeted name.
          * @param config The map of parameters.
          */
-        void buildAndAssign(const std::string &stringName,
-                            const std::map<std::string, std::any> &config);
+        void buildAndAssign(
+            const ObjectInfo &info,
+            const std::function<void(std::shared_ptr<object::IObject> &)>
+                &func);
 
         /**
          * @brief Computes a list of objects under a single group definition.
@@ -120,11 +94,10 @@ namespace raytracer::parsing {
          * @param stringName Name string representing the collection.
          * @param group The setting group containing the objects.
          */
-        void parseObjectList(const std::string &stringName,
-                             const libconfig::Setting &list);
+        void parseObjectList(const libconfig::Setting &list);
 
-        void computeUniqueObjects(const std::map<std::string, std::any> &data,
-                                  const std::string &typeName);
+        void computeObject(const std::string &parentName,
+                           const libconfig::Setting &objectData);
 
         /**
          * @brief Parses the list of general groupings from the config.
@@ -132,6 +105,9 @@ namespace raytracer::parsing {
          * @param list The libconfig root list/group list.
          */
         void parseGroups(const libconfig::Setting &list);
+
+        std::shared_ptr<object::scene::IScene> makeScene(
+            libconfig::Setting &root);
     };
 
 }  // namespace raytracer::parsing

@@ -8,8 +8,6 @@
 #include "parser/ConfigParser.hpp"
 
 #include <any>
-#include <exception>
-#include <iostream>
 #include <libconfig.h++>
 #include <map>
 #include <memory>
@@ -18,13 +16,10 @@
 
 #include "exception/ParsingException.hpp"
 #include "object/IObject.hpp"
+#include "object/IScene.hpp"
+#include "parser/LibCfgUtils.hpp"
 
 namespace raytracer::parsing {
-
-    void ConfigParser::setAssignCallback(
-        const ConfigParser::AssignCallback &callback) {
-        this->_assignCallback = callback;
-    }
 
     void ConfigParser::setBuildCallback(
         const ConfigParser::buildCallback &callback) {
@@ -33,6 +28,8 @@ namespace raytracer::parsing {
 
     void ConfigParser::loadConfig(const std::filesystem::path &filepath) {
         try {
+            this->_cfg.clear();
+            this->_scenes.clear();
             this->_cfg.readFile(filepath);
         } catch (...) {
             throw raytracer::exception::ParsingException(
@@ -40,135 +37,129 @@ namespace raytracer::parsing {
         }
     }
 
-    std::any ConfigParser::extractValue(const libconfig::Setting &setting) {
-        switch (setting.getType()) {
-            case libconfig::Setting::TypeInt:
-                return (int)setting;
-            case libconfig::Setting::TypeInt64:
-                return ((long long)setting);
-            case libconfig::Setting::TypeFloat:
-                return ((double)setting);
-            case libconfig::Setting::TypeString:
-                return ((std::string)setting);
-            case libconfig::Setting::TypeBoolean:
-                return ((bool)setting);
-            default:
-                throw raytracer::exception::ParsingException(
-                    "Invalid config syntaxe on {}.", setting.getName());
-        }
-    }
-    std::any ConfigParser::resolveValue(const libconfig::Setting &value) {
-        if (value.isGroup())
-            return parseGroup(value);
-        if (value.isArray())
-            return parseArray(value);
-        return extractValue(value);
-    }
-
-    std::vector<std::any> ConfigParser::parseArray(
-        const libconfig::Setting &array) {
-        std::vector<std::any> data;
-
-        for (const auto &value : array) {
-            try {
-                data.emplace_back(ConfigParser::extractValue(value));
-            } catch (const std::exception &err) {
-                std::cerr << err.what() << "\n";
-            }
-        }
-
-        return data;
-    }
-
-    std::map<std::string, std::any> ConfigParser::parseGroup(
-        const libconfig::Setting &group) {
-        std::map<std::string, std::any> data;
-
-        for (const auto &value : group) {
-            try {
-                data.emplace(value.getName(), resolveValue(value));
-            } catch (const std::exception &err) {
-                std::cerr << err.what() << "\n";
-            }
-        }
-        return data;
-    }
-
     void ConfigParser::buildAndAssign(
-        const std::string &stringName,
-        const std::map<std::string, std::any> &config) {
-        std::unique_ptr<object::IObject> object =
-            this->_buildCallback(stringName, config);
+        const ObjectInfo &info,
+        const std::function<void(std::shared_ptr<object::IObject> &)> &func) {
+        std::shared_ptr<object::IObject> object =
+            this->_buildCallback(info.name, info.params);
 
         if (object != nullptr) {
-            this->_assignCallback(std::move(object));
+            func(object);
         } else {
             throw raytracer::exception::ParsingException(
-                "Failed to build \"{}\"", stringName);
+                "Failed to build \"{}\"", info.name);
         }
     }
 
-    void ConfigParser::parseObjectList(const std::string &stringName,
-                                       const libconfig::Setting &list) {
-        for (unsigned int index = 0; index < list.getLength(); ++index) {
-            std::map<std::string, std::any> config =
-                ConfigParser::parseGroup(list[index]);
-            if (config.empty()) {
-                continue;
-            }
-            this->buildAndAssign(stringName, config);
-        }
-    }
+    ConfigParser::ObjectInfo ConfigParser::getObjectInfo(
+        const libconfig::Setting &objectName) {
+        ObjectInfo info;
 
-    void ConfigParser::computeUniqueObjects(
-        const std::map<std::string, std::any> &data,
-        const std::string &typeName) {
-        for (const auto &object : data) {
-            std::map<std::string, std::any> config;
-            try {
-                config = std::any_cast<std::map<std::string, std::any>>(
-                    object.second);
-            } catch (const std::bad_any_cast &err) {
+        try {
+            const libconfig::Setting &params =
+                objectName.lookup(std::string(K_PARAMETERS_KEYWORD));
+
+            info.params = LibCfgUtils::groupToMap(params);
+            const libconfig::Setting &name =
+                objectName.lookup(std::string(K_NAME_KEYWORD));
+            if (!name.isString()) {
                 throw raytracer::exception::ParsingException(
-                    "Failed to parse file because of  \"{}\" in {}",
-                    object.first, typeName);
+                    "did not found parameters");
             }
-            this->buildAndAssign(object.first, config);
+            info.name =
+                std::any_cast<std::string>(LibCfgUtils::extractValue(name));
+        } catch (...) {
+            info.params = LibCfgUtils::groupToMap(objectName);
+        }
+        return info;
+    }
+
+    void ConfigParser::computeObject(const std::string &parentName,
+                                     const libconfig::Setting &objectData) {
+        ObjectInfo info = this->getObjectInfo(objectData);
+        if (info.params.empty()) {
+            return;
+        }
+        if (info.name.empty()) {
+            info.name = parentName;
+        }
+        try {
+            const libconfig::Setting &materialConfig =
+                objectData.lookup(std::string(K_MATERIAL_KEYWORD));
+            ObjectInfo materialInfo = this->getObjectInfo(materialConfig);
+
+            this->buildAndAssign(
+                materialInfo,
+                [&info](std::shared_ptr<object::IObject> &object) {
+                    info.params.emplace(K_MATERIAL_KEYWORD, object);
+                });
+
+        } catch (...) {
+        }
+        this->buildAndAssign(info,
+                             [this](std::shared_ptr<object::IObject> &object) {
+                                 this->_scenes.at(0)->addObject(object);
+                             });
+    }
+
+    void ConfigParser::parseObjectList(const libconfig::Setting &list) {
+        for (unsigned int index = 0; index < list.getLength(); ++index) {
+            this->computeObject(list.getName(), list[index]);
         }
     }
 
     void ConfigParser::parseGroups(const libconfig::Setting &list) {
-        std::map<std::string, std::any> buffer;
-        bool isObject = true;
-
         for (auto &value : list) {
             if (value.isList()) {
-                this->parseObjectList(value.getName(), value);
-                isObject = false;
+                this->parseObjectList(value);
                 continue;
             }
-            buffer.emplace(value.getName(), ConfigParser::resolveValue(value));
-        }
-
-        if (isObject) {
-            this->buildAndAssign(list.getName(), buffer);
-        } else {
-            this->computeUniqueObjects(buffer, list.getName());
+            this->computeObject(list.getName(), value);
         }
     }
 
-    void ConfigParser::parse(const std::filesystem::path &filepath) {
-        if (this->_assignCallback == nullptr ||
-            this->_buildCallback == nullptr) {
+    std::shared_ptr<object::scene::IScene> ConfigParser::makeScene(
+        libconfig::Setting &root) {
+        try {
+            const libconfig::Setting &sceneCfg =
+                root.lookup(std::string(K_SCENE_PARAMETERS));
+            std::map<std::string, std::any> params =
+                LibCfgUtils::groupToMap(sceneCfg);
+            std::shared_ptr<raytracer::object::IObject> objectScene =
+                this->_buildCallback("scene", params);
+
+            if (objectScene == nullptr)
+                return nullptr;
+            if (auto scene = std::dynamic_pointer_cast<object::scene::IScene>(
+                    objectScene)) {
+                root.remove(sceneCfg.getName());
+                return scene;
+            }
+        } catch (...) {
+            return nullptr;
+        }
+        return nullptr;
+    }
+
+    std::vector<std::shared_ptr<object::scene::IScene>> ConfigParser::parse(
+        const std::filesystem::path &filepath) {
+        if (this->_buildCallback == nullptr) {
             throw raytracer::exception::ParsingException(
                 "Parsing parameter not set");
         }
-        this->_cfg.clear();
         this->loadConfig(filepath);
+        if (std::shared_ptr<object::scene::IScene> scene =
+                this->makeScene(this->_cfg.getRoot())) {
+            this->_scenes.emplace_back(scene);
+        }
         for (const auto &objectsTheme : this->_cfg.getRoot()) {
             if (objectsTheme.isGroup()) {
                 this->parseGroups(objectsTheme);
             }
+            if (objectsTheme.isList()) {
+                this->parseObjectList(objectsTheme);
+            }
         }
+        return this->_scenes;
     }
 }  // namespace raytracer::parsing

@@ -39,6 +39,7 @@ namespace raytracer {
         ObjectFactory _objFactory;
         Render _renderer;
 
+        std::vector<std::shared_ptr<object::scene::IScene>> _scenes;
         std::shared_ptr<object::scene::IScene> _scene;
 
         static constexpr std::string_view PLUGINS_FOLDER_PATH = "./plugins/";
