@@ -28,7 +28,6 @@ namespace raytracer::object::primitive {
           _radius(
               util::ObjectMiddleware::validate<double>(args, "r", "Sphere")) {
         util::Helpers::unsignedDouble(_radius, "r", "Sphere");
-
     }
 
     Sphere::Sphere(const maths::Vector &vector, const double radius)

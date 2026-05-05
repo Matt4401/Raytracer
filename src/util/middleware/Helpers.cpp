@@ -42,7 +42,7 @@ namespace raytracer::util {
         normal.normalize();
         return normal;
     }
-  
+
     void Helpers::notCollinearVector(const maths::Vector &v1,
                                      const maths::Vector &v2,
                                      std::string_view fieldName1,

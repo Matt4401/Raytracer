@@ -33,9 +33,8 @@ namespace {
                                              {"g", (unsigned char)200},
                                              {"b", (unsigned char)200}}},
             {"emission",
-             std::map<std::string, std::any>{{"x", 0.0},
-                                             {"y", 0.0},
-                                             {"z", 0.0}}},
+             std::map<std::string, std::any>{
+                 {"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
             {"reflType", raytracer::object::primitive::RefltT::DIFF}};
         auto matObj = factory.build("flatcolor", flatColorArgs);
         EXPECT_NE(matObj, nullptr);
@@ -53,17 +52,14 @@ namespace {
         std::map<std::string, std::any> args = {
             {"material", material},
             {"center",
-             std::map<std::string, std::any>{{"x", center.x},
-                                             {"y", center.y},
-                                             {"z", center.z}}},
+             std::map<std::string, std::any>{
+                 {"x", center.x}, {"y", center.y}, {"z", center.z}}},
             {"v1",
-             std::map<std::string, std::any>{{"x", v1.x},
-                                             {"y", v1.y},
-                                             {"z", v1.z}}},
+             std::map<std::string, std::any>{
+                 {"x", v1.x}, {"y", v1.y}, {"z", v1.z}}},
             {"v2",
-             std::map<std::string, std::any>{{"x", v2.x},
-                                             {"y", v2.y},
-                                             {"z", v2.z}}},
+             std::map<std::string, std::any>{
+                 {"x", v2.x}, {"y", v2.y}, {"z", v2.z}}},
         };
 
         auto obj = factory.build("triangle", args);
