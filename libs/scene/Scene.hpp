@@ -18,7 +18,7 @@ namespace raytracer::object::scene {
         maths::Vector nl;
         maths::Vector f;
         int depth;
-        unsigned short *Xi;
+        unsigned short *xi;
         const int emissive;
     };
 
@@ -31,7 +31,7 @@ namespace raytracer::object::scene {
         bool intersect(const maths::Ray &ray, double &t,
                        int &objectId) const override;
         maths::Vector radiance(const maths::Ray &ray, int depth,
-                               unsigned short *Xi,
+                               unsigned short *xi,
                                int emissive = 1) const override;
 
       private:
@@ -54,13 +54,13 @@ namespace raytracer::object::scene {
         /// to be reflected.
         /// @param nl the normal vector defining the hemisphere, expected to be
         /// a non-zero vector. The function will normalize nl internally.
-        /// @param Xi the random seed state for the drand48 family of functions,
+        /// @param xi the random seed state for the drand48 family of functions,
         /// used to generate random numbers. The caller is responsible for
-        /// initializing and managing the state of Xi.
+        /// initializing and managing the state of xi.
         /// @return a random direction vector in the hemisphere around nl, with
         /// a cosine-weighted distribution.
         maths::Vector randomCosineDir(const maths::Vector &nl,
-                                      unsigned short *Xi) const;
+                                      unsigned short *xi) const;
         maths::Vector radianceDiffuse(const maths::Ray &ray,
                                       const primitive::IPrimitive &obj,
                                       const RadianceContext &ctx) const;

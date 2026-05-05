@@ -7,6 +7,8 @@
 
 #include "../../include/math/Vector.hpp"
 
+#include <stdexcept>
+
 namespace raytracer::maths {
 
     Vector &Vector::operator=(const Vector &other) = default;

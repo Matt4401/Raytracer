@@ -9,7 +9,6 @@
 
 #include "math/Color.hpp"
 #include "math/Vector.hpp"
-#include "object/primitive/IPrimitive.hpp"
 
 namespace raytracer::object::scene {
     class IScene;
