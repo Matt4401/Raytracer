@@ -28,7 +28,7 @@ namespace raytracer::parsing {
                 return ((bool)setting);
             default:
                 throw raytracer::exception::ParsingException(
-                    "Invalid config syntaxe on {}.", setting.getName());
+                    "Invalid config syntax on {}.", setting.getName());
         }
     }
 
@@ -55,7 +55,6 @@ namespace raytracer::parsing {
 
         for (const auto &value : group) {
             try {
-                // std::cout << value.getName() << "\n";
                 data.emplace(value.getName(), resolveValue(value));
             } catch (const std::exception &err) {
                 std::cerr << "Warning: Failed to resolve the value of "

@@ -8,7 +8,7 @@
 #include "parser/ConfigParser.hpp"
 
 #include <any>
-#include <iostream>
+#include <exception>
 #include <libconfig.h++>
 #include <map>
 #include <memory>
@@ -34,9 +34,14 @@ namespace raytracer::parsing {
             this->_cfg.clear();
             this->_scenes.clear();
             this->_cfg.readFile(filepath);
-        } catch (...) {
+
+        } catch (const libconfig::FileIOException &) {
             throw raytracer::exception::ParsingException(
-                "Failed to open \"{}\" file", filepath.string());
+                "Failed to open \"{}\" file.", filepath.string());
+        } catch (const libconfig::ParseException &e) {
+            throw raytracer::exception::ParsingException(
+                "Failed to parse \"{}\" file (line {}, {}).", filepath.string(),
+                e.getLine(), e.getError());
         }
     }
 
@@ -57,23 +62,30 @@ namespace raytracer::parsing {
     ConfigParser::ObjectInfo ConfigParser::getObjectInfo(
         const libconfig::Setting &objectName) {
         ObjectInfo info;
+        const bool hasName = objectName.exists(std::string(K_NAME_KEYWORD));
+        const bool hasParameters =
+            objectName.exists(std::string(K_PARAMETERS_KEYWORD));
 
-        try {
-            const libconfig::Setting &params =
-                objectName.lookup(std::string(K_PARAMETERS_KEYWORD));
-
-            info.params = LibCfgUtils::groupToMap(params);
-            const libconfig::Setting &name =
-                objectName.lookup(std::string(K_NAME_KEYWORD));
-            if (!name.isString()) {
-                throw raytracer::exception::ParsingException(
-                    "did not found parameters");
-            }
-            info.name =
-                std::any_cast<std::string>(LibCfgUtils::extractValue(name));
-        } catch (...) {
+        if (!hasName && !hasParameters) {
             info.params = LibCfgUtils::groupToMap(objectName);
+            return info;
         }
+        if (!hasName || !hasParameters) {
+            throw raytracer::exception::ParsingException(
+                "Object must define both \"{}\" and \"{}\"", K_NAME_KEYWORD,
+                K_PARAMETERS_KEYWORD);
+        }
+        const libconfig::Setting &params =
+            objectName.lookup(std::string(K_PARAMETERS_KEYWORD));
+        info.params = LibCfgUtils::groupToMap(params);
+        const libconfig::Setting &name =
+            objectName.lookup(std::string(K_NAME_KEYWORD));
+        if (!name.isString()) {
+            throw raytracer::exception::ParsingException(
+                "\"{}\" must be a string", K_NAME_KEYWORD);
+        }
+        info.name = std::any_cast<std::string>(LibCfgUtils::extractValue(name));
+
         return info;
     }
 

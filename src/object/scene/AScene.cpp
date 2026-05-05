@@ -14,17 +14,17 @@
 namespace raytracer::object::scene {
     AScene::AScene(const std::map<std::string, std::any> &params)
         : AObject(Type::SCENE) {
-        const auto &ambiantOcclution = util::ObjectMiddleware::requireMap(
-            params, "ambiantOcclution", "Scene");
+        const auto &ambiantOcclusion = util::ObjectMiddleware::requireMap(
+            params, "ambiantOcclusion", "Scene");
         const auto &ambientLight =
             util::ObjectMiddleware::requireMap(params, "ambientLight", "Scene");
         const auto &ambientDiffuse = util::ObjectMiddleware::requireMap(
             params, "ambientDiffuse", "Scene");
 
         this->_ambientOcclusion.samples = util::ObjectMiddleware::validate<int>(
-            ambiantOcclution, "samples", "Scene");
+            ambiantOcclusion, "samples", "Scene");
         this->_ambientOcclusion.radius =
-            util::ObjectMiddleware::validate<double>(ambiantOcclution, "radius",
+            util::ObjectMiddleware::validate<double>(ambiantOcclusion, "radius",
                                                      "Scene");
         util::Helpers::unsignedDouble(_ambientOcclusion.radius, "radius",
                                       "Scene");

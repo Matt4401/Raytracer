@@ -43,8 +43,8 @@ namespace raytracer::util {
             {"REFR", object::primitive::RefltT::REFR},
             {"SPEC", object::primitive::RefltT::SPEC},
         };
-        std::string strReflect = ObjectMiddleware::validate<std::string>(
-            params, "reflType", className);
+        std::string strReflect =
+            ObjectMiddleware::validate<std::string>(params, keyName, className);
 
         auto iter = linkData.find(strReflect);
 
