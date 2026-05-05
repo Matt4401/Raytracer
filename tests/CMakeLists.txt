@@ -60,6 +60,7 @@ if (NOT SKIP_INTERNET)
     add_executable(material_tests
             src/main.cpp
             src/materials/test_flatcolor.cpp
+            ${CMAKE_SOURCE_DIR}/libs/materials/flatcolor/FlatColor.cpp
             ${CMAKE_SOURCE_DIR}/src/plugin/ObjectFactory.cpp
             ${CMAKE_SOURCE_DIR}/src/plugin/PluginManager.cpp
     )
@@ -117,5 +118,3 @@ else ()
     message(WARNING "GoogleTest not available. Unit tests will not be built.")
 endif ()
 
-
-add_subdirectory(libs)
