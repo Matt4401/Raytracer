@@ -30,35 +30,31 @@ jobs:
         run: cd build && cmake --build . -j$(nproc)
         timeout-minutes: 5
 
-      - name: Upload binaries
-        uses: actions/upload-artifact@v6
-        with:
-          name: binaries
-          path: |
-            Raytracer
-            lib/
-
-  check_program_compilation:
+  launch_tests:
     needs: build
     runs-on: [ self-hosted ]
     container:
       image: epitechcontent/epitest-docker:latest
     steps:
-      - name: Download binaries
-        uses: actions/download-artifact@v8
+      - name: Checkout repository
+        uses: actions/checkout@v6
         with:
-          name: binaries
+          fetch-depth: 1
 
-      - name: Verify executables
-        run: |
-          chmod +x Raytracer
-          for exe in $EXECUTABLES; do
-            if [ ! -x "$exe" ]; then
-            echo "::error file=$exe::Executable $exe not found or not executable"
-            exit 1
-            fi
-          done
+      - name: Create build directory
+        run: mkdir -p build
 
+      - name: Configure CMake
+        run: cd build && cmake ..
+        timeout-minutes: 5
+
+      - name: Compile tests
+        run: cd build && cmake --build . --target tests -j$(nproc)
+        timeout-minutes: 5
+
+      - name: Run tests
+        run: cd build && ctest --output-on-failure
+        timeout-minutes: 5
   linter:
     runs-on: [ self-hosted ]
     container:
