@@ -15,7 +15,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "MeshGeometryGroup.hpp"
 #include "exception/PluginException.hpp"
 #include "math/Vector.hpp"
 

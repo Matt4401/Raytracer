@@ -11,7 +11,6 @@ SET (SRCS
 SET (HEADERS
     Mesh.hpp
     ObjLoader.hpp
-    MeshGeometryGroup.hpp
     MeshSurfaceHelper.hpp
 )
 
