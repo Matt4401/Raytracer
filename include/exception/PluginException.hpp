@@ -28,7 +28,9 @@ namespace raytracer::exception {
 
         template <typename... Args>
         explicit PluginException(std::string_view fmt, Args &&...args)
-            : PluginException(PREFIX, fmt, std::forward<Args>(args)...) {
+            : Exception(std::string(PREFIX) +
+                            std::vformat(fmt, std::make_format_args(args...)),
+                        source::current()) {
         }
 
         template <typename... Args>
@@ -38,7 +40,6 @@ namespace raytracer::exception {
                             std::vformat(fmt, std::make_format_args(args...)),
                         source::current()) {
         }
-
         explicit PluginException(
             const std::string_view prefix, const std::string_view msg,
             const source &location = source::current()) noexcept
@@ -116,8 +117,7 @@ namespace raytracer::exception {
                                             std::string_view fmt,
                                             Args &&...args) {
             return std::string(prefix) +
-                   std::vformat(
-                       fmt, std::make_format_args(std::forward<Args>(args)...));
+                   std::vformat(fmt, std::make_format_args(args...));
         }
     };
 }  // namespace raytracer::exception
