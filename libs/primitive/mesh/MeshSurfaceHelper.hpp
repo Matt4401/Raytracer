@@ -12,18 +12,13 @@
 #include <optional>
 #include <vector>
 
+#include "ObjLoader.hpp"
 #include "math/Ray.hpp"
 #include "math/Vector.hpp"
 
 namespace raytracer::object::primitive {
     class MeshSurfaceHelper {
       public:
-        struct Triangle {
-            int v1;
-            int v2;
-            int v3;
-        };
-
         struct TriangleIntersection {
             int triangleIndex;
             double distance;
@@ -36,40 +31,30 @@ namespace raytracer::object::primitive {
 
         ~MeshSurfaceHelper() = default;
 
-        void addTriangle(int v1, int v2, int v3) {
-            _triangles.emplace_back(v1, v2, v3);
+        void addTriangle(const ObjLoader::Face &face) {
+            _faces.push_back(face);
         }
 
-        void addTriangle(const Triangle &tri) {
-            _triangles.push_back(tri);
-        }
-
-        const std::vector<Triangle> &triangles() const {
-            return _triangles;
+        const std::vector<ObjLoader::Face> &triangles() const {
+            return _faces;
         }
 
         int triangleCount() const {
-            return _triangles.size();
+            return static_cast<int>(_faces.size());
         }
 
-        /**
-         * @brief Find the closest triangle intersection with a ray
-         */
         std::optional<TriangleIntersection> findClosestTriangle(
             const maths::Ray &ray) const;
 
-        /**
-         * @brief Compute surface normal at intersection point
-         */
         maths::Vector computeNormal(
             int triangleIdx, const maths::Vector &hitPoint,
             const std::vector<maths::Vector> &normals) const;
 
-        /**
-         * @brief Compute UV coordinates for surface
-         */
-        static maths::Vector computeUV(const maths::Vector &hitPoint,
-                                       const maths::Vector &center);
+        maths::Vector computeUV(
+            int triangleIdx, const maths::Vector &hitPoint,
+            const std::vector<maths::Vector> &textureCoords) const;
+
+        maths::Vector computeCentroid(const ObjLoader::Face &face) const;
 
       private:
         static constexpr double K_RAY_EPSILON = 1e-4;
@@ -80,7 +65,7 @@ namespace raytracer::object::primitive {
                                   const maths::Vector &v2, double &outT) const;
 
         std::reference_wrapper<const std::vector<maths::Vector>> _vertices;
-        std::vector<Triangle> _triangles;
+        std::vector<ObjLoader::Face> _faces;
     };
 
 }  // namespace raytracer::object::primitive

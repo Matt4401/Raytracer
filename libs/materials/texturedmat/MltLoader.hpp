@@ -5,10 +5,11 @@
 ** MltLoader
 */
 
-#ifndef MLTLOADER_HPP_
-#define MLTLOADER_HPP_
+#pragma once
 
+#include <functional>
 #include <map>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <unordered_map>
@@ -17,7 +18,7 @@
 #include "MeshMaterial.hpp"
 #include "exception/PluginException.hpp"
 
-namespace raytracer::object::primitive {
+namespace raytracer::object::material {
     class MltLoader {
       public:
         explicit MltLoader(const std::string &filePath);
@@ -32,8 +33,8 @@ namespace raytracer::object::primitive {
       protected:
       private:
         static const std::unordered_map<
-            std::string,
-            void (*)(MltLoader &, std::istringstream &, MeshMaterial &)>
+            std::string, std::function<void(MltLoader &, std::istringstream &,
+                                            MeshMaterial &)>>
             _ops;
 
         void parseFile(const std::string &filePath);
@@ -70,6 +71,4 @@ namespace raytracer::object::primitive {
         std::map<std::string, MeshMaterial> _materials;
     };
 
-}  // namespace raytracer::object::primitive
-
-#endif /* !MLTLOADER_HPP_ */
+}  // namespace raytracer::object::material

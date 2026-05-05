@@ -5,14 +5,13 @@
 ** MeshMaterial
 */
 
-#ifndef MESHMATERIAL_HPP_
-#define MESHMATERIAL_HPP_
+#pragma once
 
 #include <string>
 
 #include "math/Vector.hpp"
 
-namespace raytracer::object::primitive {
+namespace raytracer::object::material {
     class MeshMaterial {
       public:
         MeshMaterial() = default;
@@ -63,7 +62,6 @@ namespace raytracer::object::primitive {
             _illum = illum;
         }
 
-        // Optional getters
         const std::string &name() const {
             return _name;
         }
@@ -113,6 +111,4 @@ namespace raytracer::object::primitive {
         std::string _mapKd;    // Diffuse texture path
         std::string _mapBump;  // Bump/normal map path
     };
-}  // namespace raytracer::object::primitive
-
-#endif /* !MESHMATERIAL_HPP_ */
+}  // namespace raytracer::object::material

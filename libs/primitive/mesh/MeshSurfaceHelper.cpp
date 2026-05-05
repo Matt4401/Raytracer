@@ -11,16 +11,17 @@
 #include <limits>
 
 namespace raytracer::object::primitive {
+
     std::optional<MeshSurfaceHelper::TriangleIntersection>
     MeshSurfaceHelper::findClosestTriangle(const maths::Ray &ray) const {
         double closestT = std::numeric_limits<double>::infinity();
         int closestIdx = -1;
 
-        for (int i = 0; i < static_cast<int>(_triangles.size()); ++i) {
-            const auto &tri = _triangles[i];
-            const maths::Vector &v0 = _vertices.get()[tri.v1];
-            const maths::Vector &v1 = _vertices.get()[tri.v2];
-            const maths::Vector &v2 = _vertices.get()[tri.v3];
+        for (int i = 0; i < static_cast<int>(_faces.size()); ++i) {
+            const auto &face = _faces[i];
+            const maths::Vector &v0 = _vertices.get()[face.fv1.v];
+            const maths::Vector &v1 = _vertices.get()[face.fv2.v];
+            const maths::Vector &v2 = _vertices.get()[face.fv3.v];
 
             double t = 0.0;
             if (triangleIntersection(ray, v0, v1, v2, t)) {
@@ -43,36 +44,82 @@ namespace raytracer::object::primitive {
     maths::Vector MeshSurfaceHelper::computeNormal(
         int triangleIdx, const maths::Vector &hitPoint,
         const std::vector<maths::Vector> &normals) const {
-        if (triangleIdx < 0 ||
-            triangleIdx >= static_cast<int>(_triangles.size())) {
+        if (triangleIdx < 0 || triangleIdx >= static_cast<int>(_faces.size()))
             return maths::Vector(0, 1, 0);
-        }
 
-        const auto &tri = _triangles[triangleIdx];
+        const auto &face = _faces[triangleIdx];
 
-        if (!normals.empty() && normals.size() == _vertices.get().size()) {
-            const maths::Vector &n0 = normals[tri.v1];
-            const maths::Vector &n1 = normals[tri.v2];
-            const maths::Vector &n2 = normals[tri.v3];
+        if (!normals.empty() && face.fv1.vn >= 0 && face.fv2.vn >= 0 &&
+            face.fv3.vn >= 0 &&
+            face.fv1.vn < static_cast<int>(normals.size()) &&
+            face.fv2.vn < static_cast<int>(normals.size()) &&
+            face.fv3.vn < static_cast<int>(normals.size())) {
+            const maths::Vector &n0 = normals[face.fv1.vn];
+            const maths::Vector &n1 = normals[face.fv2.vn];
+            const maths::Vector &n2 = normals[face.fv3.vn];
             return ((n0 + n1 + n2) / 3.0).normalized();
         }
 
-        const maths::Vector &v0 = _vertices.get()[tri.v1];
-        const maths::Vector &v1 = _vertices.get()[tri.v2];
-        const maths::Vector &v2 = _vertices.get()[tri.v3];
+        const maths::Vector &v0 = _vertices.get()[face.fv1.v];
+        const maths::Vector &v1 = _vertices.get()[face.fv2.v];
+        const maths::Vector &v2 = _vertices.get()[face.fv3.v];
         maths::Vector normal = (v1 - v0).cross(v2 - v0);
 
-        if (normal.magnitude() < K_RAY_EPSILON) {
+        if (normal.magnitude() < K_RAY_EPSILON)
             return maths::Vector(0, 1, 0);
-        }
         return normal.normalized();
     }
 
-    maths::Vector MeshSurfaceHelper::computeUV(const maths::Vector &hitPoint,
-                                               const maths::Vector &center) {
-        double u = hitPoint.x - center.x;
-        double v = hitPoint.y - center.y;
-        return maths::Vector(u, v, 0);
+    maths::Vector MeshSurfaceHelper::computeUV(
+        int triangleIdx, const maths::Vector &hitPoint,
+        const std::vector<maths::Vector> &textureCoords) const {
+        if (triangleIdx >= 0 && triangleIdx < static_cast<int>(_faces.size())) {
+            const auto &face = _faces[triangleIdx];
+
+            if (!textureCoords.empty() && face.fv1.vt >= 0 &&
+                face.fv2.vt >= 0 && face.fv3.vt >= 0 &&
+                face.fv1.vt < static_cast<int>(textureCoords.size()) &&
+                face.fv2.vt < static_cast<int>(textureCoords.size()) &&
+                face.fv3.vt < static_cast<int>(textureCoords.size())) {
+                const maths::Vector &v0 = _vertices.get()[face.fv1.v];
+                const maths::Vector &v1 = _vertices.get()[face.fv2.v];
+                const maths::Vector &v2 = _vertices.get()[face.fv3.v];
+
+                const maths::Vector e1 = v1 - v0;
+                const maths::Vector e2 = v2 - v0;
+                const maths::Vector ep = hitPoint - v0;
+
+                const double d11 = e1.dot(e1);
+                const double d12 = e1.dot(e2);
+                const double d22 = e2.dot(e2);
+                const double d1p = e1.dot(ep);
+                const double d2p = e2.dot(ep);
+
+                const double denom = d11 * d22 - d12 * d12;
+                double bv = 0.0, bw = 0.0;
+                if (std::fabs(denom) > K_RAY_EPSILON) {
+                    bv = (d22 * d1p - d12 * d2p) / denom;
+                    bw = (d11 * d2p - d12 * d1p) / denom;
+                }
+                const double bu = 1.0 - bv - bw;
+
+                const maths::Vector &uv0 = textureCoords[face.fv1.vt];
+                const maths::Vector &uv1 = textureCoords[face.fv2.vt];
+                const maths::Vector &uv2 = textureCoords[face.fv3.vt];
+
+                return uv0 * bu + uv1 * bv + uv2 * bw;
+            }
+        }
+        return maths::Vector(hitPoint.x, hitPoint.y,
+                             0);  // TODO : fallback UV mapping
+    }
+
+    maths::Vector MeshSurfaceHelper::computeCentroid(
+        const ObjLoader::Face &face) const {
+        const auto &v0 = _vertices.get()[face.fv1.v];
+        const auto &v1 = _vertices.get()[face.fv2.v];
+        const auto &v2 = _vertices.get()[face.fv3.v];
+        return (v0 + v1 + v2) / 3.0;
     }
 
     bool MeshSurfaceHelper::triangleIntersection(const maths::Ray &ray,
@@ -85,24 +132,21 @@ namespace raytracer::object::primitive {
         const maths::Vector h = ray.direction.cross(edge2);
         const double a = edge1.dot(h);
 
-        if (std::fabs(a) < K_RAY_EPSILON) {
+        if (std::fabs(a) < K_RAY_EPSILON)
             return false;
-        }
 
         const double f = 1.0 / a;
         const maths::Vector s = ray.origin - v0;
-        double u = f * s.dot(h);
-        if (u < 0.0 || u > 1.0) {
+        const double u = f * s.dot(h);
+        if (u < 0.0 || u > 1.0)
             return false;
-        }
 
         const maths::Vector q = s.cross(edge1);
-        double v = f * ray.direction.dot(q);
-        if (v < 0.0 || u + v > 1.0) {
+        const double v = f * ray.direction.dot(q);
+        if (v < 0.0 || u + v > 1.0)
             return false;
-        }
 
-        double t = f * edge2.dot(q);
+        const double t = f * edge2.dot(q);
         if (t > K_RAY_EPSILON) {
             outT = t;
             return true;

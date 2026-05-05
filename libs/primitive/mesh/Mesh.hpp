@@ -14,7 +14,6 @@
 #include <string>
 
 #include "MeshSurfaceHelper.hpp"
-#include "MltLoader.hpp"
 #include "ObjLoader.hpp"
 #include "object/primitive/APrimitive.hpp"
 
@@ -36,7 +35,6 @@ namespace raytracer::object::primitive {
 
         std::unique_ptr<MeshSurfaceHelper> _surfaceHelper;
         std::unique_ptr<ObjLoader> _objLoader;
-        std::unique_ptr<MltLoader> _materialLoader;
     };
 }  // namespace raytracer::object::primitive
 #endif /* !MESH_HPP_ */

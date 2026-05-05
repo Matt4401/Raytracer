@@ -47,12 +47,10 @@ namespace raytracer::object::primitive {
         }
         std::string line;
         while (std::getline(file, line)) {
-            if (line.empty() || line[0] == '#') {
+            if (line.empty() || line[0] == '#')
                 continue;
-            }
             processLine(line);
         }
-        file.close();
     }
 
     void ObjLoader::processLine(const std::string &line) {
@@ -87,15 +85,13 @@ namespace raytracer::object::primitive {
     }
 
     void ObjLoader::handleFace(ObjLoader &loader, std::istringstream &iss) {
-        std::string v1, v2, v3;
-        iss >> v1 >> v2 >> v3;
-        const std::array<int, 3> face = {
-            parseFaceVertex(v1), parseFaceVertex(v2), parseFaceVertex(v3)};
-        int faceIndex = loader._faces.size();
-        loader._faces.push_back({face[0], face[1], face[2]});
-        loader._faceToMaterial[faceIndex] = loader._currentMaterialName;
+        std::string t1, t2, t3;
+        iss >> t1 >> t2 >> t3;
 
-        // Group face by material
+        int faceIndex = static_cast<int>(loader._faces.size());
+        loader._faces.push_back(
+            {parseFaceVertex(t1), parseFaceVertex(t2), parseFaceVertex(t3)});
+        loader._faceToMaterial[faceIndex] = loader._currentMaterialName;
         loader._groupsByMaterial[loader._currentMaterialName].push_back(
             faceIndex);
     }
@@ -104,11 +100,23 @@ namespace raytracer::object::primitive {
         iss >> loader._currentMaterialName;
     }
 
-    int ObjLoader::parseFaceVertex(const std::string &token) {
-        std::istringstream tokenStream(token);
-        std::string vertexIndex;
-        std::getline(tokenStream, vertexIndex, '/');
-        return std::stoi(vertexIndex) - 1;
+    ObjLoader::FaceVertex ObjLoader::parseFaceVertex(const std::string &token) {
+        FaceVertex fv;
+        std::istringstream ss(token);
+        std::string part;
+
+        if (std::getline(ss, part, '/') && !part.empty())
+            fv.v = std::stoi(part) - 1;
+
+        if (std::getline(ss, part, '/')) {
+            if (!part.empty())
+                fv.vt = std::stoi(part) - 1;
+        } else {
+            return fv;
+        }
+        if (std::getline(ss, part, '/') && !part.empty())
+            fv.vn = std::stoi(part) - 1;
+        return fv;
     }
 
     void ObjLoader::applyTransformations() {
@@ -116,28 +124,25 @@ namespace raytracer::object::primitive {
             vertex.x *= _transformScale.x;
             vertex.y *= _transformScale.y;
             vertex.z *= _transformScale.z;
-        }
-        for (auto &vertex : _vertices) {
             vertex += _transformCenter;
         }
     }
 
     void ObjLoader::computeNormalsIfMissing() {
-        if (_normals.empty()) {
-            _normals.resize(_vertices.size(), maths::Vector(0, 0, 0));
-            for (const auto &face : _faces) {
-                const maths::Vector &v0 = _vertices[face.v1];
-                const maths::Vector &v1 = _vertices[face.v2];
-                const maths::Vector &v2 = _vertices[face.v3];
-                maths::Vector normal = (v1 - v0).cross(v2 - v0).normalized();
-                _normals[face.v1] += normal;
-                _normals[face.v2] += normal;
-                _normals[face.v3] += normal;
-            }
-            for (auto &normal : _normals) {
-                normal.normalize();
-            }
+        if (!_normals.empty())
+            return;
+
+        _normals.resize(_vertices.size(), maths::Vector(0, 0, 0));
+        for (const auto &face : _faces) {
+            const maths::Vector &v0 = _vertices[face.fv1.v];
+            const maths::Vector &v1 = _vertices[face.fv2.v];
+            const maths::Vector &v2 = _vertices[face.fv3.v];
+            maths::Vector normal = (v1 - v0).cross(v2 - v0).normalized();
+            _normals[face.fv1.v] += normal;
+            _normals[face.fv2.v] += normal;
+            _normals[face.fv3.v] += normal;
         }
+        for (auto &normal : _normals) normal.normalize();
     }
 
 }  // namespace raytracer::object::primitive

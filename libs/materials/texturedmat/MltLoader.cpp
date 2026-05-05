@@ -14,11 +14,11 @@
 #include "exception/PluginException.hpp"
 #include "math/Vector.hpp"
 
-namespace raytracer::object::primitive {
+namespace raytracer::object::material {
 
-    const std::unordered_map<std::string,
-                             void (*)(MltLoader &, std::istringstream &,
-                                      MeshMaterial &)>
+    const std::unordered_map<
+        std::string,
+        std::function<void(MltLoader &, std::istringstream &, MeshMaterial &)>>
         MltLoader::_ops = {
             {"Ns", &MltLoader::handleNs},
             {"Ka", &MltLoader::handleKa},
@@ -203,4 +203,4 @@ namespace raytracer::object::primitive {
         return it->second;
     }
 
-}  // namespace raytracer::object::primitive
+}  // namespace raytracer::object::material

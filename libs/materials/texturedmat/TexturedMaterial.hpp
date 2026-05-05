@@ -2,25 +2,30 @@
 ** EPITECH PROJECT, 2026
 ** Raytracer
 ** File description:
-** FlatColor
+** TexturedMaterial
 */
 
 #pragma once
 
 #include <any>
 #include <map>
+#include <memory>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
+#include "MeshMaterial.hpp"
+#include "MltLoader.hpp"
 #include "math/Color.hpp"
 #include "math/Vector.hpp"
 #include "object/material/AMaterial.hpp"
 #include "object/primitive/ReflTypes.hpp"
 
 namespace raytracer::object::material {
-    class FlatColor : public AMaterial {
+    class TexturedMaterial : public AMaterial {
       public:
-        explicit FlatColor(const std::map<std::string, std::any>& args);
-        ~FlatColor() override = default;
+        explicit TexturedMaterial(const std::map<std::string, std::any>& args);
+        ~TexturedMaterial() override = default;
 
         primitive::MaterialProperties evaluate(
             const primitive::SurfaceData& data,
@@ -35,5 +40,7 @@ namespace raytracer::object::material {
         double _ior;
         double _roughness;
         double _metalness;
+        std::string _texturePath;
+        std::unique_ptr<MltLoader> _materialLoader;
     };
 }  // namespace raytracer::object::material

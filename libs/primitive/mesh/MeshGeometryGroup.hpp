@@ -20,7 +20,7 @@ namespace raytracer::object::primitive {
      */
     struct MeshGeometryGroup {
         std::string materialName;
-        std::vector<int> faceIndices;  // Indices into global faces array
+        std::vector<int> faceIndices;
         std::vector<maths::Vector> vertices;
         std::vector<maths::Vector> normals;
         std::vector<maths::Vector> textureCoords;

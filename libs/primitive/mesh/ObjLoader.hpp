@@ -5,8 +5,7 @@
 ** ObjLoader
 */
 
-#ifndef OBJLOADER_HPP_
-#define OBJLOADER_HPP_
+#pragma once
 
 #include <array>
 #include <functional>
@@ -23,10 +22,16 @@
 namespace raytracer::object::primitive {
     class ObjLoader {
       public:
+        struct FaceVertex {
+            int v = -1;
+            int vt = -1;
+            int vn = -1;
+        };
+
         struct Face {
-            int v1;
-            int v2;
-            int v3;
+            FaceVertex fv1;
+            FaceVertex fv2;
+            FaceVertex fv3;
         };
 
         explicit ObjLoader(const std::string &filePath);
@@ -38,31 +43,24 @@ namespace raytracer::object::primitive {
         const std::vector<maths::Vector> &vertices() const {
             return _vertices;
         }
-
         const std::vector<maths::Vector> &normals() const {
             return _normals;
         }
-
         const std::vector<maths::Vector> &textureCoords() const {
             return _textureCoords;
         }
-
         const std::vector<Face> &faces() const {
             return _faces;
         }
-
         const std::string &currentMaterialName() const {
             return _currentMaterialName;
         }
-
         const std::map<int, std::string> &faceToMaterial() const {
             return _faceToMaterial;
         }
-
         const maths::Vector &scale() const {
             return _scale;
         }
-
         const std::map<std::string, std::vector<int>> &groupsByMaterial()
             const {
             return _groupsByMaterial;
@@ -73,7 +71,6 @@ namespace raytracer::object::primitive {
             return (it != _faceToMaterial.end()) ? it->second : "";
         }
 
-      protected:
       private:
         static const std::unordered_map<
             std::string, std::function<void(ObjLoader &, std::istringstream &)>>
@@ -90,7 +87,7 @@ namespace raytracer::object::primitive {
         static void handleTexCoord(ObjLoader &loader, std::istringstream &iss);
         static void handleFace(ObjLoader &loader, std::istringstream &iss);
         static void handleUseMtl(ObjLoader &loader, std::istringstream &iss);
-        static int parseFaceVertex(const std::string &token);
+        static FaceVertex parseFaceVertex(const std::string &token);
 
         std::vector<maths::Vector> _vertices;
         std::vector<maths::Vector> _normals;
@@ -105,5 +102,3 @@ namespace raytracer::object::primitive {
     };
 
 }  // namespace raytracer::object::primitive
-
-#endif /* !OBJLOADER_HPP_ */

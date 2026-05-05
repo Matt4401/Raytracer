@@ -32,7 +32,7 @@ namespace raytracer::object::primitive {
     struct SurfaceData {
         maths::Vector normal;
         maths::Vector uv;
-        std::unordered_map<std::string, double> extraParams;
+        std::map<std::string, std::any> extraParams;
         MaterialProperties material;
     };
 
