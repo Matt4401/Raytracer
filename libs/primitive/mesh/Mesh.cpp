@@ -7,40 +7,43 @@
 
 #include "Mesh.hpp"
 
-#include <fstream>
 #include <iostream>
-#include <sstream>
+#include <limits>
 #include <stdexcept>
 
 #include "util/middleware/Helpers.hpp"
 #include "util/middleware/ObjectMiddleware.hpp"
 
 namespace raytracer::object::primitive {
+
     Mesh::Mesh(const std::map<std::string, std::any> &params)
         : APrimitive(
               "Mesh", util::Helpers::toVector(params, "center", "Mesh"),
               util::ObjectMiddleware::validate<
                   std::shared_ptr<raytracer::object::material::IMaterial>>(
                   params, "material", "Mesh")) {
-        _scale = util::Helpers::toVector(params, "scale", "Mesh");
-        if (_scale.x <= 0 || _scale.y <= 0 || _scale.z <= 0) {
+        std::string objPath = util::ObjectMiddleware::validate<std::string>(
+            params, "objPath", "Mesh");
+        std::string mtlPath = util::ObjectMiddleware::validate<std::string>(
+            params, "mtlPath", "Mesh");
+        maths::Vector scale = util::Helpers::toVector(params, "scale", "Mesh");
+
+        if (scale.x <= 0 || scale.y <= 0 || scale.z <= 0) {
             throw exception::PluginException{
                 "Mesh scale components must be greater than zero"};
         }
-        loadMesh(util::ObjectMiddleware::validate<std::string>(params, "path",
-                                                               "Mesh"));
+
+        _objLoader = std::make_unique<ObjLoader>(objPath, scale, _center);
+        _materialLoader = std::make_unique<MltLoader>(mtlPath);
+        _surfaceHelper =
+            std::make_unique<MeshSurfaceHelper>(_objLoader->vertices());
+
+        buildTrianglesFromFaces();
     }
 
     double Mesh::hits(const maths::Ray &ray) {
-        double closestT = std::numeric_limits<double>::infinity();
-        for (size_t i = 0; i < _triangles.size(); ++i) {
-            double t = triangleHits(ray, i);
-            if (t > 0 && t < closestT) {
-                closestT = t;
-            }
-        }
-        return closestT == std::numeric_limits<double>::infinity() ? -1.0
-                                                                   : closestT;
+        auto intersection = _surfaceHelper->findClosestTriangle(ray);
+        return intersection ? intersection->distance : -1.0;
     }
 
     IPrimitive::BoundingBox Mesh::boundingBox() {
@@ -48,17 +51,18 @@ namespace raytracer::object::primitive {
             _meshBoundingBox.d > 0) {
             return _meshBoundingBox;
         }
-        if (_vertices.empty()) {
+        const auto &vertices = _objLoader->vertices();
+        if (vertices.empty()) {
             return {0, 0, 0, 0, 0, 0};
         }
-        double minX = _vertices[0].x;
-        double minY = _vertices[0].y;
-        double minZ = _vertices[0].z;
-        double maxX = _vertices[0].x;
-        double maxY = _vertices[0].y;
-        double maxZ = _vertices[0].z;
+        double minX = vertices[0].x;
+        double minY = vertices[0].y;
+        double minZ = vertices[0].z;
+        double maxX = vertices[0].x;
+        double maxY = vertices[0].y;
+        double maxZ = vertices[0].z;
 
-        for (const auto &vertex : _vertices) {
+        for (const auto &vertex : vertices) {
             if (vertex.x < minX)
                 minX = vertex.x;
             if (vertex.y < minY)
@@ -79,53 +83,91 @@ namespace raytracer::object::primitive {
     }
 
     SurfaceData Mesh::surfaceData(const maths::Vector &hitPoint) const {
-        maths::Vector normal(0, 0, 0);
-        double bestDistance = std::numeric_limits<double>::infinity();
-        for (const auto &triangle : _triangles) {
-            const maths::Vector &v0 = _vertices[triangle.v1];
-            const maths::Vector &v1 = _vertices[triangle.v2];
-            const maths::Vector &v2 = _vertices[triangle.v3];
-            const maths::Vector triNormal = (v1 - v0).cross(v2 - v0);
-            const double triMagnitude = triNormal.magnitude();
-            if (triMagnitude < kRayEpsilon) {
-                continue;
-            }
+        const auto &normals = _objLoader->normals();
+        const auto &faceToMaterial = _objLoader->faceToMaterial();
 
-            const maths::Vector unitNormal = triNormal / triMagnitude;
-            const double distance = std::fabs((hitPoint - v0).dot(unitNormal));
-            if (distance < bestDistance) {
-                bestDistance = distance;
-                normal = unitNormal;
+        SurfaceData data{.normal = maths::Vector(0, 1, 0),
+                         .uv = maths::Vector(0, 0, 0),
+                         .extraParams = {},
+                         .material = {}};
+
+        int closestTriangleIdx = -1;
+        double closestDist = std::numeric_limits<double>::infinity();
+
+        const auto &triangles = _surfaceHelper->triangles();
+        const auto &vertices = _objLoader->vertices();
+
+        for (int i = 0; i < _surfaceHelper->triangleCount(); ++i) {
+            const auto &tri = triangles[i];
+            const maths::Vector &v0 = vertices[tri.v1];
+            const maths::Vector &v1 = vertices[tri.v2];
+            const maths::Vector &v2 = vertices[tri.v3];
+
+            maths::Vector centroid = (v0 + v1 + v2) / 3.0;
+            double dist = (hitPoint - centroid).magnitude();
+
+            if (dist < closestDist) {
+                closestDist = dist;
+                closestTriangleIdx = i;
             }
         }
 
-        if (normal.magnitude() < kRayEpsilon) {
-            normal = (hitPoint - _center);
-            if (normal.magnitude() < kRayEpsilon) {
-                normal = maths::Vector(0, 1, 0);
+        if (closestTriangleIdx >= 0) {
+            data.normal = _surfaceHelper->computeNormal(closestTriangleIdx,
+                                                        hitPoint, normals);
+
+            data.uv = MeshSurfaceHelper::computeUV(hitPoint, _center);
+
+            auto it = faceToMaterial.find(closestTriangleIdx);
+            if (it != faceToMaterial.end() && !it->second.empty()) {
+                try {
+                    const auto &meshMaterial = _materialLoader->get(it->second);
+                    const auto kd = meshMaterial.Kd();
+                    data.material.color = maths::Color(kd.x, kd.y, kd.z);
+                    data.material.emission = meshMaterial.Ke();
+                    data.material.transparency = meshMaterial.d();
+                    data.material.ior = meshMaterial.Ni();
+                    data.material.metalness = meshMaterial.Ns() / 1000.0;
+                    data.material.reflectivity = 0.5;
+                } catch (const std::exception &) {
+                    throw exception::PluginException{
+                        "Failed to load material '" + it->second +
+                        "' for triangle " + std::to_string(closestTriangleIdx)};
+                }
+            }
+        } else {
+            data.normal = (hitPoint - _center);
+            if (data.normal.magnitude() < kRayEpsilon) {
+                data.normal = maths::Vector(0, 1, 0);
             } else {
-                normal = normal.normalized();
+                data.normal = data.normal.normalized();
             }
         }
-
-        double u = 0, v = 0;
-        u = (hitPoint.x - _center.x) / _scale.x;
-        v = (hitPoint.y - _center.y) / _scale.y;
-
-        SurfaceData data{
-            .normal = normal, .uv = maths::Vector(u, v, 0), .material = {}};
 
         if (this->_material) {
-            data.material = this->_material->evaluate(data, hitPoint);
+            MaterialProperties matProps =
+                this->_material->evaluate(data, hitPoint);
+            if (data.material.color.r < kRayEpsilon && data.material.color.g < kRayEpsilon &&
+                data.material.color.b < kRayEpsilon) {
+                data.material = matProps;
+            }
         }
+
         return data;
     }
 
-    IPrimitive::BoundingBox Mesh::triangleBoundingBox(
-        const Triangle &triangle) const {
-        const maths::Vector &v0 = _vertices[triangle.v1];
-        const maths::Vector &v1 = _vertices[triangle.v2];
-        const maths::Vector &v2 = _vertices[triangle.v3];
+    IPrimitive::BoundingBox Mesh::triangleBoundingBox(int triangleIndex) const {
+        const auto &triangles = _surfaceHelper->triangles();
+        if (triangleIndex < 0 ||
+            triangleIndex >= static_cast<int>(triangles.size())) {
+            return {0, 0, 0, 0, 0, 0};
+        }
+
+        const auto &vertices = _objLoader->vertices();
+        const auto &tri = triangles[triangleIndex];
+        const maths::Vector &v0 = vertices[tri.v1];
+        const maths::Vector &v1 = vertices[tri.v2];
+        const maths::Vector &v2 = vertices[tri.v3];
 
         const double minX = std::min({v0.x, v1.x, v2.x});
         const double minY = std::min({v0.y, v1.y, v2.y});
@@ -137,158 +179,10 @@ namespace raytracer::object::primitive {
         return {minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ};
     }
 
-    double Mesh::triangleHits(const maths::Ray &ray, int triangleIndex) const {
-        Triangle triangle = _triangles.at(triangleIndex);
-        float t, u, v = 0.0f;
-        const maths::Vector &v0 = _vertices[triangle.v1];
-        const maths::Vector &v1 = _vertices[triangle.v2];
-        const maths::Vector &v2 = _vertices[triangle.v3];
-        const maths::Vector edge1 = v1 - v0;
-        const maths::Vector edge2 = v2 - v0;
-        const maths::Vector h = ray.direction.cross(edge2);
-        const double a = edge1.dot(h);
-        if (std::fabs(a) < kRayEpsilon)
-            return -1.0;
-        const double f = 1.0 / a;
-        const maths::Vector s = ray.origin - v0;
-        u = f * s.dot(h);
-        if (u < 0.0 || u > 1.0)
-            return -1.0;
-        const maths::Vector q = s.cross(edge1);
-        v = f * ray.direction.dot(q);
-        if (v < 0.0 || u + v > 1.0)
-            return -1.0;
-        t = f * edge2.dot(q);
-        if (t > kRayEpsilon)
-            return t;
-        else
-            return -1.0;
-        return -1.0;
-    }
-
-    maths::Vector Mesh::triangleCentroid(const Triangle &triangle) const {
-        const maths::Vector &v0 = _vertices[triangle.v1];
-        const maths::Vector &v1 = _vertices[triangle.v2];
-        const maths::Vector &v2 = _vertices[triangle.v3];
-        return (v0 + v1 + v2) / 3.0;
-    }
-
-    void Mesh::parseVertexLine(const std::string &line) {
-        std::istringstream iss(line);
-        std::string prefix;
-        iss >> prefix;
-        double x, y, z;
-        iss >> x >> y >> z;
-        _vertices.emplace_back(x, y, z);
-    }
-
-    void Mesh::parseNormalLine(const std::string &line) {
-        std::istringstream iss(line);
-        std::string prefix;
-        iss >> prefix;
-        double x, y, z;
-        iss >> x >> y >> z;
-        _normals.emplace_back(x, y, z);
-    }
-
-    void Mesh::parseTexCoordLine(const std::string &line) {
-        std::istringstream iss(line);
-        std::string prefix;
-        iss >> prefix;
-        double u, v;
-        iss >> u >> v;
-        _textureCoords.emplace_back(u, v, 0);
-    }
-
-    void Mesh::parseFaceLine(const std::string &line) {
-        std::istringstream iss(line);
-        std::string prefix;
-        iss >> prefix;
-
-        auto parseFaceVertex = [](const std::string &token) {
-            std::istringstream tokenStream(token);
-            std::string vertexIndex;
-            std::getline(tokenStream, vertexIndex, '/');
-            return std::stoi(vertexIndex) - 1;
-        };
-
-        std::string v1;
-        std::string v2;
-        std::string v3;
-        iss >> v1 >> v2 >> v3;
-        const std::array<int, 3> face = {
-            parseFaceVertex(v1), parseFaceVertex(v2), parseFaceVertex(v3)};
-        std::cerr << "[Mesh] face: " << face[0] << ", " << face[1] << ", "
-                  << face[2] << std::endl;
-        _faces.push_back(face);
-    }
-
-    void Mesh::computeNormalsIfMissing() {
-        if (_normals.empty()) {
-            _normals.resize(_vertices.size(), maths::Vector(0, 0, 0));
-            for (const auto &face : _faces) {
-                const maths::Vector &v0 = _vertices[face[0]];
-                const maths::Vector &v1 = _vertices[face[1]];
-                const maths::Vector &v2 = _vertices[face[2]];
-                maths::Vector normal = (v1 - v0).cross(v2 - v0).normalized();
-                _normals[face[0]] += normal;
-                _normals[face[1]] += normal;
-                _normals[face[2]] += normal;
-            }
-            for (auto &normal : _normals) {
-                normal.normalize();
-            }
-        }
-    }
-
-    void Mesh::applyScaleToVertices() {
-        for (auto &vertex : _vertices) {
-            vertex.x *= _scale.x;
-            vertex.y *= _scale.y;
-            vertex.z *= _scale.z;
-        }
-    }
-
-    void Mesh::applyCenterToVertices() {
-        for (auto &vertex : _vertices) {
-            vertex += _center;
-        }
-    }
-
     void Mesh::buildTrianglesFromFaces() {
-        _triangles.reserve(_faces.size());
-        for (const auto &face : _faces) {
-            _triangles.push_back({face[0], face[1], face[2]});
+        const auto &faces = _objLoader->faces();
+        for (const auto &face : faces) {
+            _surfaceHelper->addTriangle(face.v1, face.v2, face.v3);
         }
-    }
-
-    void Mesh::loadMesh(const std::string &filePath) {
-        if (filePath.empty()) {
-            throw exception::PluginException{"Mesh file path cannot be empty"};
-        }
-        std::ifstream file(filePath);
-        if (!file.is_open()) {
-            throw exception::PluginException{"Failed to open Mesh file: " +
-                                             filePath};
-        }
-        std::string line;
-        while (std::getline(file, line)) {
-            if (line.empty())
-                continue;
-            if (line.rfind("v ", 0) == 0) {
-                parseVertexLine(line);
-            } else if (line.rfind("vn ", 0) == 0) {
-                parseNormalLine(line);
-            } else if (line.rfind("vt ", 0) == 0) {
-                parseTexCoordLine(line);
-            } else if (line.rfind("f ", 0) == 0) {
-                parseFaceLine(line);
-            }
-        }
-        computeNormalsIfMissing();
-        applyScaleToVertices();
-        applyCenterToVertices();
-        buildTrianglesFromFaces();
-        file.close();
     }
 }  // namespace raytracer::object::primitive

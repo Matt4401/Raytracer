@@ -11,3 +11,5 @@ raytracer
 .DS_Store
 *.ppm
 *.obj
+*.mtl
+*.png

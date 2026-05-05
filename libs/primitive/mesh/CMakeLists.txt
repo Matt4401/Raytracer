@@ -4,10 +4,18 @@ SET (CMAKE_CXX_STANDARD 20)
 SET (SRCS
     MeshPlugin.cpp
     Mesh.cpp
+    MltLoader.cpp
+    ObjLoader.cpp
+    MeshSurfaceHelper.cpp
 )
 
 SET (HEADERS
     Mesh.hpp
+    MeshMaterial.hpp
+    MltLoader.hpp
+    ObjLoader.hpp
+    MeshGeometryGroup.hpp
+    MeshSurfaceHelper.hpp
 )
 
 add_library(mesh_plug SHARED ${SRCS} ${HEADERS})
