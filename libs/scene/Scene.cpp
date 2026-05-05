@@ -264,7 +264,9 @@ namespace raytracer::object::scene {
         double nDelta = nt - nc, nSum = nt + nc;
         double reflectance0 = nDelta * nDelta / (nSum * nSum);
         double angleFactor = 1 - (into ? -ddn : tdir.dot(n));
-        double reflectance = reflectance0 + (1 - reflectance0) * angleFactor * angleFactor * angleFactor * angleFactor * angleFactor;
+        double reflectance = reflectance0 + (1 - reflectance0) * angleFactor *
+                                                angleFactor * angleFactor *
+                                                angleFactor * angleFactor;
         double transmittance = 1 - reflectance;
 
         transmittance *= transparency;
@@ -279,19 +281,22 @@ namespace raytracer::object::scene {
         }
 
         double choiceProb = 0.25 + 0.5 * reflectance;
-        double reflectProb = reflectance / choiceProb, transProb = transmittance / (1 - choiceProb);
+        double reflectProb = reflectance / choiceProb,
+               transProb = transmittance / (1 - choiceProb);
 
         if (depth > K_REFRACTIVE_RUSSIAN_ROULETTE_DEPTH) {
-        if (::erand48(xi) < choiceProb)
-            return surfData.material.emission * emissive +
-                   f * radiance(reflRay, depth, xi, 1) * reflectProb;
-        else
-            return surfData.material.emission * emissive +
-                   f * radiance(maths::Ray(x, tdir), depth, xi, 1) * transProb;
+            if (::erand48(xi) < choiceProb)
+                return surfData.material.emission * emissive +
+                       f * radiance(reflRay, depth, xi, 1) * reflectProb;
+            else
+                return surfData.material.emission * emissive +
+                       f * radiance(maths::Ray(x, tdir), depth, xi, 1) *
+                           transProb;
         } else {
             return surfData.material.emission * emissive +
                    f * (radiance(reflRay, depth, xi, 1) * reflectance +
-                        radiance(maths::Ray(x, tdir), depth, xi, 1) * transmittance);
+                        radiance(maths::Ray(x, tdir), depth, xi, 1) *
+                            transmittance);
         }
     }
 }  // namespace raytracer::object::scene

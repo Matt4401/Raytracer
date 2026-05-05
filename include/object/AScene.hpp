@@ -29,10 +29,10 @@ namespace raytracer::object::scene {
         ~AScene() override = default;
 
         bool intersect(const maths::Ray &ray, double &t,
-                               int &objectId) const override = 0;
+                       int &objectId) const override = 0;
         maths::Vector radiance(const maths::Ray &ray, int depth,
-                                       unsigned short *xi,
-                                       int emissive = 1) const override = 0;
+                               unsigned short *xi,
+                               int emissive = 1) const override = 0;
 
         void addObject(std::shared_ptr<IObject> object) override;
         void setAmbientLight(const maths::Color &color,

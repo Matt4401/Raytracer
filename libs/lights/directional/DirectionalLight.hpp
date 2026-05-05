@@ -11,7 +11,6 @@
 #include <map>
 #include <string>
 
-
 #include "math/Vector.hpp"
 #include "object/ALight.hpp"
 #include "object/IScene.hpp"

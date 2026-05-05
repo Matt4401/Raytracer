@@ -36,10 +36,9 @@ namespace raytracer::object::camera {
               _imageWidth(K_IMAGE_WIDTH),
               _imageHeight(K_IMAGE_HEIGHT) {};
         ~ACamera() override = default;
-        maths::Ray ray(const double u,
-                               const double v) const override = 0;
+        maths::Ray ray(const double u, const double v) const override = 0;
         void setViewport(const double fieldOfView,
-                                 const double aspectRatio) override = 0;
+                         const double aspectRatio) override = 0;
 
         void setImageWidth(const int width) override {
             _imageWidth = width;
