@@ -57,13 +57,13 @@ namespace raytracer {
             maths::Vector cx{0, 0, 0};
             maths::Vector cy{0, 0, 0};
             double sampleWeight = 0.0;
-            unsigned short *Xi = nullptr;
+            unsigned short *xi = nullptr;
         };
 
-        static constexpr double kCxFactor = 0.5135;
+        static constexpr double KCX_FACTOR = 0.5135;
 
         /// @brief Compute stratified jitter offsets for a sample.
-        static void computeStratifiedSample(unsigned short *Xi, double &dx,
+        static void computeStratifiedSample(unsigned short *xi, double &dx,
                                             double &dy);
 
         /// @brief Cast a primary ray for a pixel and subpixel.

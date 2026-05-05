@@ -26,16 +26,16 @@ namespace raytracer::object::camera {
               _aspectRatio(aspectRatio),
               _position(origin),
               _rotation(rotation),
-              _imageWidth(kImageWidth),
-              _imageHeight(kImageHeight) {};
+              _imageWidth(K_IMAGE_WIDTH),
+              _imageHeight(K_IMAGE_HEIGHT) {};
         ACamera()
             : AObject(object::AObject::Type::CAMERA),
               _fov(std::numbers::pi / 2),
               _aspectRatio(16.0 / 9.0),
               _position(),
               _rotation(),
-              _imageWidth(kImageWidth),
-              _imageHeight(kImageHeight) {};
+              _imageWidth(K_IMAGE_WIDTH),
+              _imageHeight(K_IMAGE_HEIGHT) {};
         ~ACamera() override = default;
         virtual maths::Ray ray(const double u,
                                const double v) const override = 0;
@@ -81,14 +81,14 @@ namespace raytracer::object::camera {
         }
 
       protected:
-        static constexpr std::size_t kImageWidth = 800;
-        static constexpr std::size_t kImageHeight = 600;
+        static constexpr std::size_t K_IMAGE_WIDTH = 800;
+        static constexpr std::size_t K_IMAGE_HEIGHT = 600;
         double _fov = std::numbers::pi / 2;
         double _aspectRatio = 16.0 / 9.0;
         maths::Vector _position;
         maths::Vector _rotation;
-        int _imageWidth = kImageWidth;
-        int _imageHeight = kImageHeight;
+        int _imageWidth = K_IMAGE_WIDTH;
+        int _imageHeight = K_IMAGE_HEIGHT;
 
       private:
     };

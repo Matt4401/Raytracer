@@ -33,7 +33,7 @@ namespace raytracer::object::scene {
         virtual bool intersect(const maths::Ray &ray, double &t,
                                int &objectId) const override = 0;
         virtual maths::Vector radiance(const maths::Ray &ray, int depth,
-                                       unsigned short *Xi,
+                                       unsigned short *xi,
                                        int emissive = 1) const override = 0;
 
         void addObject(std::shared_ptr<IObject> object) override;
@@ -55,14 +55,14 @@ namespace raytracer::object::scene {
             const override;
 
       protected:
-        static constexpr int kMaxRadianceDepth = 10;
-        static constexpr int kDiffuseRussianRouletteDepth = 5;
-        static constexpr int kRefractiveRussianRouletteDepth = 2;
-        static constexpr double kColorScale = 1.0 / 255.0;
-        static constexpr double kOnbAxisThreshold = 0.1;
-        static constexpr double kDefaultIor = 1.5;
-        static constexpr double kDielectricF0 = 0.04;
-        static constexpr double kProbabilityNormalizationThreshold = 1e-12;
+        static constexpr int K_MAX_RADIANCE_DEPTH = 10;
+        static constexpr int K_DIFFUSE_RUSSIAN_ROULETTE_DEPTH = 5;
+        static constexpr int K_REFRACTIVE_RUSSIAN_ROULETTE_DEPTH = 2;
+        static constexpr double K_COLOR_SCALE = 1.0 / 255.0;
+        static constexpr double K_ON_B_AXIS_THRESHOLD = 0.1;
+        static constexpr double K_DEFAULT_IOR = 1.5;
+        static constexpr double K_DIELECTRIC_F0 = 0.04;
+        static constexpr double K_PROB_NORMALIZATION_THRESHOLD = 1e-12;
 
         std::vector<std::shared_ptr<primitive::IPrimitive>> _primitives;
         std::vector<std::shared_ptr<light::ILight>> _lights;
