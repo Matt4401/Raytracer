@@ -7,8 +7,7 @@
 
 #include "Render.hpp"
 
-#include <stdlib.h>
-
+#include <cstdlib>
 #include <chrono>
 #include <iostream>
 
