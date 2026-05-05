@@ -8,7 +8,6 @@
 #pragma once
 
 #include <numbers>
-#include <string>
 
 #include "AObject.hpp"
 #include "ICamera.hpp"
@@ -37,9 +36,9 @@ namespace raytracer::object::camera {
               _imageWidth(K_IMAGE_WIDTH),
               _imageHeight(K_IMAGE_HEIGHT) {};
         ~ACamera() override = default;
-        virtual maths::Ray ray(const double u,
+        maths::Ray ray(const double u,
                                const double v) const override = 0;
-        virtual void setViewport(const double fieldOfView,
+        void setViewport(const double fieldOfView,
                                  const double aspectRatio) override = 0;
 
         void setImageWidth(const int width) override {

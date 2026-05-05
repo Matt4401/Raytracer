@@ -9,9 +9,7 @@
 
 #include <iostream>
 
-#include "object/ALight.hpp"
 #include "object/AObject.hpp"
-#include "object/AScene.hpp"
 #include "object/material/IMaterial.hpp"
 #include "plugin/ObjectFactory.hpp"
 #include "plugin/PluginManager.hpp"

@@ -9,7 +9,6 @@
 
 #include <dlfcn.h>
 
-#include <exception>
 #include <filesystem>
 #include <string_view>
 

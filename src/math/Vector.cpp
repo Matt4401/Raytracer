@@ -6,6 +6,7 @@
 */
 
 #include "../../include/math/Vector.hpp"
+#include <stdexcept>
 
 namespace raytracer::maths {
 

@@ -9,13 +9,9 @@
 
 #include <algorithm>
 
-#include "object/ACamera.hpp"
-#include "object/ALight.hpp"
-#include "object/AObject.hpp"
 #include "object/IScene.hpp"
 #include "object/primitive/IPrimitive.hpp"
 #include "object/primitive/ReflTypes.hpp"
-#include "util/middleware/ObjectMiddleware.hpp"
 
 namespace raytracer::object::scene {
     Scene::Scene() : AScene() {
@@ -265,8 +261,8 @@ namespace raytracer::object::scene {
                     .normalized();
         }
 
-        double n_delta = nt - nc, n_sum = nt + nc;
-        double reflectance0 = n_delta * n_delta / (n_sum * n_sum);
+        double nDelta = nt - nc, nSum = nt + nc;
+        double reflectance0 = nDelta * nDelta / (nSum * nSum);
         double angleFactor = 1 - (into ? -ddn : tdir.dot(n));
         double reflectance = reflectance0 + (1 - reflectance0) * angleFactor * angleFactor * angleFactor * angleFactor * angleFactor;
         double transmittance = 1 - reflectance;
