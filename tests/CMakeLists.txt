@@ -26,7 +26,6 @@ endif ()
 if (NOT SKIP_INTERNET)
     set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(googletest)
-
     include(GoogleTest)
 
     add_executable(exception_tests
