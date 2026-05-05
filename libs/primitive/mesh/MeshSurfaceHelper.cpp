@@ -11,8 +11,6 @@
 #include <limits>
 
 namespace raytracer::object::primitive {
-    const double MeshSurfaceHelper::kRayEpsilon = 1e-6;
-
     std::optional<MeshSurfaceHelper::TriangleIntersection>
     MeshSurfaceHelper::findClosestTriangle(const maths::Ray &ray) const {
         double closestT = std::numeric_limits<double>::infinity();
@@ -26,7 +24,7 @@ namespace raytracer::object::primitive {
 
             double t;
             if (triangleIntersection(ray, v0, v1, v2, t)) {
-                if (t > kRayEpsilon && t < closestT) {
+                if (t > K_RAY_EPSILON && t < closestT) {
                     closestT = t;
                     closestIdx = i;
                 }
@@ -66,7 +64,7 @@ namespace raytracer::object::primitive {
         const maths::Vector &v2 = _vertices.get()[tri.v3];
         maths::Vector normal = (v1 - v0).cross(v2 - v0);
 
-        if (normal.magnitude() < kRayEpsilon) {
+        if (normal.magnitude() < K_RAY_EPSILON) {
             return maths::Vector(0, 1, 0);
         }
         return normal.normalized();
@@ -89,7 +87,7 @@ namespace raytracer::object::primitive {
         const maths::Vector h = ray.direction.cross(edge2);
         const double a = edge1.dot(h);
 
-        if (std::fabs(a) < kRayEpsilon) {
+        if (std::fabs(a) < K_RAY_EPSILON) {
             return false;
         }
 
@@ -107,7 +105,7 @@ namespace raytracer::object::primitive {
         }
 
         double t = f * edge2.dot(q);
-        if (t > kRayEpsilon) {
+        if (t > K_RAY_EPSILON) {
             outT = t;
             return true;
         }

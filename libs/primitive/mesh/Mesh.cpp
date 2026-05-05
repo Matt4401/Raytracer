@@ -137,7 +137,7 @@ namespace raytracer::object::primitive {
             }
         } else {
             data.normal = (hitPoint - _center);
-            if (data.normal.magnitude() < kRayEpsilon) {
+            if (data.normal.magnitude() < K_RAY_EPSILON) {
                 data.normal = maths::Vector(0, 1, 0);
             } else {
                 data.normal = data.normal.normalized();
@@ -147,8 +147,8 @@ namespace raytracer::object::primitive {
         if (this->_material) {
             MaterialProperties matProps =
                 this->_material->evaluate(data, hitPoint);
-            if (data.material.color.r < kRayEpsilon && data.material.color.g < kRayEpsilon &&
-                data.material.color.b < kRayEpsilon) {
+            if (data.material.color.r < K_RAY_EPSILON && data.material.color.g < K_RAY_EPSILON &&
+                data.material.color.b < K_RAY_EPSILON) {
                 data.material = matProps;
             }
         }
