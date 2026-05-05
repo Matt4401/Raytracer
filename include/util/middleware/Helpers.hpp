@@ -14,6 +14,8 @@
 #include <string>
 #include <string_view>
 
+#include "object/primitive/ReflTypes.hpp"
+
 namespace raytracer::util {
     class Helpers {
       public:
@@ -54,6 +56,10 @@ namespace raytracer::util {
          or if the vector components cannot be converted to double.
          */
         static maths::Vector toVector(
+            const std::map<std::string, std::any> &params,
+            std::string_view keyName, std::string_view className);
+
+        static object::primitive::RefltT toEnumRefltT(
             const std::map<std::string, std::any> &params,
             std::string_view keyName, std::string_view className);
 

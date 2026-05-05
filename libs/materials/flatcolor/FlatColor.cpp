@@ -14,13 +14,11 @@
 
 namespace raytracer::object::material {
 
-    FlatColor::FlatColor(const std::map<std::string, std::any>& args)
+    FlatColor::FlatColor(const std::map<std::string, std::any> &args)
         : AMaterial(),
           _color(util::Helpers::toColor(args, "color", "FlatColor")),
           _emission(0, 0, 0),
-          _refl(util::ObjectMiddleware::validate<
-                raytracer::object::primitive::RefltT>(args, "reflType",
-                                                      "FlatColor")),
+          _refl(util::Helpers::toEnumRefltT(args, "reflType", "FlatColor")),
           _reflectivity(0.0),
           _transparency(0.0),
           _ior(1.0),
@@ -58,8 +56,8 @@ namespace raytracer::object::material {
     }
 
     primitive::MaterialProperties FlatColor::evaluate(
-        const primitive::SurfaceData& data,
-        const maths::Vector& hitPoint) const {
+        const primitive::SurfaceData &data,
+        const maths::Vector &hitPoint) const {
         return {.color = _color,
                 .emission = _emission,
                 .reflType = _refl,
