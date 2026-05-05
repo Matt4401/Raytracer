@@ -7,12 +7,12 @@
 
 #include <gtest/gtest.h>
 
+#include "libs/primitive/plane/Plane.hpp"
 #include "math/Ray.hpp"
 #include "math/Vector.hpp"
-#include "libs/primitive/plane/Plane.hpp"
 
-using raytracer::maths::Vector;
 using raytracer::maths::Ray;
+using raytracer::maths::Vector;
 using raytracer::object::primitive::Plane;
 
 TEST(PRIMITIVE, plane_constructor_normalizes) {
@@ -53,4 +53,3 @@ TEST(PRIMITIVE, plane_surface_data_uv_and_normal) {
     ASSERT_DOUBLE_EQ(data.uv.x, 0.0);
     ASSERT_DOUBLE_EQ(data.uv.y, -1.0);
 }
-

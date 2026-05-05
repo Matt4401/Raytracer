@@ -28,7 +28,6 @@ namespace raytracer::object::primitive {
           _radius(
               util::ObjectMiddleware::validate<double>(args, "r", "Sphere")) {
         util::Helpers::unsignedDouble(_radius, "r", "Sphere");
-
     }
 
     Sphere::Sphere(const maths::Vector &vector, const double radius)
@@ -62,10 +61,10 @@ namespace raytracer::object::primitive {
         const double t0 = (-b - sqrtDiscriminant) / (2.0 * a);
         const double t1 = (-b + sqrtDiscriminant) / (2.0 * a);
 
-        if (t0 > kRayEpsilon) {
+        if (t0 > K_RAY_EPSILON) {
             return t0;
         }
-        if (t1 > kRayEpsilon) {
+        if (t1 > K_RAY_EPSILON) {
             return t1;
         }
         return -1.0;

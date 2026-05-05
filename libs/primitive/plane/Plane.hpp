@@ -22,9 +22,9 @@ namespace raytracer::object::primitive {
         explicit Plane(const std::map<std::string, std::any> &args);
         explicit Plane(const maths::Vector &vector,
                        const maths::Vector &normal);
-        explicit Plane(std::shared_ptr<raytracer::object::material::IMaterial> material,
-                       const maths::Vector &vector,
-                       const maths::Vector &normal);
+        explicit Plane(
+            std::shared_ptr<raytracer::object::material::IMaterial> material,
+            const maths::Vector &vector, const maths::Vector &normal);
 
         ~Plane() override = default;
 
@@ -38,6 +38,6 @@ namespace raytracer::object::primitive {
         maths::Vector _normal;
 
         static constexpr std::size_t EXPECTED_ARGS = 3;
-        static constexpr double EPS = kRayEpsilon;
+        static constexpr double EPS = K_RAY_EPSILON;
     };
 }  // namespace raytracer::object::primitive

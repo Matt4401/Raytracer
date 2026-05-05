@@ -2,6 +2,8 @@ set(FIXTURES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/fixtures")
 set(TEST_PLUGINS_DIR "${CMAKE_SOURCE_DIR}/tests/plugins/")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
+add_subdirectory(libs)
+
 include(FetchContent)
 
 FetchContent_Declare(
@@ -26,7 +28,6 @@ endif ()
 if (NOT SKIP_INTERNET)
     set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(googletest)
-
     include(GoogleTest)
 
     add_executable(exception_tests
@@ -60,6 +61,7 @@ if (NOT SKIP_INTERNET)
     add_executable(material_tests
             src/main.cpp
             src/materials/test_flatcolor.cpp
+            ${CMAKE_SOURCE_DIR}/libs/materials/flatcolor/FlatColor.cpp
             ${CMAKE_SOURCE_DIR}/src/plugin/ObjectFactory.cpp
             ${CMAKE_SOURCE_DIR}/src/plugin/PluginManager.cpp
     )
@@ -117,5 +119,3 @@ else ()
     message(WARNING "GoogleTest not available. Unit tests will not be built.")
 endif ()
 
-
-add_subdirectory(libs)

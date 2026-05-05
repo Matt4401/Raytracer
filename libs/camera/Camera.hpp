@@ -14,7 +14,6 @@
 #include "math/Rectangle.hpp"
 #include "math/Vector.hpp"
 #include "object/ACamera.hpp"
-#include "object/AObject.hpp"
 
 namespace raytracer::object::camera {
     class Camera : public ACamera {
