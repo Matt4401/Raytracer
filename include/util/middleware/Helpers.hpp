@@ -105,27 +105,58 @@ namespace raytracer::util {
             std::string_view className);
 
         /**
-         * @brief Check if a double value is negative or not.
-         * @param value The double value to check.
-         * @param fieldName The name of the field (e.g., "radius", "intensity")
-         * for error messages.
-         * @param className The name of the class owning this field, used for
-         * error messages.
-         * @throws PluginException If the value is negative.
+         @brief Check if a double given value it negative or not.
+         * @param value double to check if it is negative or not.
+         * @param fieldName name of the double to check. For Example radius
+         for a Sphere.
+         * @param className name of the class of the value.v
+         * @throws PluginException If the index is out of bounds or if the
+         type casting fails, with a message indicating the nature of the
+         error.
          */
         static void unsignedDouble(double value, std::string_view fieldName,
                                    std::string_view className);
+
         /**
-         * @brief Check if an integer value is negative or not.
-         * @param value The integer value to check.
-         * @param fieldName The name of the field (e.g., "samples", "count") for
-         * error messages.
-         * @param className The name of the class owning this field, used for
-         * error messages.
-         * @throws PluginException If the value is negative.
+         @brief Check if an integer given value is negative or not.
+         * @param value integer to check if it is negative or not.
+         * @param fieldName name of the integer to check. For Example
+         samples for a Sphere.
+         * @param className name of the class of the value.
+         * @throws PluginException If the index is out of bounds or if the
+         type casting fails, with a message indicating the nature of the
+         error.
          */
         static void unsignedInt(const int value,
                                 const std::string_view fieldName,
                                 const std::string_view className);
+
+        /**
+         @brief Normalize a vector and ensure it is not the zero vector.
+         * @param normal The vector to normalize.
+         * @return The normalized vector.
+         * @throws PluginException If the input vector is the zero vector, as it
+         cannot be normalized.
+         */
+        static maths::Vector normalVector(maths::Vector &normal);
+
+        /**
+         @brief Check if two vectors are collinear.
+         * @param v1 First vector to check.
+         * @param v2 Second vector to check.
+         * @param fieldName1 Name of the first vector field, used for error
+         messages.
+         * @param fieldName2 Name of the second vector field, used for error
+         messages.
+         * @param className Name of the class where the vectors are used,
+         used for error messages.
+         * @throws PluginException If the vectors are collinear, with a
+         message indicating the nature of the error.
+         */
+        static void notCollinearVector(const maths::Vector &v1,
+                                       const maths::Vector &v2,
+                                       std::string_view fieldName1,
+                                       std::string_view fieldName2,
+                                       std::string_view className);
     };
 }  // namespace raytracer::util

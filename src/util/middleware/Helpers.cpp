@@ -57,6 +57,27 @@ namespace raytracer::util {
         return iter->second;
     }
 
+    maths::Vector Helpers::normalVector(maths::Vector &normal) {
+        if (normal == maths::Vector(0, 0, 0)) {
+            throw exception::PluginException{
+                "Normal vector cannot be the zero"};
+        }
+        normal.normalize();
+        return normal;
+    }
+
+    void Helpers::notCollinearVector(const maths::Vector &v1,
+                                     const maths::Vector &v2,
+                                     std::string_view fieldName1,
+                                     std::string_view fieldName2,
+                                     const std::string_view className) {
+        if (const double crossProductMagnitude = v1.cross(v2).magnitude();
+            crossProductMagnitude == 0) {
+            throw exception::PluginException{"{} {} and {} can't be collinear",
+                                             className, fieldName1, fieldName2};
+        }
+    }
+
     maths::Color Helpers::toColor(const std::map<std::string, std::any> &params,
                                   const std::string_view keyName,
                                   const std::string_view className) {
@@ -91,7 +112,7 @@ namespace raytracer::util {
         const std::map<std::string, std::any> &params,
         const std::string_view keyName, const maths::Color &defaultValue,
         const std::string_view className) {
-        if (params.find(std::string(keyName)) == params.end()) {
+        if (!params.contains(std::string(keyName))) {
             return defaultValue;
         }
         return toColor(params, keyName, className);
@@ -101,7 +122,7 @@ namespace raytracer::util {
         const std::map<std::string, std::any> &params,
         const std::string_view keyName, const maths::Vector &defaultValue,
         const std::string_view className) {
-        if (params.find(std::string(keyName)) == params.end()) {
+        if (!params.contains(std::string(keyName))) {
             return defaultValue;
         }
         return toVector(params, keyName, className);

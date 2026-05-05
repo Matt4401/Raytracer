@@ -19,7 +19,7 @@ namespace raytracer::object {
         };
 
       protected:
-        static constexpr double kRayEpsilon = 1e-4;
+        static constexpr double K_RAY_EPSILON = 1e-4;
 
         Type _type;
     };

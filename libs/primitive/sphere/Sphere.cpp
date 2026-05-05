@@ -19,13 +19,13 @@
 #include "util/middleware/ObjectMiddleware.hpp"
 
 namespace raytracer::object::primitive {
-    Sphere::Sphere(const std::map<std::string, std::any> &params)
+    Sphere::Sphere(const std::map<std::string, std::any> &args)
         : APrimitive(
-              "Sphere", util::Helpers::toVector(params, "center", "Sphere"),
+              "Sphere", util::Helpers::toVector(args, "center", "Sphere"),
               util::ObjectMiddleware::validate<
                   std::shared_ptr<raytracer::object::material::IMaterial>>(
-                  params, "material", "Sphere")),
-          _radius(util::ObjectMiddleware::validate<double>(params, "radius",
+                  args, "material", "Sphere")),
+          _radius(util::ObjectMiddleware::validate<double>(args, "radius",
                                                            "Sphere")) {
         util::Helpers::unsignedDouble(_radius, "radius", "Sphere");
     }
@@ -61,10 +61,10 @@ namespace raytracer::object::primitive {
         const double t0 = (-b - sqrtDiscriminant) / (2.0 * a);
         const double t1 = (-b + sqrtDiscriminant) / (2.0 * a);
 
-        if (t0 > kRayEpsilon) {
+        if (t0 > K_RAY_EPSILON) {
             return t0;
         }
-        if (t1 > kRayEpsilon) {
+        if (t1 > K_RAY_EPSILON) {
             return t1;
         }
         return -1.0;
@@ -82,11 +82,9 @@ namespace raytracer::object::primitive {
     }
 
     SurfaceData Sphere::surfaceData(const maths::Vector &hitPoint) const {
-        maths::Vector normal = (hitPoint - _center).normalized();
-
-        double u = 0.5 + std::atan2(normal.z, normal.x) / (2 * M_PI);
-        double v = 0.5 - std::asin(normal.y) / M_PI;
-
+        const maths::Vector normal = (hitPoint - _center).normalized();
+        const double u = 0.5 + std::atan2(normal.z, normal.x) / (2 * M_PI);
+        const double v = 0.5 - std::asin(normal.y) / M_PI;
         SurfaceData data{
             .normal = normal, .uv = maths::Vector(u, v, 0), .material = {}};
 

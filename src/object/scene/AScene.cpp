@@ -7,8 +7,6 @@
 
 #include "object/AScene.hpp"
 
-#include <iostream>
-
 #include "exception/PluginException.hpp"
 #include "util/middleware/Helpers.hpp"
 #include "util/middleware/ObjectMiddleware.hpp"

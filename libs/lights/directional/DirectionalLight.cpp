@@ -7,8 +7,8 @@
 
 #include "DirectionalLight.hpp"
 
+#include "exception/PluginException.hpp"
 #include "util/middleware/Helpers.hpp"
-#include "util/middleware/ObjectMiddleware.hpp"
 
 namespace raytracer::object::light {
     DirectionalLight::DirectionalLight(

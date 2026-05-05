@@ -8,6 +8,7 @@
 #include "Core.hpp"
 
 #include "parser/ConfigParser.hpp"
+#include "plugin/ObjectFactory.hpp"
 #include "plugin/PluginManager.hpp"
 
 namespace raytracer {

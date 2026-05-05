@@ -7,8 +7,6 @@
 
 #include "Render.hpp"
 
-#include <stdlib.h>
-
 #include <chrono>
 #include <iostream>
 
@@ -25,11 +23,11 @@ namespace raytracer {
                   << static_cast<int>(color.b) << "\n";
     }
 
-    void Render::computeStratifiedSample(unsigned short *Xi, double &dx,
+    void Render::computeStratifiedSample(unsigned short *xi, double &dx,
                                          double &dy) {
-        double r1 = 2 * ::erand48(Xi);
+        double r1 = 2 * ::erand48(xi);
         dx = r1 < 1 ? std::sqrt(r1) - 1 : 1 - std::sqrt(2 - r1);
-        double r2 = 2 * ::erand48(Xi);
+        double r2 = 2 * ::erand48(xi);
         dy = r2 < 1 ? std::sqrt(r2) - 1 : 1 - std::sqrt(2 - r2);
     }
 
@@ -49,10 +47,10 @@ namespace raytracer {
 
         for (int s = 0; s < samplesPerSubpixel; ++s) {
             double dx, dy;
-            computeStratifiedSample(st.Xi, dx, dy);
+            computeStratifiedSample(st.xi, dx, dy);
             maths::Ray primary = castPrimaryRay(st, x, y, sx, sy, dx, dy);
             radiance = radiance +
-                       st.scene->radiance(primary, 0, st.Xi) * st.sampleWeight;
+                       st.scene->radiance(primary, 0, st.xi) * st.sampleWeight;
         }
         return radiance;
     }
@@ -196,11 +194,11 @@ namespace raytracer {
         const int samplesPerSubpixel = std::max(1, _samples / 4);
         const double sampleWeight = 1.0 / samplesPerSubpixel;
 
-        const maths::Vector cx((imageWidth * Render::kCxFactor) / imageHeight,
+        const maths::Vector cx((imageWidth * Render::KCX_FACTOR) / imageHeight,
                                0, 0);
         const maths::Vector cy =
             cx.cross(scene.cameras().at(0)->rotation()).normalized() *
-            Render::kCxFactor;
+            Render::KCX_FACTOR;
 
         Render::RenderState st;
         st.scene = &scene;
@@ -212,9 +210,9 @@ namespace raytracer {
         st.sampleWeight = sampleWeight;
 
         for (int y = yStart; y < yEnd; ++y) {
-            unsigned short Xi[3] = {
+            unsigned short xi[3] = {
                 0, 0, static_cast<unsigned short>((y + 1) * (y + 1) * (y + 1))};
-            st.Xi = Xi;
+            st.xi = xi;
             for (int x = 0; x < imageWidth; ++x) {
                 const int idx = (imageHeight - y - 1) * imageWidth + x;
                 _pixels[idx] = computePixelColor(st, x, y);
