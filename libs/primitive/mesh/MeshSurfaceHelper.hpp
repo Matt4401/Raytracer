@@ -72,7 +72,7 @@ namespace raytracer::object::primitive {
                                        const maths::Vector &center);
 
       private:
-        static const double K_RAY_EPSILON;
+        static constexpr double K_RAY_EPSILON = 1e-4;
 
         bool triangleIntersection(const maths::Ray &ray,
                                   const maths::Vector &v0,
