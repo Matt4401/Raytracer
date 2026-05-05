@@ -22,7 +22,7 @@ namespace raytracer::object::primitive {
             const maths::Vector &v1 = _vertices.get()[tri.v2];
             const maths::Vector &v2 = _vertices.get()[tri.v3];
 
-            double t;
+            double t = 0.0;
             if (triangleIntersection(ray, v0, v1, v2, t)) {
                 if (t > K_RAY_EPSILON && t < closestT) {
                     closestT = t;
@@ -50,7 +50,6 @@ namespace raytracer::object::primitive {
 
         const auto &tri = _triangles[triangleIdx];
 
-        // Use interpolated normal if available
         if (!normals.empty() && normals.size() == _vertices.get().size()) {
             const maths::Vector &n0 = normals[tri.v1];
             const maths::Vector &n1 = normals[tri.v2];
@@ -58,7 +57,6 @@ namespace raytracer::object::primitive {
             return ((n0 + n1 + n2) / 3.0).normalized();
         }
 
-        // Compute normal from triangle geometry
         const maths::Vector &v0 = _vertices.get()[tri.v1];
         const maths::Vector &v1 = _vertices.get()[tri.v2];
         const maths::Vector &v2 = _vertices.get()[tri.v3];
