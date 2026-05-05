@@ -69,6 +69,12 @@ namespace raytracer::parsing {
         static constexpr std::string_view K_NAME_KEYWORD = "name";
         static constexpr std::string_view K_MATERIAL_KEYWORD = "material";
 
+        /**
+         * @brief Extracts object information from a libconfig setting.
+         * @param objectName The libconfig setting containing the object data.
+         * @return An ObjectInfo struct containing the object's name and
+         * parameters.
+         */
         ObjectInfo getObjectInfo(const libconfig::Setting &objectName);
 
         /**
@@ -80,8 +86,8 @@ namespace raytracer::parsing {
         /**
          * @brief Triggers the build callback and, if successful, the assign
          * callback.
-         * @param stringName Name element indicating the targeted name.
-         * @param config The map of parameters.
+         * @param info The ObjectInfo containing name and parameters.
+         * @param func The callback function to execute on the built object.
          */
         void buildAndAssign(
             const ObjectInfo &info,
@@ -96,6 +102,12 @@ namespace raytracer::parsing {
          */
         void parseObjectList(const libconfig::Setting &list);
 
+        /**
+         * @brief Processes a single object from the configuration.
+         * @param parentName The name of the parent group (e.g., "sphere",
+         * "plane").
+         * @param objectData The libconfig setting containing the object's data.
+         */
         void computeObject(const std::string &parentName,
                            const libconfig::Setting &objectData);
 
@@ -106,9 +118,18 @@ namespace raytracer::parsing {
          */
         void parseGroups(const libconfig::Setting &list);
 
+        /**
+         * @brief Processes and attaches a material definition to an object.
+         * @param info The ObjectInfo to attach the material to.
+         * @param objectData The libconfig setting containing the material data.
+         */
         void computeMaterial(ObjectInfo &info,
                              const libconfig::Setting &objectData);
 
+        /**
+         * @brief Creates a scene from the parsed configuration root.
+         * @param root The root libconfig setting containing all scene data.
+         */
         void makeScene(libconfig::Setting &root);
     };
 
