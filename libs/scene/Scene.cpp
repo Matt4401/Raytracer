@@ -141,7 +141,7 @@ namespace raytracer::object::scene {
             double unoccluded = 0.0;
             for (int k = 0; k < _ambientOcclusion.samples; ++k) {
                 maths::Vector aoDir = randomCosineDir(nl, xi);
-                maths::Ray aoRay(x + nl * kRayEpsilon, aoDir);
+                maths::Ray aoRay(x + nl * K_RAY_EPSILON, aoDir);
                 double aoT;
                 int aoId;
                 bool hit = intersect(aoRay, aoT, aoId);
@@ -216,7 +216,7 @@ namespace raytracer::object::scene {
 
         return surfData.material.emission * emissive +
                specularWeight *
-                   radiance(maths::Ray(x + n * kRayEpsilon, reflectionDir),
+                   radiance(maths::Ray(x + n * K_RAY_EPSILON, reflectionDir),
                             depth, xi, 1);
     }
 
