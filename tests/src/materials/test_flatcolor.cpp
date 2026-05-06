@@ -60,8 +60,8 @@ TEST(MATERIAL, flatcolor_decorator) {
             sphere);
     ASSERT_NE(basePrim, nullptr);
 
-    raytracer::maths::Ray ray(raytracer::maths::Vector(0, -20, 0),
-                              raytracer::maths::Vector(0, 1, 0).normalized());
+    raytracer::maths::Ray ray(raytracer::maths::Vector(0, 20, 0),
+                              raytracer::maths::Vector(0, -1, 0).normalized());
     auto hitCtx = basePrim->hits(ray);
     ASSERT_TRUE(hitCtx.has_value());
     auto finalData = hitCtx->surfaceData;
