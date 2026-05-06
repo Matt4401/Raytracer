@@ -15,36 +15,36 @@ namespace raytracer::object::material {
     class MeshMaterial {
       public:
         MeshMaterial() = default;
-        explicit MeshMaterial(const std::string &name, double Ns,
-                              const maths::Vector &Ka, const maths::Vector &Ks,
-                              const maths::Vector &Ke, const maths::Vector &Kd,
-                              double Ni, double d, double illum)
+        explicit MeshMaterial(const std::string &name, double ns,
+                              const maths::Vector &ka, const maths::Vector &ks,
+                              const maths::Vector &ke, const maths::Vector &kd,
+                              double ni, double d, double illum)
             : _name(name),
-              _Ns(Ns),
-              _Ka(Ka),
-              _Ks(Ks),
-              _Ke(Ke),
-              _Kd(Kd),
-              _Ni(Ni),
+              _ns(ns),
+              _ka(ka),
+              _ks(ks),
+              _ke(ke),
+              _kd(kd),
+              _ni(ni),
               _d(d),
               _illum(illum) {};
         void setName(const std::string &name) {
             _name = name;
         }
         void setNs(double ns) {
-            _Ns = ns;
+            _ns = ns;
         }
         void setKa(const maths::Vector &v) {
-            _Ka = v;
+            _ka = v;
         }
         void setKs(const maths::Vector &v) {
-            _Ks = v;
+            _ks = v;
         }
         void setKe(const maths::Vector &v) {
-            _Ke = v;
+            _ke = v;
         }
         void setKd(const maths::Vector &v) {
-            _Kd = v;
+            _kd = v;
         }
         void setMapKd(const std::string &path) {
             _mapKd = path;
@@ -53,7 +53,7 @@ namespace raytracer::object::material {
             _mapBump = path;
         }
         void setNi(double ni) {
-            _Ni = ni;
+            _ni = ni;
         }
         void setD(double d) {
             _d = d;
@@ -65,20 +65,20 @@ namespace raytracer::object::material {
         const std::string &name() const {
             return _name;
         }
-        double Ns() const {
-            return _Ns;
+        double ns() const {
+            return _ns;
         }
-        const maths::Vector &Ka() const {
-            return _Ka;
+        const maths::Vector &ka() const {
+            return _ka;
         }
-        const maths::Vector &Ks() const {
-            return _Ks;
+        const maths::Vector &ks() const {
+            return _ks;
         }
-        const maths::Vector &Ke() const {
-            return _Ke;
+        const maths::Vector &ke() const {
+            return _ke;
         }
-        const maths::Vector &Kd() const {
-            return _Kd;
+        const maths::Vector &kd() const {
+            return _kd;
         }
         const std::string &mapKd() const {
             return _mapKd;
@@ -86,8 +86,8 @@ namespace raytracer::object::material {
         const std::string &mapBump() const {
             return _mapBump;
         }
-        double Ni() const {
-            return _Ni;
+        double ni() const {
+            return _ni;
         }
         double d() const {
             return _d;
@@ -100,12 +100,12 @@ namespace raytracer::object::material {
       protected:
       private:
         std::string _name;     // Material name
-        double _Ns;            // Specular exponent
-        maths::Vector _Ka;     // Ambient color
-        maths::Vector _Ks;     // Specular color
-        maths::Vector _Ke;     // Emissive color
-        maths::Vector _Kd;     // Diffuse color
-        double _Ni;            // Optical density (index of refraction)
+        double _ns;            // Specular exponent
+        maths::Vector _ka;     // Ambient color
+        maths::Vector _ks;     // Specular color
+        maths::Vector _ke;     // Emissive color
+        maths::Vector _kd;     // Diffuse color
+        double _ni;            // Optical density (index of refraction)
         double _d;             // Dissolve (transparency)
         double _illum;         // Illumination model
         std::string _mapKd;    // Diffuse texture path
