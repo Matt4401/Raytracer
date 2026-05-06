@@ -22,7 +22,8 @@ namespace raytracer::object::primitive {
       public:
         Mesh(const std::map<std::string, std::any> &params);
         ~Mesh() override = default;
-        std::optional<HitContext> hits(const maths::Ray &ray) override;
+        std::optional<HitContext> hits(const maths::Ray &ray,
+                                       bool computeSurfaceData = true) override;
         BoundingBox boundingBox() override;
 
       protected:

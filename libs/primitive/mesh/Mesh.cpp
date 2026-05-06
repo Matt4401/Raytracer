@@ -35,7 +35,8 @@ namespace raytracer::object::primitive {
         buildTrianglesFromFaces();
     }
 
-    std::optional<HitContext> Mesh::hits(const maths::Ray &ray) {
+    std::optional<HitContext> Mesh::hits(const maths::Ray &ray,
+                                        bool computeSurfaceData) {
         auto intersection = _surfaceHelper->findClosestTriangle(ray);
         if (!intersection) {
             return std::nullopt;
@@ -43,6 +44,12 @@ namespace raytracer::object::primitive {
 
         int triangleIndex = intersection->triangleIndex;
         const maths::Vector &hitPoint = intersection->hitPoint;
+
+        if (!computeSurfaceData) {
+            return HitContext{.distance = intersection->distance,
+                              .hitPoint = hitPoint,
+                              .surfaceData = {}};
+        }
 
         maths::Vector normal = _surfaceHelper->computeNormal(
             triangleIndex, hitPoint, _objLoader->normals());

@@ -30,7 +30,8 @@ namespace raytracer::object::primitive {
 
         const maths::Vector &normal() const noexcept;
 
-        std::optional<HitContext> hits(const maths::Ray &ray) override;
+        std::optional<HitContext> hits(const maths::Ray &ray,
+                                       bool computeSurfaceData = true) override;
         BoundingBox boundingBox() override;
 
       private:

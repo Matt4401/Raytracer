@@ -45,7 +45,8 @@ namespace raytracer::object::primitive {
         return _radius;
     }
 
-    std::optional<HitContext> Sphere::hits(const maths::Ray &ray) {
+    std::optional<HitContext> Sphere::hits(const maths::Ray &ray,
+                                          bool computeSurfaceData) {
         const maths::Vector oc = ray.origin - _center;
         const maths::Vector ocVec(oc.x, oc.y, oc.z);
         const double a = ray.direction.dot(ray.direction);
@@ -71,6 +72,12 @@ namespace raytracer::object::primitive {
         }
 
         const maths::Vector hitPoint = ray.origin + ray.direction * t;
+
+        if (!computeSurfaceData) {
+            return HitContext{.distance = t,
+                              .hitPoint = hitPoint,
+                              .surfaceData = {}};
+        }
 
         const maths::Vector normal = (hitPoint - _center).normalized();
         const double u = 0.5 + std::atan2(normal.z, normal.x) / (2 * M_PI);

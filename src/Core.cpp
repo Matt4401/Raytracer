@@ -245,12 +245,12 @@ namespace raytracer {
             std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(
                 greenMaterial);
 
-        std::map<std::string, std::any> cubeMeshParams;
-        cubeMeshParams["center"] = vec(50.0, 16.5, 60.0);
-        cubeMeshParams["scale"] = vec(30.0, 30.0, 30.0);  // size of the cube
-        cubeMeshParams["path"] = std::string("assets/models/octane.obj");
-        cubeMeshParams["material"] = greenMaterialPtr;
-        auto cubeMesh = this->_objFactory.build("mesh", cubeMeshParams);
+        // std::map<std::string, std::any> cubeMeshParams;
+        // cubeMeshParams["center"] = vec(50.0, 16.5, 60.0);
+        // cubeMeshParams["scale"] = vec(30.0, 30.0, 30.0);  // size of the cube
+        // cubeMeshParams["path"] = std::string("assets/models/octane.obj");
+        // cubeMeshParams["material"] = greenMaterialPtr;
+        // auto cubeMesh = this->_objFactory.build("mesh", cubeMeshParams);
 
         // Point Light
         std::map<std::string, std::any> pointLightParams;
@@ -275,9 +275,9 @@ namespace raytracer {
             scenePtr->addObject(floorSphere);
             scenePtr->addObject(ceilingSphere);
             scenePtr->addObject(behindSphere);
-            // scenePtr->addObject(mirrorSphere);
+            scenePtr->addObject(mirrorSphere);
             // scenePtr->addObject(refractiveSphere);
-            scenePtr->addObject(cubeMesh);
+            // scenePtr->addObject(cubeMesh);
             scenePtr->addObject(pointLight);
             scenePtr->addObject(camera);
         } else {

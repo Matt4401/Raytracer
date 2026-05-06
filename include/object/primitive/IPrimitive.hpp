@@ -59,10 +59,13 @@ namespace raytracer::object::primitive {
          * @brief Compute ray-primitive intersection and return complete hit
          * context.
          * @param ray the ray to test for intersection with the primitive
+         * @param computeSurfaceData if true, compute normal, uv, and material;
+         * if false, return only distance and hitPoint with empty surfaceData
          * @return HitContext containing distance, hit point, and surface data
          * if intersection occurs, std::nullopt otherwise
          */
-        virtual std::optional<HitContext> hits(const maths::Ray &ray) = 0;
+        virtual std::optional<HitContext> hits(const maths::Ray &ray,
+                                               bool computeSurfaceData = true) = 0;
 
         /**
          * @return a BoundingBox struct that defines the axis-aligned bounding

@@ -44,7 +44,7 @@ namespace raytracer::object::scene {
 
     bool Scene::intersect(const maths::Ray &ray, double &t,
                           int &objectId) const {
-        auto hit = intersectClosest(ray);
+        auto hit = intersectClosest(ray, false);
         if (!hit) {
             t = -1.0;
             objectId = -1;
@@ -57,12 +57,12 @@ namespace raytracer::object::scene {
     }
 
     std::optional<SceneHitContext> Scene::intersectClosest(
-        const maths::Ray &ray) const {
+        const maths::Ray &ray, bool computeSurfaceData) const {
         std::optional<SceneHitContext> bestHit = std::nullopt;
         double minDist = std::numeric_limits<double>::infinity();
 
         for (std::size_t i = 0; i < _primitives.size(); ++i) {
-            auto hitCtx = _primitives.at(i)->hits(ray);
+            auto hitCtx = _primitives.at(i)->hits(ray, computeSurfaceData);
             if (hitCtx && hitCtx->distance < minDist) {
                 minDist = hitCtx->distance;
                 bestHit = SceneHitContext{i, *hitCtx};
@@ -153,7 +153,7 @@ namespace raytracer::object::scene {
             for (int k = 0; k < _ambientOcclusion.samples; ++k) {
                 maths::Vector aoDir = randomCosineDir(nl, xi);
                 maths::Ray aoRay(x + nl * K_RAY_EPSILON, aoDir);
-                auto aoHit = intersectClosest(aoRay);
+                auto aoHit = intersectClosest(aoRay, false);
                 if (!aoHit || aoHit->hit.distance > _ambientOcclusion.radius)
                     unoccluded += 1.0;
             }

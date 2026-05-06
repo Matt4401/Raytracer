@@ -53,7 +53,8 @@ namespace raytracer::object::primitive {
         return _v2;
     }
 
-    std::optional<HitContext> Triangle::hits(const maths::Ray &ray) {
+    std::optional<HitContext> Triangle::hits(const maths::Ray &ray,
+                                             bool computeSurfaceData) {
         const maths::Vector edge1 = _v1 - _center;
         const maths::Vector edge2 = _v2 - _center;
         const maths::Vector rayCrossE2 = ray.direction.cross(edge2);
@@ -82,6 +83,12 @@ namespace raytracer::object::primitive {
         }
 
         const maths::Vector hitPoint = ray.origin + ray.direction * t;
+
+        if (!computeSurfaceData) {
+            return HitContext{.distance = t,
+                              .hitPoint = hitPoint,
+                              .surfaceData = {}};
+        }
 
         const auto normal = edge1.cross(edge2).normalized();
         const auto hitVector = hitPoint - _center;

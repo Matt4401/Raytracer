@@ -46,7 +46,7 @@ namespace raytracer::object::scene {
         /// @brief Find the closest intersection with any primitive in the
         /// scene. Returns the primitive index and its full hit context.
         std::optional<SceneHitContext> intersectClosest(
-            const maths::Ray &ray) const;
+            const maths::Ray &ray, bool computeSurfaceData = true) const;
 
         /// @brief build an orthonormal basis (u, v, w) given a normal vector w.
         /// The vectors u and v are perpendicular
