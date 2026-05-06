@@ -60,25 +60,25 @@ namespace raytracer::object::primitive {
         const double det = edge1.dot(rayCrossE2);
 
         if (std::abs(det) < K_RAY_EPSILON) {
-            return std::nullopt; // Ray is parallel to triangle
+            return std::nullopt;  // Ray is parallel to triangle
         }
 
         const double invDet = 1.0 / det;
         const maths::Vector s = ray.origin - _center;
         const double u = s.dot(rayCrossE2) * invDet;
         if (u < -K_RAY_EPSILON || u - 1 > K_RAY_EPSILON) {
-            return std::nullopt; // Ray pass outside edge2 bounds
+            return std::nullopt;  // Ray pass outside edge2 bounds
         }
 
         const maths::Vector sCrossE1 = s.cross(edge1);
         const double v = ray.direction.dot(sCrossE1) * invDet;
         if (v < -K_RAY_EPSILON || u + v - 1 > K_RAY_EPSILON) {
-            return std::nullopt; // Ray pass outside edge1 bounds
+            return std::nullopt;  // Ray pass outside edge1 bounds
         }
 
         const double t = edge2.dot(sCrossE1) * invDet;
         if (t < K_RAY_EPSILON) {
-            return std::nullopt; // Ray intersection behind the origin
+            return std::nullopt;  // Ray intersection behind the origin
         }
 
         const maths::Vector hitPoint = ray.origin + ray.direction * t;
@@ -101,9 +101,7 @@ namespace raytracer::object::primitive {
         }
 
         return HitContext{
-            .distance = t,
-            .hitPoint = hitPoint,
-            .surfaceData = surfData};
+            .distance = t, .hitPoint = hitPoint, .surfaceData = surfData};
     }
 
     IPrimitive::BoundingBox Triangle::boundingBox() {

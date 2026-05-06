@@ -7,10 +7,10 @@
 
 #pragma once
 
+#include <any>
+#include <map>
 #include <optional>
 #include <string>
-#include <map>
-#include <any>
 
 #include "math/Color.hpp"
 #include "math/Ray.hpp"
@@ -56,10 +56,11 @@ namespace raytracer::object::primitive {
 
         virtual ~IPrimitive() = default;
         /**
-         * @brief Compute ray-primitive intersection and return complete hit context.
+         * @brief Compute ray-primitive intersection and return complete hit
+         * context.
          * @param ray the ray to test for intersection with the primitive
-         * @return HitContext containing distance, hit point, and surface data if intersection occurs,
-         *         std::nullopt otherwise
+         * @return HitContext containing distance, hit point, and surface data
+         * if intersection occurs, std::nullopt otherwise
          */
         virtual std::optional<HitContext> hits(const maths::Ray &ray) = 0;
 

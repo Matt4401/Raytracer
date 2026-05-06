@@ -70,9 +70,7 @@ namespace raytracer::object::primitive {
         }
 
         return HitContext{
-            .distance = t,
-            .hitPoint = hitPoint,
-            .surfaceData = surfData};
+            .distance = t, .hitPoint = hitPoint, .surfaceData = surfData};
     }
 
     IPrimitive::BoundingBox Plane::boundingBox() {

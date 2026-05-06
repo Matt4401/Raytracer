@@ -43,8 +43,8 @@ namespace raytracer::object::scene {
                                int emissive = 1) const override;
 
       private:
-        /// @brief Find the closest intersection with any primitive in the scene.
-        /// Returns the primitive index and its full hit context.
+        /// @brief Find the closest intersection with any primitive in the
+        /// scene. Returns the primitive index and its full hit context.
         std::optional<SceneHitContext> intersectClosest(
             const maths::Ray &ray) const;
 

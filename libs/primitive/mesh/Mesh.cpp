@@ -7,7 +7,6 @@
 
 #include "Mesh.hpp"
 
-
 #include "util/middleware/Helpers.hpp"
 #include "util/middleware/ObjectMiddleware.hpp"
 
@@ -50,10 +49,8 @@ namespace raytracer::object::primitive {
         maths::Vector uv = _surfaceHelper->computeUV(
             triangleIndex, hitPoint, _objLoader->textureCoords());
 
-        SurfaceData surfData{.normal = normal,
-                             .uv = uv,
-                             .extraParams = {},
-                             .material = {}};
+        SurfaceData surfData{
+            .normal = normal, .uv = uv, .extraParams = {}, .material = {}};
 
         surfData.extraParams["materialName"] =
             _objLoader->getMaterialForFace(triangleIndex);
@@ -62,10 +59,9 @@ namespace raytracer::object::primitive {
             surfData.material = this->_material->evaluate(surfData, hitPoint);
         }
 
-        return HitContext{
-            .distance = intersection->distance,
-            .hitPoint = hitPoint,
-            .surfaceData = surfData};
+        return HitContext{.distance = intersection->distance,
+                          .hitPoint = hitPoint,
+                          .surfaceData = surfData};
     }
 
     IPrimitive::BoundingBox Mesh::boundingBox() {
