@@ -8,9 +8,16 @@
 #ifndef SCENE_HPP_
 #define SCENE_HPP_
 
+#include <optional>
+
 #include "object/AScene.hpp"
 
 namespace raytracer::object::scene {
+
+    struct SceneHitContext {
+        std::size_t objectId;
+        primitive::HitContext hit;
+    };
 
     struct RadianceContext {
         maths::Vector x;
@@ -37,8 +44,8 @@ namespace raytracer::object::scene {
 
       private:
         /// @brief Find the closest intersection with any primitive in the scene.
-        /// Returns optional HitContext containing distance, hit point, and surface data.
-        std::optional<primitive::HitContext> intersectClosest(
+        /// Returns the primitive index and its full hit context.
+        std::optional<SceneHitContext> intersectClosest(
             const maths::Ray &ray) const;
 
         /// @brief build an orthonormal basis (u, v, w) given a normal vector w.
@@ -68,13 +75,10 @@ namespace raytracer::object::scene {
         maths::Vector randomCosineDir(const maths::Vector &nl,
                                       unsigned short *xi) const;
         maths::Vector radianceDiffuse(const maths::Ray &ray,
-                                      const primitive::IPrimitive &obj,
                                       const RadianceContext &ctx) const;
         maths::Vector radianceSpecular(const maths::Ray &ray,
-                                       const primitive::IPrimitive &obj,
                                        const RadianceContext &ctx) const;
         maths::Vector radianceRefractive(const maths::Ray &ray,
-                                         const primitive::IPrimitive &obj,
                                          const RadianceContext &ctx) const;
     };
 }  // namespace raytracer::object::scene
