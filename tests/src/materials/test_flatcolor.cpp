@@ -51,7 +51,7 @@ TEST(MATERIAL, flatcolor_decorator) {
         {"material", matPtr},
         {"center",
          std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
-        {"r", 10.0}};
+        {"radius", 10.0}};
     auto sphere = objFactory.build("sphere", sphereArgs);
     ASSERT_NE(sphere, nullptr);
 
@@ -101,7 +101,7 @@ TEST(MATERIAL, flatcolor_preserves_normal) {
         {"material", matPtr},
         {"center",
          std::map<std::string, std::any>{{"x", 5.0}, {"y", 5.0}, {"z", 5.0}}},
-        {"r", 2.0}};
+        {"radius", 2.0}};
     auto sphere = objFactory.build("sphere", sphereArgs);
     ASSERT_NE(sphere, nullptr);
     auto basePrim =
