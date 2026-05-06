@@ -35,6 +35,7 @@ namespace raytracer::object::primitive {
 
         std::unique_ptr<MeshSurfaceHelper> _surfaceHelper;
         std::unique_ptr<ObjLoader> _objLoader;
+        std::optional<MeshSurfaceHelper::TriangleIntersection> _lastHitTriangleIndex;
     };
 }  // namespace raytracer::object::primitive
 #endif /* !MESH_HPP_ */

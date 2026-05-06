@@ -37,11 +37,17 @@ namespace raytracer::object::primitive {
         _surfaceHelper =
             std::make_unique<MeshSurfaceHelper>(_objLoader->vertices());
         buildTrianglesFromFaces();
+        _lastHitTriangleIndex = std::nullopt;
     }
 
     double Mesh::hits(const maths::Ray &ray) {
         auto intersection = _surfaceHelper->findClosestTriangle(ray);
-        return intersection ? intersection->distance : -1.0;
+        if (intersection) {
+            _lastHitTriangleIndex = intersection;
+            return intersection->distance;
+        }
+        _lastHitTriangleIndex = std::nullopt;
+        return -1.0;
     }
 
     IPrimitive::BoundingBox Mesh::boundingBox() {
@@ -81,39 +87,19 @@ namespace raytracer::object::primitive {
                          .uv = maths::Vector(0, 0, 0),
                          .extraParams = {},
                          .material = {}};
-
-        const auto &triangles = _surfaceHelper->triangles();
-        if (triangles.empty())
+        if (!_lastHitTriangleIndex.has_value())
             return data;
-
-        int closestIdx = -1;
-        double closestDist = std::numeric_limits<double>::infinity();
-
-        for (int i = 0; i < _surfaceHelper->triangleCount(); ++i) {
-            maths::Vector centroid =
-                _surfaceHelper->computeCentroid(triangles[i]);
-            double dist = (hitPoint - centroid).magnitude();
-            if (dist < closestDist) {
-                closestDist = dist;
-                closestIdx = i;
-            }
-        }
-
-        if (closestIdx < 0)
-            return data;
-
+        int closestIdx = _lastHitTriangleIndex.value().triangleIndex;
         data.normal = _surfaceHelper->computeNormal(closestIdx, hitPoint,
                                                     _objLoader->normals());
         data.uv = _surfaceHelper->computeUV(closestIdx, hitPoint,
                                             _objLoader->textureCoords());
 
-        data.extraParams["triangleIndex"] = closestIdx;
         data.extraParams["materialName"] =
             _objLoader->getMaterialForFace(closestIdx);
 
         if (this->_material)
             this->_material->evaluate(data, hitPoint);
-
         return data;
     }
 
