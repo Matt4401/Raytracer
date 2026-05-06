@@ -8,6 +8,8 @@
 #include "parser/ConfigParser.hpp"
 
 #include <any>
+#include <filesystem>
+#include <iostream>
 #include <libconfig.h++>
 #include <map>
 #include <memory>
@@ -166,6 +168,65 @@ namespace raytracer::parsing {
         }
     }
 
+    std::vector<std::string> ConfigParser::getSubScenePath(
+        libconfig::Setting &root) {
+        std::string scenesConfigName = std::string(K_SCENES_KEYWORD);
+        if (!root.exists(scenesConfigName)) {
+            return {};
+        }
+        const libconfig::Setting &scenes = root.lookup(scenesConfigName);
+        if (!scenes.isList() && !scenes.isArray()) {
+            throw exception::ParsingException(
+                "{} config must be either a array [] or a list ().",
+                scenesConfigName);
+        }
+        std::vector<std::string> paths;
+        for (const auto &path : scenes) {
+            if (!path.isString()) {
+                throw raytracer::exception::ParsingException(
+                    "sub scenes path {}, is not a string", path.getName());
+            }
+            paths.emplace_back(path);
+        }
+        root.remove(scenesConfigName);
+        return paths;
+    }
+
+    void ConfigParser::parseObjects(const libconfig::Setting &root) {
+        for (const auto &objectsTheme : root) {
+            if (objectsTheme.isGroup()) {
+                this->parseGroups(objectsTheme);
+            }
+            if (objectsTheme.isList()) {
+                this->parseObjectList(objectsTheme);
+            }
+        }
+    }
+
+    void ConfigParser::makeSubScenes(const std::vector<std::string> &scenesPath,
+                                     const std::filesystem::path &currentPath) {
+        parsing::ConfigParser parser;
+
+        parser.setBuildCallback(
+            [this](const std::string &name,
+                   const std::map<std::string, std::any> &param) {
+                return this->_buildCallback(name, param);
+            });
+        for (const auto &pathName : scenesPath) {
+            std::filesystem::path path = currentPath.parent_path() / pathName;
+            if (!std::filesystem::exists(path) ||
+                !std::filesystem::is_regular_file(path)) {
+                throw exception::ParsingException(
+                    "subScene \"{}\" is not a valid path, in {} config file",
+                    path.string(), currentPath.string());
+            }
+            std::vector<std::shared_ptr<object::scene::IScene>> scenes =
+                parser.parse(path);
+            this->_scenes.insert(this->_scenes.end(), scenes.begin(),
+                                 scenes.end());
+        }
+    }
+
     std::vector<std::shared_ptr<object::scene::IScene>> ConfigParser::parse(
         const std::filesystem::path &filepath) {
         if (this->_buildCallback == nullptr) {
@@ -175,19 +236,14 @@ namespace raytracer::parsing {
 
         this->loadConfig(filepath);
         this->makeScene(this->_cfg.getRoot());
-
-        for (const auto &objectsTheme : this->_cfg.getRoot()) {
-            if (objectsTheme.isGroup()) {
-                this->parseGroups(objectsTheme);
-            }
-            if (objectsTheme.isList()) {
-                this->parseObjectList(objectsTheme);
-            }
-        }
+        std::vector<std::string> scenesPath =
+            this->getSubScenePath(this->_cfg.getRoot());
+        this->parseObjects(this->_cfg.getRoot());
         if (!this->_scenes.at(0)->haveCamera()) {
             throw exception::ParsingException(
                 "Scene in {} do not have any cameras", filepath.string());
         }
+        this->makeSubScenes(scenesPath, filepath);
         return this->_scenes;
     }
 }  // namespace raytracer::parsing
