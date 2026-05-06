@@ -18,16 +18,12 @@ namespace raytracer::object::primitive {
             : _wrapped(std::move(wrapped)) {
         }
 
-        double hits(const maths::Ray &ray) override {
+        std::optional<HitContext> hits(const maths::Ray &ray) override {
             return _wrapped->hits(ray);
         }
 
         BoundingBox boundingBox() override {
             return _wrapped->boundingBox();
-        }
-
-        SurfaceData surfaceData(const maths::Vector &hitPoint) const override {
-            return _wrapped->surfaceData(hitPoint);
         }
 
       protected:

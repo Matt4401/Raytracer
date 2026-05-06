@@ -44,33 +44,51 @@ namespace raytracer::object::scene {
 
     bool Scene::intersect(const maths::Ray &ray, double &t,
                           int &objectId) const {
-        const double infinity = std::numeric_limits<double>::infinity();
-        t = infinity;
-        objectId = -1;
+        auto hitCtx = intersectClosest(ray);
+        if (!hitCtx) {
+            t = -1.0;
+            objectId = -1;
+            return false;
+        }
+        t = hitCtx->distance;
         for (size_t i = 0; i < _primitives.size(); ++i) {
-            const double distance = _primitives.at(i)->hits(ray);
-            if (distance >= 0.0 && distance < t) {
-                t = distance;
+            auto hit = _primitives.at(i)->hits(ray);
+            if (hit && hit->distance == t) {
                 objectId = static_cast<int>(i);
+                return true;
             }
         }
-        return objectId != -1;
+        return false;
+    }
+
+    std::optional<primitive::HitContext> Scene::intersectClosest(
+        const maths::Ray &ray) const {
+        std::optional<primitive::HitContext> bestHit = std::nullopt;
+        double minDist = std::numeric_limits<double>::infinity();
+
+        for (const auto &prim : _primitives) {
+            auto hitCtx = prim->hits(ray);
+            if (hitCtx && hitCtx->distance < minDist) {
+                minDist = hitCtx->distance;
+                bestHit = hitCtx;
+            }
+        }
+        return bestHit;
     }
 
     maths::Vector Scene::radiance(const maths::Ray &ray, int depth,
                                   unsigned short *xi, int emissive) const {
-        double t = -1.0;
-        int id = -1;
-        if (!intersect(ray, t, id))
+        auto hitCtx = intersectClosest(ray);
+        if (!hitCtx) {
             return maths::Vector();
+        }
 
-        const std::shared_ptr<primitive::IPrimitive> &obj = _primitives.at(id);
-        if (depth > K_MAX_RADIANCE_DEPTH)
+        if (depth > K_MAX_RADIANCE_DEPTH) {
             return maths::Vector();
+        }
 
-        maths::Vector rayOrigin(ray.origin.x, ray.origin.y, ray.origin.z);
-        maths::Vector x = rayOrigin + ray.direction * t;
-        primitive::SurfaceData surfData = obj->surfaceData(x);
+        maths::Vector x = hitCtx->hitPoint;
+        primitive::SurfaceData surfData = hitCtx->surfaceData;
         maths::Vector n = surfData.normal;
         maths::Vector nl = n.dot(ray.direction) < 0 ? n : n * -1;
 
@@ -86,21 +104,28 @@ namespace raytracer::object::scene {
                 return surfData.material.emission * emissive;
         }
 
-        RadianceContext ctx{x, n, nl, f, depth, xi, emissive};
-        if (surfData.material.reflType == object::primitive::RefltT::DIFF) {
-            return radianceDiffuse(ray, *obj, ctx);
+        RadianceContext ctx{x, n, nl, f, depth, xi, emissive, surfData};
+
+        for (const auto &prim : _primitives) {
+            auto hit = prim->hits(ray);
+            if (hit && std::abs(hit->distance - hitCtx->distance) < 1e-9) {
+                if (surfData.material.reflType == object::primitive::RefltT::DIFF) {
+                    return radianceDiffuse(ray, *prim, ctx);
+                }
+                if (surfData.material.reflType == object::primitive::RefltT::SPEC) {
+                    return radianceSpecular(ray, *prim, ctx);
+                }
+                return radianceRefractive(ray, *prim, ctx);
+            }
         }
-        if (surfData.material.reflType == object::primitive::RefltT::SPEC) {
-            return radianceSpecular(ray, *obj, ctx);
-        }
-        return radianceRefractive(ray, *obj, ctx);
+        return maths::Vector();
     }
 
     maths::Vector Scene::radianceDiffuse(const maths::Ray &ray,
                                          const primitive::IPrimitive &obj,
                                          const RadianceContext &ctx) const {
         const maths::Vector &x = ctx.x;
-        primitive::SurfaceData surfData = obj.surfaceData(x);
+        const primitive::SurfaceData &surfData = ctx.surfaceData;
         const maths::Vector &n = ctx.n;
         const maths::Vector &nl = ctx.nl;
         const maths::Vector &f = ctx.f;
@@ -138,10 +163,8 @@ namespace raytracer::object::scene {
             for (int k = 0; k < _ambientOcclusion.samples; ++k) {
                 maths::Vector aoDir = randomCosineDir(nl, xi);
                 maths::Ray aoRay(x + nl * K_RAY_EPSILON, aoDir);
-                double aoT;
-                int aoId;
-                bool hit = intersect(aoRay, aoT, aoId);
-                if (!hit || aoT > _ambientOcclusion.radius)
+                auto aoHit = intersectClosest(aoRay);
+                if (!aoHit || aoHit->distance > _ambientOcclusion.radius)
                     unoccluded += 1.0;
             }
             double aoFactor =
@@ -180,7 +203,7 @@ namespace raytracer::object::scene {
         int depth = ctx.depth;
         unsigned short *xi = ctx.xi;
         int emissive = ctx.emissive;
-        primitive::SurfaceData surfData = obj.surfaceData(x);
+        const primitive::SurfaceData &surfData = ctx.surfaceData;
 
         const double reflectivity =
             std::clamp(surfData.material.reflectivity, 0.0, 1.0);
@@ -223,7 +246,7 @@ namespace raytracer::object::scene {
         const maths::Vector &n = ctx.n;
         const maths::Vector &nl = ctx.nl;
         const maths::Vector &f = ctx.f;
-        primitive::SurfaceData surfData = obj.surfaceData(x);
+        const primitive::SurfaceData &surfData = ctx.surfaceData;
 
         int depth = ctx.depth;
         unsigned short *xi = ctx.xi;

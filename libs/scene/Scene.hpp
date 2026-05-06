@@ -20,6 +20,7 @@ namespace raytracer::object::scene {
         int depth;
         unsigned short *xi;
         const int emissive;
+        primitive::SurfaceData surfaceData;
     };
 
     class Scene : public AScene {
@@ -35,6 +36,11 @@ namespace raytracer::object::scene {
                                int emissive = 1) const override;
 
       private:
+        /// @brief Find the closest intersection with any primitive in the scene.
+        /// Returns optional HitContext containing distance, hit point, and surface data.
+        std::optional<primitive::HitContext> intersectClosest(
+            const maths::Ray &ray) const;
+
         /// @brief build an orthonormal basis (u, v, w) given a normal vector w.
         /// The vectors u and v are perpendicular
         /// to w and to each other. This is used to generate random directions
