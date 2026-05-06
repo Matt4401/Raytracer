@@ -213,6 +213,31 @@ material: {
 };
 ```
 
+### Rule 7: Scenes Config for subScene Path
+
+A special configuration key, `scenes`, is used to specify sub-scenes by referencing other configuration files. The `scenes` config must be either a list or an array of strings, where each string represents a relative path to a sub-scene configuration file, relative to the file it is imported from.
+
+**Example:**
+```cfg
+scenes = [
+    "subscenes/room1.cfg",
+    "subscenes/room2.cfg"
+];
+```
+
+or
+
+```cfg
+scenes = (
+    "subscenes/room1.cfg",
+    "subscenes/room2.cfg"
+);
+```
+
+- Each entry must be a string representing the relative path to a configuration file.
+- The path is resolved relative to the importing config file.
+- The referenced files must themselves be valid scene configuration files. If not the program will stop.
+
 ## Small Error Cases and Corrections
 
 ### ❌ Error Case 1: Missing SceneParameters
