@@ -7,9 +7,6 @@
 
 #include "Mesh.hpp"
 
-#include <iostream>
-#include <limits>
-#include <stdexcept>
 
 #include "util/middleware/Helpers.hpp"
 #include "util/middleware/ObjectMiddleware.hpp"
