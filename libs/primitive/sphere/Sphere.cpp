@@ -26,8 +26,8 @@ namespace raytracer::object::primitive {
                   std::shared_ptr<raytracer::object::material::IMaterial>>(
                   args, "material", "Sphere")),
           _radius(
-              util::ObjectMiddleware::validate<double>(args, "r", "Sphere")) {
-        util::Helpers::unsignedDouble(_radius, "r", "Sphere");
+              util::ObjectMiddleware::validate<double>(args, "radius", "Sphere")) {
+        util::Helpers::unsignedDouble(_radius, "radius", "Sphere");
     }
 
     Sphere::Sphere(const maths::Vector &vector, const double radius)
