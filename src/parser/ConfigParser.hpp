@@ -53,6 +53,9 @@ namespace raytracer::parsing {
         std::vector<std::shared_ptr<object::scene::IScene>> parse(
             const std::filesystem::path &filepath);
 
+        void parse(const std::shared_ptr<object::scene::IScene> &sceneBuffer,
+                   const std::filesystem::path &filepath);
+
       private:
         struct ObjectInfo {
             std::map<std::string, std::any> params;
@@ -69,6 +72,7 @@ namespace raytracer::parsing {
         static constexpr std::string_view K_NAME_KEYWORD = "name";
         static constexpr std::string_view K_MATERIAL_KEYWORD = "material";
         static constexpr std::string_view K_SCENES_KEYWORD = "scenes";
+        static constexpr std::string_view K_EXTRA_KEYWORD = "objects_clusters";
 
         /**
          * @brief Extracts object information from a libconfig setting.
@@ -127,13 +131,14 @@ namespace raytracer::parsing {
         void computeMaterial(ObjectInfo &info,
                              const libconfig::Setting &objectData);
 
-        static std::vector<std::string> getSubScenePath(
-            libconfig::Setting &root);
+        void parseObjects(libconfig::Setting &root,
+                          const std::filesystem::path &path);
 
-        void parseObjects(const libconfig::Setting &root);
-
-        void makeSubScenes(const std::vector<std::string> &scenesPath,
-                           const std::filesystem::path &currentPath);
+        void subFileHandling(
+            const std::vector<std::string> &scenesPath,
+            const std::filesystem::path &currentPath,
+            const std::function<void(ConfigParser &parser,
+                                     const std::filesystem::path &path)> &func);
 
         /**
          * @brief Creates a scene from the parsed configuration root.

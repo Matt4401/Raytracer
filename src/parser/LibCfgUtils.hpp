@@ -10,6 +10,8 @@
 #include <any>
 #include <libconfig.h++>
 #include <map>
+#include <string>
+#include <string_view>
 #include <vector>
 namespace raytracer::parsing {
 
@@ -46,5 +48,8 @@ namespace raytracer::parsing {
          */
         static std::vector<std::any> arrayToVector(
             const libconfig::Setting &array);
+
+        static std::vector<std::string> stringAggregateToVector(
+            libconfig::Setting &root, const std::string_view &aggregateName);
     };
 }  // namespace raytracer::parsing
