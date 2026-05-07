@@ -238,6 +238,30 @@ scenes = (
 - The path is resolved relative to the importing config file.
 - The referenced files must themselves be valid scene configuration files. If not the program will stop.
 
+### Rule 8: Objects Clusters Config for Object Extension
+
+A special configuration key, `objects_clusters`, is used to include additional objects into the current scene by referencing external configuration files. Unlike `scenes` which creates separate scenes, `objects_clusters` extends the current scene with more objects. The `objects_clusters` config must be either a list or an array of strings, where each string represents a relative path to a configuration file containing only objects.
+
+**Example:**
+```cfg
+objects_clusters = [
+    "walls.cfg",
+    "furniture.cfg"
+];
+```
+
+or
+
+```cfg
+objects_clusters = (
+    "walls.cfg",
+    "furniture.cfg"
+);
+```
+
+**Important Notes:**
+- Each referenced file should contain only object definitions (primitives, lights, etc.) and **must NOT contain** `sceneParameters` or `scenes` declarations. They will be considered as object in those files.
+
 ## Small Error Cases and Corrections
 
 ### ❌ Error Case 1: Missing SceneParameters
