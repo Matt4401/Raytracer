@@ -21,7 +21,7 @@ Every configuration file must start with a `sceneParameters` group. This is the 
 ```cfg
 sceneParameters:
 {
-    ambiantOcclution: {
+    ambiantOcclusion: {
         samples = 0;
         radius = 0.0;
     };
@@ -143,7 +143,7 @@ In this example:
 - Object type: `point_light` (used by the plugin constructor)
 - One object created per list element
 
-Be carefull this second method to not allow materials
+Be careful this second method do not allow materials
 
 ### Rule 4: Type Safety - Explicit Type Declarations
 

@@ -8,6 +8,7 @@
 #pragma once
 
 #include <filesystem>
+#include <utility>
 
 #include "Render.hpp"
 #include "plugin/ObjectFactory.hpp"
@@ -33,6 +34,8 @@ namespace raytracer {
          * TODO: Implement the main core program
          */
         void run();
+
+        static std::pair<bool, int> helpMessage(int argc, char **argv);
 
       private:
         PluginManager _plugManager;

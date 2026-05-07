@@ -38,7 +38,7 @@ namespace raytracer::util {
     object::primitive::RefltT Helpers::toEnumRefltT(
         const std::map<std::string, std::any> &params, std::string_view keyName,
         std::string_view className) {
-        std::map<std::string, object::primitive::RefltT> linkData = {
+        std::map<std::string, object::primitive::RefltT> refletMap = {
             {"DIFF", object::primitive::RefltT::DIFF},
             {"REFR", object::primitive::RefltT::REFR},
             {"SPEC", object::primitive::RefltT::SPEC},
@@ -46,15 +46,19 @@ namespace raytracer::util {
         std::string strReflect =
             ObjectMiddleware::validate<std::string>(params, keyName, className);
 
-        auto iter = linkData.find(strReflect);
+        auto iter = refletMap.find(strReflect);
 
-        if (iter == linkData.end()) {
-            throw exception::PluginException{
-                "given Reflection in {} has invalid value, must be either "
-                "\"DIFF\", \"REFR\" or \"SPEC\"",
-                className};
+        if (iter != refletMap.end()) {
+            return iter->second;
         }
-        return iter->second;
+        std::string printableRefltTList = "/ ";
+
+        for (const auto &reflt : refletMap)
+            printableRefltTList += reflt.first + " / ";
+        throw exception::PluginException{
+            "given Reflection in {} has invalid value, "
+            "must be in the following list: {}",
+            std::string(className), printableRefltTList};
     }
 
     maths::Vector Helpers::normalVector(maths::Vector &normal) {

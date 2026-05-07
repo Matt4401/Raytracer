@@ -13,10 +13,8 @@
 int main(int argc, char **argv) {
     raytracer::Core core;
 
-    if (argc != 2) {
-        std::cerr << "USAGE: ./raytracer <SCENE_FILE> \n"
-                  << "\tSCENE_FILE: scene configuration\n";
-        return 84;
+    if (auto state = core.helpMessage(argc, argv); state.first) {
+        return state.second;
     }
 
     try {
