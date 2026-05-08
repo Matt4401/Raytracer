@@ -32,8 +32,8 @@ namespace raytracer::object::primitive {
         }
         ~APrimitive() override = default;
 
-        std::optional<HitContext> hits(const maths::Ray &ray,
-                                       bool computeSurfaceData = true) override = 0;
+        std::optional<HitContext> hits(
+            const maths::Ray &ray, bool computeSurfaceData = true) override = 0;
         BoundingBox boundingBox() override = 0;
 
         maths::Vector center() const noexcept override;

@@ -41,7 +41,7 @@ namespace raytracer::object::primitive {
     }
 
     std::optional<HitContext> Plane::hits(const maths::Ray &ray,
-                                         bool computeSurfaceData) {
+                                          bool computeSurfaceData) {
         const double denom = _normal.dot(ray.direction);
         if (std::abs(denom) < EPS) {
             return std::nullopt;
@@ -54,9 +54,8 @@ namespace raytracer::object::primitive {
         const maths::Vector hitPoint = ray.origin + ray.direction * t;
 
         if (!computeSurfaceData) {
-            return HitContext{.distance = t,
-                              .hitPoint = hitPoint,
-                              .surfaceData = {}};
+            return HitContext{
+                .distance = t, .hitPoint = hitPoint, .surfaceData = {}};
         }
 
         const maths::Vector &normal = _normal;

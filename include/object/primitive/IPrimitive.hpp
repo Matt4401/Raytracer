@@ -64,8 +64,8 @@ namespace raytracer::object::primitive {
          * @return HitContext containing distance, hit point, and surface data
          * if intersection occurs, std::nullopt otherwise
          */
-        virtual std::optional<HitContext> hits(const maths::Ray &ray,
-                                               bool computeSurfaceData = true) = 0;
+        virtual std::optional<HitContext> hits(
+            const maths::Ray &ray, bool computeSurfaceData = true) = 0;
 
         /**
          * @return a BoundingBox struct that defines the axis-aligned bounding

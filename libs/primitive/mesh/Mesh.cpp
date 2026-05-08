@@ -36,7 +36,7 @@ namespace raytracer::object::primitive {
     }
 
     std::optional<HitContext> Mesh::hits(const maths::Ray &ray,
-                                        bool computeSurfaceData) {
+                                         bool computeSurfaceData) {
         auto intersection = _surfaceHelper->findClosestTriangle(ray);
         if (!intersection) {
             return std::nullopt;

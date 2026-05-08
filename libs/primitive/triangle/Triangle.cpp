@@ -85,9 +85,8 @@ namespace raytracer::object::primitive {
         const maths::Vector hitPoint = ray.origin + ray.direction * t;
 
         if (!computeSurfaceData) {
-            return HitContext{.distance = t,
-                              .hitPoint = hitPoint,
-                              .surfaceData = {}};
+            return HitContext{
+                .distance = t, .hitPoint = hitPoint, .surfaceData = {}};
         }
 
         const auto normal = edge1.cross(edge2).normalized();
