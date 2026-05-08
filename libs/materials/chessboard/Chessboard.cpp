@@ -9,7 +9,7 @@
 
 #include <cmath>
 
-#include "exception/ParsingException.hpp"
+#include "exception/PluginException.hpp"
 #include "util/middleware/Helpers.hpp"
 #include "util/middleware/ObjectMiddleware.hpp"
 
@@ -19,20 +19,20 @@ namespace raytracer::object::material {
         : ABasicMaterial(args),
           _color1(util::Helpers::toColor(args, "color1", "Chessboard")),
           _color2(util::Helpers::toColor(args, "color2", "Chessboard")),
-          _tileSize(0.0) {
-        _tileSize = util::ObjectMiddleware::validate<double>(args, "tileSize",
+          _frequency(0.0) {
+        _frequency = util::ObjectMiddleware::validate<double>(args, "tileSize",
                                                              "Chessboard");
-        util::Helpers::unsignedDouble(_tileSize, "tileSize", "Chessboard");
-        if (_tileSize <= 0.0)
-            throw raytracer::exception::ParsingException(
+        util::Helpers::unsignedDouble(_frequency, "tileSize", "Chessboard");
+        if (_frequency <= 0.0)
+            throw exception::PluginException(
                 "Chessboard: tileSize must be positive");
     }
 
     primitive::MaterialProperties Chessboard::evaluate(
         const primitive::SurfaceData& data,
         const maths::Vector& hitPoint) const {
-        double uCoord = data.uv.x * _tileSize;
-        double vCoord = data.uv.y * _tileSize;
+        double uCoord = data.uv.x * _frequency;
+        double vCoord = data.uv.y * _frequency;
 
         int checkX = static_cast<int>(std::floor(uCoord));
         int checkY = static_cast<int>(std::floor(vCoord));
