@@ -43,7 +43,7 @@ namespace raytracer::object::material {
         }
     }
 
-    void TexturedMaterial::preloadTexture(const std::string& path) {
+    void TexturedMaterial::preloadTexture(const std::string& path) const {
         if (!_loadedTextures.contains(path)) {
             sf::Image img;
             if (img.loadFromFile(path)) {
@@ -59,7 +59,7 @@ namespace raytracer::object::material {
     }
 
     maths::Color TexturedMaterial::sampleTexture(
-        const std::string& path, const maths::Vector& uv) {
+        const std::string& path, const maths::Vector& uv) const {
         auto it = _loadedTextures.find(path);
         if (it == _loadedTextures.end()) {
             try {
@@ -111,6 +111,7 @@ namespace raytracer::object::material {
             _reflectivity = mat.ns() / 1000.0;
             _transparency = mat.d();
             _ior = mat.ni();
+            // I don't know if it's perfect, but gemini told me it was a good start for roughness and metalness
             _roughness =
                 std::clamp(1.0 - std::sqrt(mat.ns() / 1000.0), 0.0, 1.0);
             _metalness = std::clamp(

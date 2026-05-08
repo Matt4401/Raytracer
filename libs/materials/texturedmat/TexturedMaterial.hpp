@@ -33,11 +33,11 @@ namespace raytracer::object::material {
         std::string _texturePath;
         double _scale;
         std::unique_ptr<MtlLoader> _materialLoader;
-        std::unordered_map<std::string, sf::Image> _loadedTextures;
+        mutable std::unordered_map<std::string, sf::Image> _loadedTextures;
 
         maths::Color sampleTexture(const std::string& path,
-                                   const maths::Vector& uv);
+                                   const maths::Vector& uv) const;
 
-        void preloadTexture(const std::string& path);
+        void preloadTexture(const std::string& path) const;
     };
 }  // namespace raytracer::object::material
