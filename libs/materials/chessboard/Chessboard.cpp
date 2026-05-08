@@ -21,7 +21,7 @@ namespace raytracer::object::material {
           _color2(util::Helpers::toColor(args, "color2", "Chessboard")),
           _frequency(0.0) {
         _frequency = util::ObjectMiddleware::validate<double>(args, "tileSize",
-                                                             "Chessboard");
+                                                              "Chessboard");
         util::Helpers::unsignedDouble(_frequency, "tileSize", "Chessboard");
         if (_frequency <= 0.0)
             throw exception::PluginException(
