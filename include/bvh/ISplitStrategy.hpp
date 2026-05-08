@@ -14,8 +14,10 @@
 #include "object/primitive/IPrimitive.hpp"
 
 namespace raytracer::bvh {
+    enum class Axis : std::uint8_t { X = 0, Y = 1, Z = 2 };
+
     struct SplitResult {
-        int axis;
+        Axis axis;
         double splitPos;
         bool shouldSplit;
     };
