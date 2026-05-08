@@ -15,7 +15,11 @@ SET (HEADERS
 )
 
 add_library(texturedmat_plug SHARED ${SRCS} ${HEADERS})
-target_link_libraries(texturedmat_plug PRIVATE raytracer_core)
+find_package(SFML 2.6 COMPONENTS graphics REQUIRED)
+target_link_libraries(texturedmat_plug PRIVATE
+    raytracer_core
+    sfml-graphics
+)
 
 target_include_directories(texturedmat_plug PRIVATE
     ${CMAKE_SOURCE_DIR}/include
