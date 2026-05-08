@@ -7,14 +7,14 @@
 
 #pragma once
 
+#include <bvh/ASplitStrategy.hpp>
 #include <bvh/BVHBuilder.hpp>
-#include <bvh/ISplitStrategy.hpp>
 
 #include "math/AABoundingBox.hpp"
 #include "object/primitive/IPrimitive.hpp"
 
 namespace raytracer::bvh {
-    class SAHStrategy : public ISplitStrategy {
+    class SAHStrategy : public ASplitStrategy {
       public:
         struct Bucket {
             size_t count = 0;

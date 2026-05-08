@@ -7,11 +7,11 @@
 
 #pragma once
 
+#include <bvh/ASplitStrategy.hpp>
 #include <bvh/BVHBuilder.hpp>
-#include <bvh/ISplitStrategy.hpp>
 
 namespace raytracer::bvh {
-    class MedianStrategy : public ISplitStrategy {
+    class MedianStrategy : public ASplitStrategy {
       public:
         MedianStrategy() = default;
         ~MedianStrategy() override = default;

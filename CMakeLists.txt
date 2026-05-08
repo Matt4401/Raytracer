@@ -44,6 +44,7 @@ set(SRCS
         src/math/AABoundingBox.cpp
         src/bvh/BVHNode.cpp
         src/bvh/StrategyFactory.cpp
+        src/bvh/ASplitStrategy.cpp
         src/bvh/bvhSplitStrategy/SAHStrategy.cpp
         src/bvh/bvhSplitStrategy/MedianStrategy.cpp
         src/bvh/bvhSplitStrategy/MidpointStrategy.cpp

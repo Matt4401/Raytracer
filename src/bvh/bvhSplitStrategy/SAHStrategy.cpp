@@ -64,14 +64,8 @@ namespace raytracer::bvh {
         SplitResult res;
         const size_t nObjs = objs.size();
 
-        if (nodeBox.w >= nodeBox.h && nodeBox.w >= nodeBox.d)
-            res.axis = Axis::X;
-        else if (nodeBox.h >= nodeBox.w && nodeBox.h >= nodeBox.d)
-            res.axis = Axis::Y;
-        else
-            res.axis = Axis::Z;
-
-        if (nObjs <= 2) {
+        res.axis = longestAxis(nodeBox);
+        if (!hasEnoughPrimitives(nObjs)) {
             res.shouldSplit = false;
             res.splitPos = 0;
             return res;
