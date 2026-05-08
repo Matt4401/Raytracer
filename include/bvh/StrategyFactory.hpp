@@ -27,4 +27,4 @@ namespace raytracer::bvh {
       private:
         static std::unordered_map<std::string, StrategyCreator>& getRegistry();
     };
-}  // namespace bvh
+}  // namespace raytracer::bvh
