@@ -130,8 +130,7 @@ namespace raytracer::object::material {
     }
 
     primitive::MaterialProperties PerlinNoise::evaluate(
-        const primitive::SurfaceData& data,
-        const maths::Vector& hitPoint) {
+        const primitive::SurfaceData& data, const maths::Vector& hitPoint) {
         const double x = hitPoint.x * _scale;
         const double y = hitPoint.y * _scale;
         const double z = hitPoint.z * _scale;

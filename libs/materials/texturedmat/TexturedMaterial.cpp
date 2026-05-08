@@ -27,7 +27,8 @@ namespace raytracer::object::material {
         } catch (const exception::PluginException&) {
             _texturePath = util::ObjectMiddleware::validate<std::string>(
                 args, "texturePath", "TexturedMaterial");
-            _scale = util::ObjectMiddleware::optional<double>(args, "scale", 1.0, "TexturedMaterial");
+            _scale = util::ObjectMiddleware::optional<double>(
+                args, "scale", 1.0, "TexturedMaterial");
             util::Helpers::unsignedDouble(_scale, "scale", "TexturedMaterial");
             if (_scale <= 0.0)
                 _scale = 1.0;
@@ -47,14 +48,16 @@ namespace raytracer::object::material {
                            "assets/images/missingTexture.png"))) {
                 _loadedTextures[path] = img;
             } else {
-                std::cerr << "ERREUR: Impossible de charger la texture : " << path << std::endl;
-                throw exception::PluginException("Failed to load texture: " + path);
+                std::cerr << "ERREUR: Impossible de charger la texture : "
+                          << path << std::endl;
+                throw exception::PluginException("Failed to load texture: " +
+                                                 path);
             }
         }
     }
 
-    maths::Color TexturedMaterial::sampleTexture(const std::string& path,
-                                                const maths::Vector& uv) const {
+    maths::Color TexturedMaterial::sampleTexture(
+        const std::string& path, const maths::Vector& uv) const {
         auto it = _loadedTextures.find(path);
         if (it == _loadedTextures.end())
             return maths::Color(255, 0, 255);
@@ -81,7 +84,6 @@ namespace raytracer::object::material {
 
     primitive::MaterialProperties TexturedMaterial::evaluate(
         const primitive::SurfaceData& data, const maths::Vector& hitPoint) {
-
         maths::Color finalColor(255, 0, 255);
 
         if (_materialLoader) {
@@ -99,8 +101,10 @@ namespace raytracer::object::material {
             _reflectivity = mat.ns() / 1000.0;
             _transparency = mat.d();
             _ior = mat.ni();
-            _roughness = std::clamp(1.0 - std::sqrt(mat.ns() / 1000.0), 0.0, 1.0);
-            _metalness = std::clamp((mat.ks().x + mat.ks().y + mat.ks().z) / 3.0, 0.0, 1.0);
+            _roughness =
+                std::clamp(1.0 - std::sqrt(mat.ns() / 1000.0), 0.0, 1.0);
+            _metalness = std::clamp(
+                (mat.ks().x + mat.ks().y + mat.ks().z) / 3.0, 0.0, 1.0);
         } else {
             finalColor = sampleTexture(_texturePath, data.uv);
         }

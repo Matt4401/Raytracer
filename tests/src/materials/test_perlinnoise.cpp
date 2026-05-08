@@ -15,8 +15,8 @@
 #include <vector>
 
 #include "math/Color.hpp"
-#include "math/Vector.hpp"
 #include "math/Ray.hpp"
+#include "math/Vector.hpp"
 #include "object/material/IMaterial.hpp"
 #include "object/primitive/IPrimitive.hpp"
 #include "plugin/ObjectFactory.hpp"
@@ -140,8 +140,9 @@ TEST(PerlinNoiseMaterial, VariesAcrossPoints) {
     std::set<int> uniqueColors;
     for (const auto &pt : samples) {
         // shoot a ray straight down from y+10 to hit at pt
-        raytracer::maths::Ray r(raytracer::maths::Vector(pt.x, pt.y + 10.0, pt.z),
-                               raytracer::maths::Vector(0, -1, 0).normalized());
+        raytracer::maths::Ray r(
+            raytracer::maths::Vector(pt.x, pt.y + 10.0, pt.z),
+            raytracer::maths::Vector(0, -1, 0).normalized());
         auto h = basePrim->hits(r);
         ASSERT_TRUE(h.has_value());
         auto sd = h->surfaceData;
