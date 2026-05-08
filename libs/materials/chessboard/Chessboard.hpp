@@ -27,6 +27,6 @@ namespace raytracer::object::material {
       private:
         maths::Color _color1;
         maths::Color _color2;
-        double _tileSize;
+        double _frequency;
     };
 }  // namespace raytracer::object::material
