@@ -15,7 +15,7 @@
 #include "bvh/ISplitStrategy.hpp"
 #include "exception/CoreException.hpp"
 
-namespace bvh {
+namespace raytracer::bvh {
     using StrategyCreator = std::function<std::unique_ptr<ISplitStrategy>()>;
 
     class StrategyFactory {
