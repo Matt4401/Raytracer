@@ -7,8 +7,8 @@
 
 #include "PerlinNoise.hpp"
 
-#include <cmath>
 #include <algorithm>
+#include <cmath>
 
 #include "util/middleware/Helpers.hpp"
 #include "util/middleware/ObjectMiddleware.hpp"
@@ -63,33 +63,33 @@ namespace raytracer::object::material {
     }
 
     static inline double grad(int hash, double x, double y, double z) {
-        int h = hash & 15;
-        double u = h < 8 ? x : y;
-        double v = h < 4 ? y : (h == 12 || h == 14 ? x : z);
+        const int h = hash & 15;
+        const double u = h < 8 ? x : y;
+        const double v = h < 4 ? y : (h == 12 || h == 14 ? x : z);
         return ((h & 1) ? -u : u) + ((h & 2) ? -v : v);
     }
 
     static double perlin(double x, double y, double z) {
-        int floorX = static_cast<int>(std::floor(x)) & 255;
-        int floorY = static_cast<int>(std::floor(y)) & 255;
-        int floorZ = static_cast<int>(std::floor(z)) & 255;
+        const int floorX = static_cast<int>(std::floor(x)) & 255;
+        const int floorY = static_cast<int>(std::floor(y)) & 255;
+        const int floorZ = static_cast<int>(std::floor(z)) & 255;
 
         x -= std::floor(x);
         y -= std::floor(y);
         z -= std::floor(z);
 
-        double u = fade(x);
-        double v = fade(y);
-        double w = fade(z);
+        const double u = fade(x);
+        const double v = fade(y);
+        const double w = fade(z);
 
-        int a = perm[floorX] + floorY;
-        int aa = perm[a] + floorZ;
-        int ab = perm[a + 1] + floorZ;
-        int b = perm[floorX + 1] + floorY;
-        int ba = perm[b] + floorZ;
-        int bb = perm[b + 1] + floorZ;
+        const int a = perm[floorX] + floorY;
+        const int aa = perm[a] + floorZ;
+        const int ab = perm[a + 1] + floorZ;
+        const int b = perm[floorX + 1] + floorY;
+        const int ba = perm[b] + floorZ;
+        const int bb = perm[b + 1] + floorZ;
 
-        double res = lerp(
+        const double res = lerp(
             lerp(lerp(grad(perm[aa], x, y, z), grad(perm[ba], x - 1, y, z), u),
                  lerp(grad(perm[ab], x, y - 1, z),
                       grad(perm[bb], x - 1, y - 1, z), u),
@@ -132,9 +132,9 @@ namespace raytracer::object::material {
     primitive::MaterialProperties PerlinNoise::evaluate(
         const primitive::SurfaceData& data,
         const maths::Vector& hitPoint) const {
-        double x = hitPoint.x * _scale;
-        double y = hitPoint.y * _scale;
-        double z = hitPoint.z * _scale;
+        const double x = hitPoint.x * _scale;
+        const double y = hitPoint.y * _scale;
+        const double z = hitPoint.z * _scale;
 
         double amplitude = 1.0;
         double frequency = 1.0;
@@ -149,7 +149,7 @@ namespace raytracer::object::material {
         }
         noise /= maxValue;
 
-        double n = (noise + 1.0) * 0.5;
+        const double n = (noise + 1.0) * 0.5;
         maths::Color finalColor = maths::Color(
             static_cast<unsigned char>(std::clamp(
                 (int)std::round(_color1.r * (1 - n) + _color2.r * n), 0, 255)),

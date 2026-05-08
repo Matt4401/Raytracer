@@ -21,20 +21,21 @@
 #include "plugin/ObjectFactory.hpp"
 #include "plugin/PluginManager.hpp"
 
-static std::map<std::string, std::any> makePerlinArgs()
-{
+static std::map<std::string, std::any> makePerlinArgs() {
     return std::map<std::string, std::any>{
-        {"color1", std::map<std::string, std::any>{{"r", (unsigned char)0}, {"g", (unsigned char)0}, {"b", (unsigned char)0}}},
-        {"color2", std::map<std::string, std::any>{{"r", (unsigned char)255}, {"g", (unsigned char)255}, {"b", (unsigned char)255}}},
+        {"color1", std::map<std::string, std::any>{{"r", (unsigned char)0},
+                                                   {"g", (unsigned char)0},
+                                                   {"b", (unsigned char)0}}},
+        {"color2", std::map<std::string, std::any>{{"r", (unsigned char)255},
+                                                   {"g", (unsigned char)255},
+                                                   {"b", (unsigned char)255}}},
         {"scale", 0.1},
         {"octaves", 3},
         {"persistence", 0.5},
-        {"reflType", raytracer::object::primitive::RefltT::DIFF}
-    };
+        {"reflType", raytracer::object::primitive::RefltT::DIFF}};
 }
 
-TEST(PerlinNoiseMaterial, Builds)
-{
+TEST(PerlinNoiseMaterial, Builds) {
     raytracer::PluginManager plugManager;
     raytracer::ObjectFactory objFactory;
 
@@ -47,12 +48,13 @@ TEST(PerlinNoiseMaterial, Builds)
     auto perlinArgs = makePerlinArgs();
     auto matObj = objFactory.build("perlinnoise", perlinArgs);
     ASSERT_NE(matObj, nullptr);
-    auto matPtr = std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(matObj);
+    auto matPtr =
+        std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(
+            matObj);
     ASSERT_NE(matPtr, nullptr);
 }
 
-TEST(PerlinNoiseMaterial, IntegratesWithPrimitive)
-{
+TEST(PerlinNoiseMaterial, IntegratesWithPrimitive) {
     raytracer::PluginManager plugManager;
     raytracer::ObjectFactory objFactory;
 
@@ -65,17 +67,21 @@ TEST(PerlinNoiseMaterial, IntegratesWithPrimitive)
     auto perlinArgs = makePerlinArgs();
     auto matObj = objFactory.build("perlinnoise", perlinArgs);
     ASSERT_NE(matObj, nullptr);
-    auto matPtr = std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(matObj);
+    auto matPtr =
+        std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(
+            matObj);
     ASSERT_NE(matPtr, nullptr);
 
     std::map<std::string, std::any> sphereArgs = {
         {"material", matPtr},
-        {"center", std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
-        {"radius", 10.0}
-    };
+        {"center",
+         std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
+        {"radius", 10.0}};
     auto sphere = objFactory.build("sphere", sphereArgs);
     ASSERT_NE(sphere, nullptr);
-    auto basePrim = std::dynamic_pointer_cast<raytracer::object::primitive::IPrimitive>(sphere);
+    auto basePrim =
+        std::dynamic_pointer_cast<raytracer::object::primitive::IPrimitive>(
+            sphere);
     ASSERT_NE(basePrim, nullptr);
 
     // Ensure surfaceData returns a color in-range
@@ -88,8 +94,7 @@ TEST(PerlinNoiseMaterial, IntegratesWithPrimitive)
     EXPECT_LE(sd.material.color.b, 255);
 }
 
-TEST(PerlinNoiseMaterial, VariesAcrossPoints)
-{
+TEST(PerlinNoiseMaterial, VariesAcrossPoints) {
     raytracer::PluginManager plugManager;
     raytracer::ObjectFactory objFactory;
 
@@ -102,17 +107,21 @@ TEST(PerlinNoiseMaterial, VariesAcrossPoints)
     auto perlinArgs = makePerlinArgs();
     auto matObj = objFactory.build("perlinnoise", perlinArgs);
     ASSERT_NE(matObj, nullptr);
-    auto matPtr = std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(matObj);
+    auto matPtr =
+        std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(
+            matObj);
     ASSERT_NE(matPtr, nullptr);
 
     std::map<std::string, std::any> sphereArgs = {
         {"material", matPtr},
-        {"center", std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
-        {"radius", 10.0}
-    };
+        {"center",
+         std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
+        {"radius", 10.0}};
     auto sphere = objFactory.build("sphere", sphereArgs);
     ASSERT_NE(sphere, nullptr);
-    auto basePrim = std::dynamic_pointer_cast<raytracer::object::primitive::IPrimitive>(sphere);
+    auto basePrim =
+        std::dynamic_pointer_cast<raytracer::object::primitive::IPrimitive>(
+            sphere);
     ASSERT_NE(basePrim, nullptr);
 
     // Build samples using explicit constructors to avoid initializer issues
