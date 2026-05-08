@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** Raytracer
 ** File description:
-** FlatColor
+** Chessboard
 */
 
 #pragma once
@@ -15,16 +15,18 @@
 #include "object/material/ABasicMaterial.hpp"
 
 namespace raytracer::object::material {
-    class FlatColor : public ABasicMaterial {
+    class Chessboard : public ABasicMaterial {
       public:
-        explicit FlatColor(const std::map<std::string, std::any>& args);
-        ~FlatColor() override = default;
+        explicit Chessboard(const std::map<std::string, std::any>& args);
+        ~Chessboard() override = default;
 
         primitive::MaterialProperties evaluate(
             const primitive::SurfaceData& data,
             const maths::Vector& hitPoint) const override;
 
       private:
-        maths::Color _color;
+        maths::Color _color1;
+        maths::Color _color2;
+        double _frequency;
     };
 }  // namespace raytracer::object::material

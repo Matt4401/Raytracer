@@ -4,5 +4,6 @@ SET (CMAKE_CXX_STANDARD 20)
 project(libs)
 
 add_subdirectory(flatcolor)
+add_subdirectory(chessboard)
 
 #add_subdirectory(tomMaterial)
