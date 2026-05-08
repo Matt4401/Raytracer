@@ -16,14 +16,12 @@
 namespace raytracer::maths {
     class BoundingBox {
       public:
-        double x = 0;
-        double y = 0;
-        double z = 0;
-        double w = 0;
-        double h = 0;
-        double d = 0;
-
-        BoundingBox();
+        double x = std::numeric_limits<double>::infinity();
+        double y = std::numeric_limits<double>::infinity();
+        double z = std::numeric_limits<double>::infinity();
+        double w = std::numeric_limits<double>::infinity();
+        double h = std::numeric_limits<double>::infinity();
+        double d = std::numeric_limits<double>::infinity();
 
         /// @brief Extend the current bounding box to include another bounding
         /// box. This function modifies the current bounding box so that it

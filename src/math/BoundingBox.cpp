@@ -8,17 +8,6 @@
 #include "math/BoundingBox.hpp"
 
 namespace raytracer::maths {
-    BoundingBox::BoundingBox() {
-        constexpr double INF = std::numeric_limits<double>::infinity();
-
-        x = INF;
-        y = INF;
-        z = INF;
-        w = INF;
-        h = INF;
-        d = INF;
-    }
-
     void BoundingBox::extend(const BoundingBox &other) {
         const double minX = std::min(x, other.x);
         const double minY = std::min(y, other.y);
