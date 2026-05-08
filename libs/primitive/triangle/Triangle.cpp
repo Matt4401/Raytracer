@@ -83,7 +83,7 @@ namespace raytracer::object::primitive {
         }
     }
 
-    IPrimitive::BoundingBox Triangle::boundingBox() {
+    IPrimitive::AABoundingBox Triangle::boundingBox() {
         const auto v0 = _center;
         const auto v1 = _v1;
         const auto v2 = _v2;
@@ -94,7 +94,7 @@ namespace raytracer::object::primitive {
         const auto maxY = std::max({v0.y, v1.y, v2.y});
         const auto maxZ = std::max({v0.z, v1.z, v2.z});
 
-        return {.x = minX,
+        return maths::AABoundingBox{.x = minX,
                 .y = minY,
                 .z = minZ,
                 .w = maxX - minX,

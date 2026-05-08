@@ -5,10 +5,10 @@
 ** BoundingBox
 */
 
-#include "math/BoundingBox.hpp"
+#include "math/AABoundingBox.hpp"
 
 namespace raytracer::maths {
-    void BoundingBox::extend(const BoundingBox &other) {
+    void AABoundingBox::extend(const AABoundingBox &other) {
         const double minX = std::min(x, other.x);
         const double minY = std::min(y, other.y);
         const double minZ = std::min(z, other.z);
@@ -24,13 +24,13 @@ namespace raytracer::maths {
         d = maxZ - minZ;
     }
 
-    double BoundingBox::surfaceData() const {
+    double AABoundingBox::surfaceData() const {
         if (w < 0 || h < 0 || d < 0)
             return 0;
         return 2 * (w * h + w * d + h * d);
     }
 
-    bool BoundingBox::intersects(const Ray &ray) const {
+    bool AABoundingBox::intersects(const Ray &ray) const {
         double tMin = -std::numeric_limits<double>::infinity();
         double tMax = std::numeric_limits<double>::infinity();
         const double axes[3][3] = {{ray.origin.x, ray.direction.x, x},

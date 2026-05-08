@@ -31,7 +31,7 @@ namespace raytracer::object::primitive {
         const maths::Vector &normal() const noexcept;
 
         double hits(const maths::Ray &ray) override;
-        BoundingBox boundingBox() override;
+        AABoundingBox boundingBox() override;
         SurfaceData surfaceData(const maths::Vector &hitPoint) const override;
 
       private:

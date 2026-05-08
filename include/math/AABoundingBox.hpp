@@ -14,7 +14,7 @@
 #include "math/Ray.hpp"
 
 namespace raytracer::maths {
-    class BoundingBox {
+    class AABoundingBox {
       public:
         double x = std::numeric_limits<double>::infinity();
         double y = std::numeric_limits<double>::infinity();
@@ -31,7 +31,7 @@ namespace raytracer::maths {
         /// include. This should be a valid BoundingBox object with defined
         /// position and dimensions.
         /// @return void
-        void extend(const BoundingBox &other);
+        void extend(const AABoundingBox &other);
 
         /// @brief Calculate the surface area of the bounding box. The surface
         /// area is calculated using the formula: surface area = 2 * (w * h + w

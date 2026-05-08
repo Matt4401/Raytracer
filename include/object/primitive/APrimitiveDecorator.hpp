@@ -22,7 +22,7 @@ namespace raytracer::object::primitive {
             return _wrapped->hits(ray);
         }
 
-        BoundingBox boundingBox() override {
+        AABoundingBox boundingBox() override {
             return _wrapped->boundingBox();
         }
 

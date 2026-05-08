@@ -10,13 +10,13 @@
 #include "object/primitive/IPrimitive.hpp"
 
 namespace raytracer::maths {
-    BVHNode::BVHNode(const BoundingBox &box, std::shared_ptr<IPrimitive> left,
+    BVHNode::BVHNode(const AABoundingBox &box, std::shared_ptr<IPrimitive> left,
                      std::shared_ptr<IPrimitive> right)
         : _bbox(box), _left(std::move(left)), _right(std::move(right)) {
         _center = computeCenter();
     }
 
-    BVHNode::BVHNode(const BoundingBox &box,
+    BVHNode::BVHNode(const AABoundingBox &box,
                      std::vector<std::shared_ptr<IPrimitive>> primitives)
         : _bbox(box), _primitives(std::move(primitives)) {
         _center = computeCenter();
@@ -60,7 +60,7 @@ namespace raytracer::maths {
         return chooseNodeHits(ray);
     }
 
-    object::primitive::IPrimitive::BoundingBox BVHNode::boundingBox() {
+    object::primitive::IPrimitive::AABoundingBox BVHNode::boundingBox() {
         return _bbox;
     }
 

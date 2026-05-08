@@ -15,14 +15,14 @@
 namespace raytracer::maths {
     class BVHNode : public object::primitive::IPrimitive {
       public:
-        BVHNode(const BoundingBox &box, std::shared_ptr<IPrimitive> left,
+        BVHNode(const AABoundingBox &box, std::shared_ptr<IPrimitive> left,
                 std::shared_ptr<IPrimitive> right);
-        BVHNode(const BoundingBox &box,
+        BVHNode(const AABoundingBox &box,
                 std::vector<std::shared_ptr<IPrimitive>> primitives);
         ~BVHNode() override = default;
 
         double hits(const Ray &ray) override;
-        BoundingBox boundingBox() override;
+        AABoundingBox boundingBox() override;
 
         object::primitive::SurfaceData surfaceData(
             const maths::Vector &hitPoint) const override;
@@ -30,7 +30,7 @@ namespace raytracer::maths {
         maths::Vector center() const noexcept override;
 
       private:
-        BoundingBox _bbox;
+        AABoundingBox _bbox;
         std::string _name = "BVHNode";
         maths::Vector _center;
 

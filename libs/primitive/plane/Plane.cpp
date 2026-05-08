@@ -49,7 +49,7 @@ namespace raytracer::object::primitive {
         return (t >= EPS) ? t : -1.0;
     }
 
-    IPrimitive::BoundingBox Plane::boundingBox() {
+    IPrimitive::AABoundingBox Plane::boundingBox() {
         // TODO
         return {0, 0, 0, 0, 0, 0};
     }

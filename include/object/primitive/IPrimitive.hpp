@@ -11,7 +11,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "math/BoundingBox.hpp"
+#include "math/AABoundingBox.hpp"
 #include "math/Color.hpp"
 #include "math/Ray.hpp"
 #include "math/Vector.hpp"
@@ -39,7 +39,7 @@ namespace raytracer::object::primitive {
 
     class IPrimitive {
       public:
-        using BoundingBox = maths::BoundingBox;
+        using AABoundingBox = maths::AABoundingBox;
 
         virtual ~IPrimitive() = default;
         /**
@@ -79,7 +79,7 @@ namespace raytracer::object::primitive {
          * box before performing more complex intersection calculations with the
          * primitive itself.
          */
-        virtual BoundingBox boundingBox() = 0;
+        virtual AABoundingBox boundingBox() = 0;
 
         virtual const std::string &name() const noexcept = 0;
         virtual maths::Vector center() const noexcept = 0;
