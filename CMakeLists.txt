@@ -41,8 +41,11 @@ set(SRCS
         src/math/Color.cpp
         src/math/Vector.cpp
         src/math/Rectangle.cpp
-        src/math/BVHNode.cpp
         src/math/AABoundingBox.cpp
+        src/bvh/BVHNode.cpp
+        src/bvh/StrategyFactory.cpp
+        src/bvh/bvhSplitStrategy/SAHStrategy.cpp
+        src/bvh/bvhSplitStrategy/MidpointStrategy.cpp
         src/object/primitive/APrimitive.cpp
         src/util/middleware/Helpers.cpp
         src/plugin/PluginManager.cpp
