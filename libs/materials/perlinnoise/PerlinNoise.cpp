@@ -15,7 +15,7 @@
 
 namespace raytracer::object::material {
 
-    static int perm[] = {
+    const int perm[] = {
         151, 160, 137, 91,  90,  15,  131, 13,  201, 95,  96,  53,  194, 233,
         7,   225, 140, 36,  103, 30,  69,  142, 8,   99,  37,  240, 21,  10,
         23,  190, 6,   148, 247, 120, 234, 75,  0,   26,  197, 62,  94,  252,
@@ -54,22 +54,22 @@ namespace raytracer::object::material {
         150, 254, 138, 236, 205, 93,  222, 114, 67,  29,  24,  72,  243, 141,
         128, 195, 78,  66,  215, 61,  156, 180};
 
-    static inline double fade(double t) {
+    double PerlinNoise::fade(double t) const {
         return t * t * t * (t * (t * 6 - 15) + 10);
     }
 
-    static inline double lerp(double a, double b, double t) {
+    double PerlinNoise::lerp(double a, double b, double t) const {
         return a + t * (b - a);
     }
 
-    static inline double grad(int hash, double x, double y, double z) {
+    double PerlinNoise::grad(int hash, double x, double y, double z) const {
         const int h = hash & 15;
         const double u = h < 8 ? x : y;
         const double v = h < 4 ? y : (h == 12 || h == 14 ? x : z);
         return ((h & 1) ? -u : u) + ((h & 2) ? -v : v);
     }
 
-    static double perlin(double x, double y, double z) {
+    double PerlinNoise::perlin(double x, double y, double z) const {
         const int floorX = static_cast<int>(std::floor(x)) & 255;
         const int floorY = static_cast<int>(std::floor(y)) & 255;
         const int floorZ = static_cast<int>(std::floor(z)) & 255;

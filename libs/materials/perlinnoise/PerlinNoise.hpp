@@ -31,5 +31,10 @@ namespace raytracer::object::material {
         double _scale;
         int _octaves;
         double _persistence;
+
+        double fade(double t) const;
+        double grad(int hash, double x, double y, double z) const;
+        double lerp(double a, double b, double t) const;
+        double perlin(double x, double y, double z) const;
     };
 }  // namespace raytracer::object::material
