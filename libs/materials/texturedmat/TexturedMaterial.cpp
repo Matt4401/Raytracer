@@ -10,7 +10,6 @@
 #include <algorithm>
 #include <cmath>
 #include <filesystem>
-#include <iostream>
 
 #include "exception/PluginException.hpp"
 #include "util/middleware/Helpers.hpp"
@@ -24,6 +23,11 @@ namespace raytracer::object::material {
             auto mtlPath = util::ObjectMiddleware::validate<std::string>(
                 args, "mtlPath", "TexturedMaterial");
             _materialLoader = std::make_unique<MtlLoader>(mtlPath);
+            _scale = util::ObjectMiddleware::optional<double>(
+                args, "scale", 1.0, "TexturedMaterial");
+            util::Helpers::unsignedDouble(_scale, "scale", "TexturedMaterial");
+            if (_scale <= 0.0)
+                _scale = 1.0;
         } catch (const exception::PluginException&) {
             _texturePath = util::ObjectMiddleware::validate<std::string>(
                 args, "texturePath", "TexturedMaterial");
@@ -40,7 +44,7 @@ namespace raytracer::object::material {
     }
 
     void TexturedMaterial::preloadTexture(const std::string& path) {
-        if (_loadedTextures.find(path) == _loadedTextures.end()) {
+        if (_loadedTextures.contains(path)) {
             sf::Image img;
             if (img.loadFromFile(path)) {
                 _loadedTextures[path] = img;
@@ -48,8 +52,6 @@ namespace raytracer::object::material {
                            "assets/images/missingTexture.png"))) {
                 _loadedTextures[path] = img;
             } else {
-                std::cerr << "ERREUR: Impossible de charger la texture : "
-                          << path << std::endl;
                 throw exception::PluginException("Failed to load texture: " +
                                                  path);
             }
