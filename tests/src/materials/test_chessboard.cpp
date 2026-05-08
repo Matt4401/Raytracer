@@ -14,6 +14,7 @@
 
 #include "../libs/materials/chessboard/Chessboard.hpp"
 #include "math/Vector.hpp"
+#include "math/Ray.hpp"
 #include "object/material/IMaterial.hpp"
 #include "object/primitive/IPrimitive.hpp"
 #include "plugin/ObjectFactory.hpp"
@@ -68,12 +69,22 @@ TEST(ChessboardMaterial, BasicTiles) {
             planeObj);
     ASSERT_NE(basePrim, nullptr);
 
-    auto sd1 = basePrim->surfaceData(raytracer::maths::Vector(0.2, 0.0, 0.0));
+    // Ray to hit at (0.2, 0.0, 0.0)
+    raytracer::maths::Ray ray1(raytracer::maths::Vector(0.2, 10.0, 0.0),
+                               raytracer::maths::Vector(0.0, -1.0, 0.0).normalized());
+    auto hit1 = basePrim->hits(ray1);
+    ASSERT_TRUE(hit1.has_value());
+    auto sd1 = hit1->surfaceData;
     EXPECT_EQ(sd1.material.color.r, 0);
     EXPECT_EQ(sd1.material.color.g, 0);
     EXPECT_EQ(sd1.material.color.b, 0);
 
-    auto sd2 = basePrim->surfaceData(raytracer::maths::Vector(1.2, 0.0, 0.0));
+    // Ray to hit at (1.2, 0.0, 0.0)
+    raytracer::maths::Ray ray2(raytracer::maths::Vector(1.2, 10.0, 0.0),
+                               raytracer::maths::Vector(0.0, -1.0, 0.0).normalized());
+    auto hit2 = basePrim->hits(ray2);
+    ASSERT_TRUE(hit2.has_value());
+    auto sd2 = hit2->surfaceData;
     EXPECT_EQ(sd2.material.color.r, 255);
     EXPECT_EQ(sd2.material.color.g, 255);
     EXPECT_EQ(sd2.material.color.b, 255);

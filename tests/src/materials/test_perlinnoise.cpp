@@ -16,6 +16,7 @@
 
 #include "math/Color.hpp"
 #include "math/Vector.hpp"
+#include "math/Ray.hpp"
 #include "object/material/IMaterial.hpp"
 #include "object/primitive/IPrimitive.hpp"
 #include "plugin/ObjectFactory.hpp"
@@ -84,8 +85,12 @@ TEST(PerlinNoiseMaterial, IntegratesWithPrimitive) {
             sphere);
     ASSERT_NE(basePrim, nullptr);
 
-    // Ensure surfaceData returns a color in-range
-    auto sd = basePrim->surfaceData(raytracer::maths::Vector(0, 10, 0));
+    // Use a ray that hits the sphere at (0,10,0)
+    raytracer::maths::Ray ray(raytracer::maths::Vector(0, 20, 0),
+                              raytracer::maths::Vector(0, -1, 0).normalized());
+    auto hitCtx = basePrim->hits(ray);
+    ASSERT_TRUE(hitCtx.has_value());
+    auto sd = hitCtx->surfaceData;
     EXPECT_GE(sd.material.color.r, 0);
     EXPECT_LE(sd.material.color.r, 255);
     EXPECT_GE(sd.material.color.g, 0);
@@ -134,7 +139,12 @@ TEST(PerlinNoiseMaterial, VariesAcrossPoints) {
 
     std::set<int> uniqueColors;
     for (const auto &pt : samples) {
-        auto sd = basePrim->surfaceData(pt);
+        // shoot a ray straight down from y+10 to hit at pt
+        raytracer::maths::Ray r(raytracer::maths::Vector(pt.x, pt.y + 10.0, pt.z),
+                               raytracer::maths::Vector(0, -1, 0).normalized());
+        auto h = basePrim->hits(r);
+        ASSERT_TRUE(h.has_value());
+        auto sd = h->surfaceData;
         int packed = (static_cast<int>(sd.material.color.r) << 16) |
                      (static_cast<int>(sd.material.color.g) << 8) |
                      (static_cast<int>(sd.material.color.b));
