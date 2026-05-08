@@ -5,4 +5,6 @@ project(libs)
 
 add_subdirectory(flatcolor)
 #add_subdirectory(texturedmat)
+add_subdirectory(chessboard)
+
 #add_subdirectory(tomMaterial)
