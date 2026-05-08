@@ -36,7 +36,7 @@ namespace raytracer::object::material {
         std::unordered_map<std::string, sf::Image> _loadedTextures;
 
         maths::Color sampleTexture(const std::string& path,
-                                   const maths::Vector& uv) const;
+                                   const maths::Vector& uv);
 
         void preloadTexture(const std::string& path);
     };
