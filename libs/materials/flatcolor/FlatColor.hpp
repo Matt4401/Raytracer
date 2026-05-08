@@ -12,12 +12,10 @@
 #include <string>
 
 #include "math/Color.hpp"
-#include "math/Vector.hpp"
-#include "object/material/AMaterial.hpp"
-#include "object/primitive/ReflTypes.hpp"
+#include "object/material/ABasicMaterial.hpp"
 
 namespace raytracer::object::material {
-    class FlatColor : public AMaterial {
+    class FlatColor : public ABasicMaterial {
       public:
         explicit FlatColor(const std::map<std::string, std::any>& args);
         ~FlatColor() override = default;
@@ -28,12 +26,5 @@ namespace raytracer::object::material {
 
       private:
         maths::Color _color;
-        maths::Vector _emission;
-        primitive::RefltT _refl;
-        double _reflectivity;
-        double _transparency;
-        double _ior;
-        double _roughness;
-        double _metalness;
     };
 }  // namespace raytracer::object::material
