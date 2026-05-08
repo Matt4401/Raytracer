@@ -64,6 +64,8 @@ if (NOT SKIP_INTERNET)
             ${CMAKE_SOURCE_DIR}/libs/materials/flatcolor/FlatColor.cpp
             src/materials/test_chessboard.cpp
             ${CMAKE_SOURCE_DIR}/libs/materials/chessboard/Chessboard.cpp
+            src/materials/test_perlinnoise.cpp
+            ${CMAKE_SOURCE_DIR}/libs/materials/perlinnoise/PerlinNoise.cpp
             ${CMAKE_SOURCE_DIR}/src/plugin/ObjectFactory.cpp
             ${CMAKE_SOURCE_DIR}/src/plugin/PluginManager.cpp
     )

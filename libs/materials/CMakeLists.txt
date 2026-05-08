@@ -5,5 +5,6 @@ project(libs)
 
 add_subdirectory(flatcolor)
 add_subdirectory(chessboard)
+add_subdirectory(perlinnoise)
 
 #add_subdirectory(tomMaterial)
