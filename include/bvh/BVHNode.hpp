@@ -12,7 +12,7 @@
 
 #include "object/primitive/IPrimitive.hpp"
 
-namespace raytracer::maths {
+namespace raytracer::bvh {
     class BVHNode : public object::primitive::IPrimitive {
       public:
         BVHNode(const AABoundingBox &box, std::shared_ptr<IPrimitive> left,
@@ -21,7 +21,7 @@ namespace raytracer::maths {
                 std::vector<std::shared_ptr<IPrimitive>> primitives);
         ~BVHNode() override = default;
 
-        double hits(const Ray &ray) override;
+        double hits(const maths::Ray &ray) override;
         AABoundingBox boundingBox() override;
 
         object::primitive::SurfaceData surfaceData(
@@ -40,6 +40,6 @@ namespace raytracer::maths {
 
         bool isLeaf() const;
         maths::Vector computeCenter() const;
-        double chooseNodeHits(const Ray &ray) const;
+        double chooseNodeHits(const maths::Ray &ray) const;
     };
-}  // namespace raytracer::maths
+}  // namespace raytracer::bvh
