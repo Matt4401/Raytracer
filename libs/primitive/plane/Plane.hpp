@@ -37,6 +37,8 @@ namespace raytracer::object::primitive {
       private:
         maths::Vector _normal;
 
+        SurfaceData surfaceData(const maths::Vector &hitPoint) const;
+
         static constexpr std::size_t EXPECTED_ARGS = 3;
         static constexpr double EPS = K_RAY_EPSILON;
     };

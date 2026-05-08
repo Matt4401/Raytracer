@@ -36,6 +36,8 @@ namespace raytracer::object::primitive {
       private:
         double _radius;
 
+        SurfaceData surfaceData(const maths::Vector &hitPoint) const;
+
         static constexpr std::size_t EXPECTED_ARGS = 3;
     };
 }  // namespace raytracer::object::primitive

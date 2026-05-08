@@ -28,6 +28,8 @@ namespace raytracer::object::primitive {
 
       protected:
       private:
+        SurfaceData surfaceData(int triangleIndex,
+                                const maths::Vector &hitPoint) const;
         BoundingBox triangleBoundingBox(int triangleIndex) const;
         void buildTrianglesFromFaces();
 

@@ -35,6 +35,26 @@ namespace raytracer::object::primitive {
         buildTrianglesFromFaces();
     }
 
+    SurfaceData Mesh::surfaceData(int triangleIndex,
+                                  const maths::Vector &hitPoint) const {
+        maths::Vector normal = _surfaceHelper->computeNormal(
+            triangleIndex, hitPoint, _objLoader->normals());
+        maths::Vector uv = _surfaceHelper->computeUV(
+            triangleIndex, hitPoint, _objLoader->textureCoords());
+
+        SurfaceData surfData{
+            .normal = normal, .uv = uv, .extraParams = {}, .material = {}};
+
+        surfData.extraParams["materialName"] =
+            _objLoader->getMaterialForFace(triangleIndex);
+
+        if (this->_material) {
+            surfData.material = this->_material->evaluate(surfData, hitPoint);
+        }
+
+        return surfData;
+    }
+
     std::optional<HitContext> Mesh::hits(const maths::Ray &ray,
                                          bool computeSurfaceData) {
         auto intersection = _surfaceHelper->findClosestTriangle(ray);
@@ -51,24 +71,9 @@ namespace raytracer::object::primitive {
                               .surfaceData = {}};
         }
 
-        maths::Vector normal = _surfaceHelper->computeNormal(
-            triangleIndex, hitPoint, _objLoader->normals());
-        maths::Vector uv = _surfaceHelper->computeUV(
-            triangleIndex, hitPoint, _objLoader->textureCoords());
-
-        SurfaceData surfData{
-            .normal = normal, .uv = uv, .extraParams = {}, .material = {}};
-
-        surfData.extraParams["materialName"] =
-            _objLoader->getMaterialForFace(triangleIndex);
-
-        if (this->_material) {
-            surfData.material = this->_material->evaluate(surfData, hitPoint);
-        }
-
         return HitContext{.distance = intersection->distance,
                           .hitPoint = hitPoint,
-                          .surfaceData = surfData};
+                          .surfaceData = surfaceData(triangleIndex, hitPoint)};
     }
 
     IPrimitive::BoundingBox Mesh::boundingBox() {

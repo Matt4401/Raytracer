@@ -45,6 +45,21 @@ namespace raytracer::object::primitive {
         return _radius;
     }
 
+    SurfaceData Sphere::surfaceData(const maths::Vector &hitPoint) const {
+        const maths::Vector normal = (hitPoint - _center).normalized();
+        const double u = 0.5 + std::atan2(normal.z, normal.x) / (2 * M_PI);
+        const double v = 0.5 - std::asin(normal.y) / M_PI;
+
+        SurfaceData surfData{
+            .normal = normal, .uv = maths::Vector(u, v, 0), .material = {}};
+
+        if (this->_material) {
+            surfData.material = this->_material->evaluate(surfData, hitPoint);
+        }
+
+        return surfData;
+    }
+
     std::optional<HitContext> Sphere::hits(const maths::Ray &ray,
                                            bool computeSurfaceData) {
         const maths::Vector oc = ray.origin - _center;
@@ -78,19 +93,9 @@ namespace raytracer::object::primitive {
                 .distance = t, .hitPoint = hitPoint, .surfaceData = {}};
         }
 
-        const maths::Vector normal = (hitPoint - _center).normalized();
-        const double u = 0.5 + std::atan2(normal.z, normal.x) / (2 * M_PI);
-        const double v = 0.5 - std::asin(normal.y) / M_PI;
-
-        SurfaceData surfData{
-            .normal = normal, .uv = maths::Vector(u, v, 0), .material = {}};
-
-        if (this->_material) {
-            surfData.material = this->_material->evaluate(surfData, hitPoint);
-        }
-
-        return HitContext{
-            .distance = t, .hitPoint = hitPoint, .surfaceData = surfData};
+        return HitContext{.distance = t,
+                          .hitPoint = hitPoint,
+                          .surfaceData = surfaceData(hitPoint)};
     }
 
     IPrimitive::BoundingBox Sphere::boundingBox() {

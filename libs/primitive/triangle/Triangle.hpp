@@ -40,6 +40,8 @@ namespace raytracer::object::primitive {
         maths::Vector _v1;
         maths::Vector _v2;
 
+        SurfaceData surfaceData(const maths::Vector &hitPoint) const;
+
         static constexpr std::size_t EXPECTED_ARGS = 4;
     };
 }  // namespace raytracer::object::primitive
