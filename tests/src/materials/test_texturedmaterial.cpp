@@ -34,7 +34,7 @@ TEST(MATERIAL, texturedmaterial_basic) {
     plugManager.fillFactory(objFactory);
 
     std::map<std::string, std::any> texArgs = {
-        {"texturePath", std::string("assets/images/texture.jpg")},
+        {"texturePath", std::string("../../assets/images/texture.jpg")},
         {"reflType", raytracer::object::primitive::RefltT::DIFF}};
     auto matObj = objFactory.build("textured_material", texArgs);
     ASSERT_NE(matObj, nullptr);
