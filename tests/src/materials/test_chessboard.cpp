@@ -12,12 +12,12 @@
 #include <memory>
 #include <string>
 
+#include "../libs/materials/chessboard/Chessboard.hpp"
 #include "math/Vector.hpp"
 #include "object/material/IMaterial.hpp"
 #include "object/primitive/IPrimitive.hpp"
 #include "plugin/ObjectFactory.hpp"
 #include "plugin/PluginManager.hpp"
-#include "../libs/materials/chessboard/Chessboard.hpp"
 
 #ifndef TEST_PLUGINS_PATH
 #define TEST_PLUGINS_PATH "./plugins/"
@@ -81,12 +81,12 @@ TEST(ChessboardMaterial, BasicTiles) {
 
 TEST(ChessboardMaterial, InvalidTileSizeThrows) {
     std::map<std::string, std::any> badArgs = {
-        {"color1", std::map<std::string, std::any>{
-                       {"r", (unsigned char)0}, {"g", (unsigned char)0},
-                       {"b", (unsigned char)0}}},
-        {"color2", std::map<std::string, std::any>{
-                       {"r", (unsigned char)255}, {"g", (unsigned char)255},
-                       {"b", (unsigned char)255}}},
+        {"color1", std::map<std::string, std::any>{{"r", (unsigned char)0},
+                                                   {"g", (unsigned char)0},
+                                                   {"b", (unsigned char)0}}},
+        {"color2", std::map<std::string, std::any>{{"r", (unsigned char)255},
+                                                   {"g", (unsigned char)255},
+                                                   {"b", (unsigned char)255}}},
         {"tileSize", 0.0},
         {"reflType", raytracer::object::primitive::RefltT::DIFF}};
 
