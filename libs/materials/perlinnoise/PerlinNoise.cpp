@@ -8,6 +8,7 @@
 #include "PerlinNoise.hpp"
 
 #include <cmath>
+#include <algorithm>
 
 #include "util/middleware/Helpers.hpp"
 #include "util/middleware/ObjectMiddleware.hpp"
