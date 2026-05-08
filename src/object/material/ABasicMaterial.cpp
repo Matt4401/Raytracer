@@ -29,12 +29,14 @@ namespace raytracer::object::material {
                                                   "Material");
         _reflectivity = util::ObjectMiddleware::optional<double>(
             args, "reflectivity", 0.0, "Material");
-        util::Helpers::unsignedDouble(_reflectivity, "reflectivity", "Material");
+        util::Helpers::unsignedDouble(_reflectivity, "reflectivity",
+                                      "Material");
         _reflectivity = std::min(_reflectivity, 1.0);
 
         _transparency = util::ObjectMiddleware::optional<double>(
             args, "transparency", 0.0, "Material");
-        util::Helpers::unsignedDouble(_transparency, "transparency", "Material");
+        util::Helpers::unsignedDouble(_transparency, "transparency",
+                                      "Material");
         _transparency = std::min(_transparency, 1.0);
 
         _ior = util::ObjectMiddleware::optional<double>(args, "ior", 1.0,
@@ -43,8 +45,8 @@ namespace raytracer::object::material {
         if (_ior <= 0.0)
             _ior = 1.0;
 
-        _roughness = util::ObjectMiddleware::optional<double>(
-            args, "roughness", 0.0, "Material");
+        _roughness = util::ObjectMiddleware::optional<double>(args, "roughness",
+                                                              0.0, "Material");
         util::Helpers::unsignedDouble(_roughness, "roughness", "Material");
         _roughness = std::min(_roughness, 1.0);
 
