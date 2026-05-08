@@ -6,6 +6,7 @@
 */
 
 #include <gtest/gtest.h>
+
 #include <any>
 #include <map>
 #include <memory>
@@ -46,7 +47,9 @@ TEST(MarbleMaterial, Builds) {
     auto args = makeMarbleArgs();
     auto matObj = objFactory.build("marble", args);
     ASSERT_NE(matObj, nullptr);
-    auto matPtr = std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(matObj);
+    auto matPtr =
+        std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(
+            matObj);
     ASSERT_NE(matPtr, nullptr);
 }
 
@@ -61,20 +64,25 @@ TEST(MarbleMaterial, VariesAcrossPoints) {
     plugManager.fillFactory(objFactory);
 
     auto args = makeMarbleArgs();
-    auto matPtr = std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(
-        objFactory.build("marble", args));
+    auto matPtr =
+        std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(
+            objFactory.build("marble", args));
 
     std::map<std::string, std::any> sphereArgs = {
         {"material", matPtr},
-        {"center", std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
+        {"center",
+         std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
         {"radius", 10.0}};
-    auto sphere = std::dynamic_pointer_cast<raytracer::object::primitive::IPrimitive>(
-        objFactory.build("sphere", sphereArgs));
+    auto sphere =
+        std::dynamic_pointer_cast<raytracer::object::primitive::IPrimitive>(
+            objFactory.build("sphere", sphereArgs));
 
     std::set<int> uniqueColors;
     for (int i = 0; i < 10; ++i) {
-        auto sd = sphere->surfaceData(raytracer::maths::Vector(i * 0.5, 10.0, 0));
-        int packed = (sd.material.color.r << 16) | (sd.material.color.g << 8) | sd.material.color.b;
+        auto sd =
+            sphere->surfaceData(raytracer::maths::Vector(i * 0.5, 10.0, 0));
+        int packed = (sd.material.color.r << 16) | (sd.material.color.g << 8) |
+                     sd.material.color.b;
         uniqueColors.insert(packed);
     }
 
