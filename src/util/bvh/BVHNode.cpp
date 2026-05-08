@@ -5,7 +5,7 @@
 ** BVHNode
 */
 
-#include "math/BVHNode.hpp"
+#include "../../../include/util/bvh/BVHNode.hpp"
 
 #include "object/primitive/IPrimitive.hpp"
 
