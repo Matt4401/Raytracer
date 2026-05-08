@@ -45,6 +45,7 @@ set(SRCS
         src/bvh/BVHNode.cpp
         src/bvh/StrategyFactory.cpp
         src/bvh/bvhSplitStrategy/SAHStrategy.cpp
+        src/bvh/bvhSplitStrategy/MedianStrategy.cpp
         src/bvh/bvhSplitStrategy/MidpointStrategy.cpp
         src/object/primitive/APrimitive.cpp
         src/util/middleware/Helpers.cpp
