@@ -71,7 +71,7 @@ namespace raytracer::object::primitive {
     }
 
     IPrimitive::BoundingBox Sphere::boundingBox() {
-        return {
+        return maths::BoundingBox{
             .x = _center.x - _radius,
             .y = _center.y - _radius,
             .z = _center.z - _radius,
