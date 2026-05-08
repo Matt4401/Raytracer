@@ -11,6 +11,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "math/BoundingBox.hpp"
 #include "math/Color.hpp"
 #include "math/Ray.hpp"
 #include "math/Vector.hpp"
@@ -38,14 +39,7 @@ namespace raytracer::object::primitive {
 
     class IPrimitive {
       public:
-        struct BoundingBox {
-            double x;
-            double y;
-            double z;
-            double w;
-            double h;
-            double d;
-        };
+        using BoundingBox = maths::BoundingBox;
 
         virtual ~IPrimitive() = default;
         /**
@@ -73,7 +67,7 @@ namespace raytracer::object::primitive {
 
         /**
          *
-         * @return a BoundingBox struct that defines the axis-aligned bounding
+         * @return a BoundingBox class that defines the axis-aligned bounding
          * box of the primitive. The bounding box is defined by its position (x,
          * y, z) and its dimensions (w, h, d). The position represents the
          * coordinates of the minimum corner of the bounding box in 3D space,
