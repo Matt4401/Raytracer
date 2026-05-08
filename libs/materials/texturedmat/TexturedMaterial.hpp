@@ -11,10 +11,7 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <unordered_map>
-#include <vector>
 
-#include "MeshMaterial.hpp"
 #include "MltLoader.hpp"
 #include "math/Color.hpp"
 #include "math/Vector.hpp"

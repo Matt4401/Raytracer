@@ -20,12 +20,12 @@ namespace raytracer::object::material {
         std::string,
         std::function<void(MltLoader &, std::istringstream &, MeshMaterial &)>>
         MltLoader::_ops = {
-            {"Ns", &MltLoader::handleNs},
-            {"Ka", &MltLoader::handleKa},
-            {"Kd", &MltLoader::handleKd},
-            {"Ks", &MltLoader::handleKs},
-            {"Ke", &MltLoader::handleKe},
-            {"Ni", &MltLoader::handleNi},
+            {"ns", &MltLoader::handleNs},
+            {"ka", &MltLoader::handleKa},
+            {"kd", &MltLoader::handleKd},
+            {"ks", &MltLoader::handleKs},
+            {"ke", &MltLoader::handleKe},
+            {"ni", &MltLoader::handleNi},
             {"d", &MltLoader::handleD},
             {"illum", &MltLoader::handleIllum},
             {"map_Kd", &MltLoader::handleMapKd},

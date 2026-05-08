@@ -27,23 +27,26 @@ TEST(PRIMITIVE, plane_hits_front_face) {
     Plane plane(Vector(0, 0, 0), Vector(0, 1, 0));
     Ray ray(Vector(0, -1, 0), Vector(0, 1, 0));
 
-    double t = plane.hits(ray);
-    ASSERT_DOUBLE_EQ(t, 1.0);
+    auto hitCtx = plane.hits(ray);
+    ASSERT_TRUE(hitCtx.has_value());
+    ASSERT_DOUBLE_EQ(hitCtx->distance, 1.0);
 }
 
 TEST(PRIMITIVE, plane_parallel_no_hit) {
     Plane plane(Vector(0, 0, 0), Vector(0, 1, 0));
     Ray ray(Vector(0, -1, 0), Vector(1, 0, 0));
 
-    double t = plane.hits(ray);
-    ASSERT_DOUBLE_EQ(t, -1.0);
+    auto hitCtx = plane.hits(ray);
+    ASSERT_FALSE(hitCtx.has_value());
 }
 
 TEST(PRIMITIVE, plane_surface_data_uv_and_normal) {
     Plane plane(Vector(0, 0, 0), Vector(0, 1, 0));
-    Vector hitPoint(1, 0, 0);
+    Ray ray(Vector(1, -1, 0), Vector(0, 1, 0));
 
-    auto data = plane.surfaceData(hitPoint);
+    auto hitCtx = plane.hits(ray);
+    ASSERT_TRUE(hitCtx.has_value());
+    auto data = hitCtx->surfaceData;
 
     ASSERT_DOUBLE_EQ(data.normal.x, 0.0);
     ASSERT_DOUBLE_EQ(data.normal.y, 1.0);

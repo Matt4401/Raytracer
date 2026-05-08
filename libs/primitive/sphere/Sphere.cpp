@@ -25,9 +25,9 @@ namespace raytracer::object::primitive {
               util::ObjectMiddleware::validate<
                   std::shared_ptr<raytracer::object::material::IMaterial>>(
                   args, "material", "Sphere")),
-          _radius(
-              util::ObjectMiddleware::validate<double>(args, "r", "Sphere")) {
-        util::Helpers::unsignedDouble(_radius, "r", "Sphere");
+          _radius(util::ObjectMiddleware::validate<double>(args, "radius",
+                                                           "Sphere")) {
+        util::Helpers::unsignedDouble(_radius, "radius", "Sphere");
     }
 
     Sphere::Sphere(const maths::Vector &vector, const double radius)
@@ -45,7 +45,23 @@ namespace raytracer::object::primitive {
         return _radius;
     }
 
-    double Sphere::hits(const maths::Ray &ray) {
+    SurfaceData Sphere::surfaceData(const maths::Vector &hitPoint) const {
+        const maths::Vector normal = (hitPoint - _center).normalized();
+        const double u = 0.5 + std::atan2(normal.z, normal.x) / (2 * M_PI);
+        const double v = 0.5 - std::asin(normal.y) / M_PI;
+
+        SurfaceData surfData{
+            .normal = normal, .uv = maths::Vector(u, v, 0), .material = {}};
+
+        if (this->_material) {
+            surfData.material = this->_material->evaluate(surfData, hitPoint);
+        }
+
+        return surfData;
+    }
+
+    std::optional<HitContext> Sphere::hits(const maths::Ray &ray,
+                                           bool computeSurfaceData) {
         const maths::Vector oc = ray.origin - _center;
         const maths::Vector ocVec(oc.x, oc.y, oc.z);
         const double a = ray.direction.dot(ray.direction);
@@ -54,20 +70,32 @@ namespace raytracer::object::primitive {
         const double discriminant = b * b - 4 * a * c;
 
         if (discriminant < 0) {
-            return -1.0;
+            return std::nullopt;
         }
 
         const double sqrtDiscriminant = std::sqrt(discriminant);
         const double t0 = (-b - sqrtDiscriminant) / (2.0 * a);
         const double t1 = (-b + sqrtDiscriminant) / (2.0 * a);
 
+        double t = -1.0;
         if (t0 > K_RAY_EPSILON) {
-            return t0;
+            t = t0;
+        } else if (t1 > K_RAY_EPSILON) {
+            t = t1;
+        } else {
+            return std::nullopt;
         }
-        if (t1 > K_RAY_EPSILON) {
-            return t1;
+
+        const maths::Vector hitPoint = ray.origin + ray.direction * t;
+
+        if (!computeSurfaceData) {
+            return HitContext{
+                .distance = t, .hitPoint = hitPoint, .surfaceData = {}};
         }
-        return -1.0;
+
+        return HitContext{.distance = t,
+                          .hitPoint = hitPoint,
+                          .surfaceData = surfaceData(hitPoint)};
     }
 
     IPrimitive::BoundingBox Sphere::boundingBox() {
@@ -79,19 +107,5 @@ namespace raytracer::object::primitive {
             .h = 2 * _radius,
             .d = 2 * _radius,
         };
-    }
-
-    SurfaceData Sphere::surfaceData(const maths::Vector &hitPoint) const {
-        const maths::Vector normal = (hitPoint - _center).normalized();
-        const double u = 0.5 + std::atan2(normal.z, normal.x) / (2 * M_PI);
-        const double v = 0.5 - std::asin(normal.y) / M_PI;
-        SurfaceData data{
-            .normal = normal, .uv = maths::Vector(u, v, 0), .material = {}};
-
-        if (this->_material) {
-            data.material = this->_material->evaluate(data, hitPoint);
-        }
-
-        return data;
     }
 }  // namespace raytracer::object::primitive

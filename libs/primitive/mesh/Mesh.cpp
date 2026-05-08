@@ -7,10 +7,6 @@
 
 #include "Mesh.hpp"
 
-#include <iostream>
-#include <limits>
-#include <stdexcept>
-
 #include "util/middleware/Helpers.hpp"
 #include "util/middleware/ObjectMiddleware.hpp"
 
@@ -37,17 +33,47 @@ namespace raytracer::object::primitive {
         _surfaceHelper =
             std::make_unique<MeshSurfaceHelper>(_objLoader->vertices());
         buildTrianglesFromFaces();
-        _lastHitTriangleIndex = std::nullopt;
     }
 
-    double Mesh::hits(const maths::Ray &ray) {
-        auto intersection = _surfaceHelper->findClosestTriangle(ray);
-        if (intersection) {
-            _lastHitTriangleIndex = intersection;
-            return intersection->distance;
+    SurfaceData Mesh::surfaceData(int triangleIndex,
+                                  const maths::Vector &hitPoint) const {
+        maths::Vector normal = _surfaceHelper->computeNormal(
+            triangleIndex, hitPoint, _objLoader->normals());
+        maths::Vector uv = _surfaceHelper->computeUV(
+            triangleIndex, hitPoint, _objLoader->textureCoords());
+
+        SurfaceData surfData{
+            .normal = normal, .uv = uv, .extraParams = {}, .material = {}};
+
+        surfData.extraParams["materialName"] =
+            _objLoader->getMaterialForFace(triangleIndex);
+
+        if (this->_material) {
+            surfData.material = this->_material->evaluate(surfData, hitPoint);
         }
-        _lastHitTriangleIndex = std::nullopt;
-        return -1.0;
+
+        return surfData;
+    }
+
+    std::optional<HitContext> Mesh::hits(const maths::Ray &ray,
+                                         bool computeSurfaceData) {
+        auto intersection = _surfaceHelper->findClosestTriangle(ray);
+        if (!intersection) {
+            return std::nullopt;
+        }
+
+        int triangleIndex = intersection->triangleIndex;
+        const maths::Vector &hitPoint = intersection->hitPoint;
+
+        if (!computeSurfaceData) {
+            return HitContext{.distance = intersection->distance,
+                              .hitPoint = hitPoint,
+                              .surfaceData = {}};
+        }
+
+        return HitContext{.distance = intersection->distance,
+                          .hitPoint = hitPoint,
+                          .surfaceData = surfaceData(triangleIndex, hitPoint)};
     }
 
     IPrimitive::BoundingBox Mesh::boundingBox() {
@@ -80,27 +106,6 @@ namespace raytracer::object::primitive {
         _meshBoundingBox = {minX,        minY,        minZ,
                             maxX - minX, maxY - minY, maxZ - minZ};
         return _meshBoundingBox;
-    }
-
-    SurfaceData Mesh::surfaceData(const maths::Vector &hitPoint) const {
-        SurfaceData data{.normal = maths::Vector(0, 1, 0),
-                         .uv = maths::Vector(0, 0, 0),
-                         .extraParams = {},
-                         .material = {}};
-        if (!_lastHitTriangleIndex.has_value())
-            return data;
-        int closestIdx = _lastHitTriangleIndex.value().triangleIndex;
-        data.normal = _surfaceHelper->computeNormal(closestIdx, hitPoint,
-                                                    _objLoader->normals());
-        data.uv = _surfaceHelper->computeUV(closestIdx, hitPoint,
-                                            _objLoader->textureCoords());
-
-        data.extraParams["materialName"] =
-            _objLoader->getMaterialForFace(closestIdx);
-
-        if (this->_material)
-            this->_material->evaluate(data, hitPoint);
-        return data;
     }
 
     IPrimitive::BoundingBox Mesh::triangleBoundingBox(int triangleIndex) const {

@@ -51,7 +51,7 @@ TEST(MATERIAL, flatcolor_decorator) {
         {"material", matPtr},
         {"center",
          std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
-        {"r", 10.0}};
+        {"radius", 10.0}};
     auto sphere = objFactory.build("sphere", sphereArgs);
     ASSERT_NE(sphere, nullptr);
 
@@ -59,7 +59,12 @@ TEST(MATERIAL, flatcolor_decorator) {
         std::dynamic_pointer_cast<raytracer::object::primitive::IPrimitive>(
             sphere);
     ASSERT_NE(basePrim, nullptr);
-    auto finalData = basePrim->surfaceData(raytracer::maths::Vector(0, 10, 0));
+
+    raytracer::maths::Ray ray(raytracer::maths::Vector(0, 20, 0),
+                              raytracer::maths::Vector(0, -1, 0).normalized());
+    auto hitCtx = basePrim->hits(ray);
+    ASSERT_TRUE(hitCtx.has_value());
+    auto finalData = hitCtx->surfaceData;
 
     ASSERT_DOUBLE_EQ(finalData.normal.y, 1.0);
 
@@ -96,7 +101,7 @@ TEST(MATERIAL, flatcolor_preserves_normal) {
         {"material", matPtr},
         {"center",
          std::map<std::string, std::any>{{"x", 5.0}, {"y", 5.0}, {"z", 5.0}}},
-        {"r", 2.0}};
+        {"radius", 2.0}};
     auto sphere = objFactory.build("sphere", sphereArgs);
     ASSERT_NE(sphere, nullptr);
     auto basePrim =
@@ -104,7 +109,12 @@ TEST(MATERIAL, flatcolor_preserves_normal) {
             sphere);
 
     raytracer::maths::Vector hitPoint(7, 5, 5);
-    auto data = basePrim->surfaceData(hitPoint);
+    raytracer::maths::Vector rayOrigin(7, -5, 5);
+    raytracer::maths::Vector rayDir = (hitPoint - rayOrigin).normalized();
+    raytracer::maths::Ray ray(rayOrigin, rayDir);
+    auto hitCtx = basePrim->hits(ray);
+    ASSERT_TRUE(hitCtx.has_value());
+    auto data = hitCtx->surfaceData;
 
     ASSERT_DOUBLE_EQ(data.normal.x, 1.0);
     ASSERT_NEAR(data.normal.y, 0.0, 1e-10);

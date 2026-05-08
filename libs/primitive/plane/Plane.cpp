@@ -40,20 +40,6 @@ namespace raytracer::object::primitive {
         return _normal;
     }
 
-    double Plane::hits(const maths::Ray &ray) {
-        const double denom = _normal.dot(ray.direction);
-        if (std::abs(denom) < EPS) {
-            return -1.0;
-        }
-        const double t = (_center - ray.origin).dot(_normal) / denom;
-        return (t >= EPS) ? t : -1.0;
-    }
-
-    IPrimitive::BoundingBox Plane::boundingBox() {
-        // TODO
-        return {0, 0, 0, 0, 0, 0};
-    }
-
     SurfaceData Plane::surfaceData(const maths::Vector &hitPoint) const {
         const maths::Vector &normal = _normal;
         const maths::Vector helper = (std::abs(normal.y) < 0.999)
@@ -65,12 +51,41 @@ namespace raytracer::object::primitive {
         const double u = localHit.dot(uAxis);
         const double v = localHit.dot(vAxis);
 
-        SurfaceData data{
+        SurfaceData surfData{
             .normal = normal, .uv = maths::Vector(u, v, 0), .material = {}};
 
         if (this->_material) {
-            data.material = this->_material->evaluate(data, hitPoint);
+            surfData.material = this->_material->evaluate(surfData, hitPoint);
         }
-        return data;
+
+        return surfData;
+    }
+
+    std::optional<HitContext> Plane::hits(const maths::Ray &ray,
+                                          bool computeSurfaceData) {
+        const double denom = _normal.dot(ray.direction);
+        if (std::abs(denom) < EPS) {
+            return std::nullopt;
+        }
+        const double t = (_center - ray.origin).dot(_normal) / denom;
+        if (t < EPS) {
+            return std::nullopt;
+        }
+
+        const maths::Vector hitPoint = ray.origin + ray.direction * t;
+
+        if (!computeSurfaceData) {
+            return HitContext{
+                .distance = t, .hitPoint = hitPoint, .surfaceData = {}};
+        }
+
+        return HitContext{.distance = t,
+                          .hitPoint = hitPoint,
+                          .surfaceData = surfaceData(hitPoint)};
+    }
+
+    IPrimitive::BoundingBox Plane::boundingBox() {
+        // TODO
+        return {0, 0, 0, 0, 0, 0};
     }
 }  // namespace raytracer::object::primitive
