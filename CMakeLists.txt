@@ -41,6 +41,7 @@ set(SRCS
         src/math/Color.cpp
         src/math/Vector.cpp
         src/math/Rectangle.cpp
+        src/math/BVHNode.cpp
         src/object/primitive/APrimitive.cpp
         src/util/middleware/Helpers.cpp
         src/plugin/PluginManager.cpp
