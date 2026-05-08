@@ -4,12 +4,12 @@ SET (CMAKE_CXX_STANDARD 20)
 SET (SRCS
     TexturedMaterialPlugin.cpp
     TexturedMaterial.cpp
-    MltLoader.cpp
+    MtlLoader.cpp
 )
 
 SET (HEADERS
     TexturedMaterial.hpp
-    MltLoader.hpp
+    MtlLoader.hpp
     MeshMaterial.hpp
     MeshMaterial.hpp
 )

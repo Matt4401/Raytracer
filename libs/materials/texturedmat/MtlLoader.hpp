@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** RayTracer
 ** File description:
-** MltLoader
+** MtlLoader
 */
 
 #pragma once
@@ -16,10 +16,10 @@
 #include "MeshMaterial.hpp"
 
 namespace raytracer::object::material {
-    class MltLoader {
+    class MtlLoader {
       public:
-        explicit MltLoader(const std::string &filePath);
-        ~MltLoader() = default;
+        explicit MtlLoader(const std::string &filePath);
+        ~MtlLoader() = default;
 
         const std::map<std::string, MeshMaterial> &materials() const {
             return _materials;
@@ -30,7 +30,7 @@ namespace raytracer::object::material {
       protected:
       private:
         static const std::unordered_map<
-            std::string, std::function<void(MltLoader &, std::istringstream &,
+            std::string, std::function<void(MtlLoader &, std::istringstream &,
                                             MeshMaterial &)>>
             _ops;
 
@@ -43,25 +43,25 @@ namespace raytracer::object::material {
         void handleProperty(const std::string &keyword, std::istringstream &iss,
                             const std::string &filePath, MeshMaterial &current);
 
-        static void handleNs(MltLoader &loader, std::istringstream &iss,
+        static void handleNs(MtlLoader &loader, std::istringstream &iss,
                              MeshMaterial &current);
-        static void handleKa(MltLoader &loader, std::istringstream &iss,
+        static void handleKa(MtlLoader &loader, std::istringstream &iss,
                              MeshMaterial &current);
-        static void handleKd(MltLoader &loader, std::istringstream &iss,
+        static void handleKd(MtlLoader &loader, std::istringstream &iss,
                              MeshMaterial &current);
-        static void handleKs(MltLoader &loader, std::istringstream &iss,
+        static void handleKs(MtlLoader &loader, std::istringstream &iss,
                              MeshMaterial &current);
-        static void handleKe(MltLoader &loader, std::istringstream &iss,
+        static void handleKe(MtlLoader &loader, std::istringstream &iss,
                              MeshMaterial &current);
-        static void handleNi(MltLoader &loader, std::istringstream &iss,
+        static void handleNi(MtlLoader &loader, std::istringstream &iss,
                              MeshMaterial &current);
-        static void handleD(MltLoader &loader, std::istringstream &iss,
+        static void handleD(MtlLoader &loader, std::istringstream &iss,
                             MeshMaterial &current);
-        static void handleIllum(MltLoader &loader, std::istringstream &iss,
+        static void handleIllum(MtlLoader &loader, std::istringstream &iss,
                                 MeshMaterial &current);
-        static void handleMapKd(MltLoader &loader, std::istringstream &iss,
+        static void handleMapKd(MtlLoader &loader, std::istringstream &iss,
                                 MeshMaterial &current);
-        static void handleMapBump(MltLoader &loader, std::istringstream &iss,
+        static void handleMapBump(MtlLoader &loader, std::istringstream &iss,
                                   MeshMaterial &current);
         static std::string extractTexturePath(std::istringstream &iss);
 
