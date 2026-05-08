@@ -17,7 +17,7 @@ extern "C" raytracer::object::AObject::Type type(void) {
 }
 
 extern "C" const char *name(void) {
-    return "perlinnoise";
+    return "perlin_noise";
 }
 
 extern "C" raytracer::object::BuilderFunc builder(void) {
