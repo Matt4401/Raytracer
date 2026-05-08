@@ -22,28 +22,42 @@ namespace raytracer::maths {
         _center = computeCenter();
     }
 
+    double BVHNode::chooseNodeHits(const Ray &ray) const {
+        const double tMinLeft =
+            _left ? _left->boundingBox().intersects(ray) : -1.0;
+        const double tMinRight =
+            _right ? _right->boundingBox().intersects(ray) : -1.0;
+        const auto first =
+            (tMinLeft <= tMinRight && tMinLeft > 0) ? _left : _right;
+        const auto second = (first == _left) ? _right : _left;
+        const double hit1 = first ? first->hits(ray) : -1.0;
+
+        if (const double tMinSecond = (second == _left) ? tMinLeft : tMinRight;
+            hit1 > 0 && (tMinSecond < 0 || hit1 < tMinSecond)) {
+            return hit1;
+        }
+        const double hit2 = second ? second->hits(ray) : -1.0;
+        if (hit1 > 0 && hit2 > 0)
+            return std::min(hit1, hit2);
+        return (hit1 > 0) ? hit1 : hit2;
+    }
+
     double BVHNode::hits(const Ray &ray) {
+        if (!_bbox.intersects(ray)) {
+            return -1.0;
+        }
+
         if (isLeaf()) {
             double closestHit = -1.0;
             for (const auto &primitive : _primitives) {
-                double hit = primitive->hits(ray);
-                if (hit > 0 && (closestHit < 0 || hit < closestHit)) {
+                if (const double hit = primitive->hits(ray);
+                    hit > 0 && (closestHit < 0 || hit < closestHit)) {
                     closestHit = hit;
                 }
             }
             return closestHit;
         }
-
-        double leftHit = _left ? _left->hits(ray) : -1.0;
-        double rightHit = _right ? _right->hits(ray) : -1.0;
-
-        if (leftHit > 0 && rightHit > 0) {
-            return std::min(leftHit, rightHit);
-        } else if (leftHit > 0) {
-            return leftHit;
-        } else {
-            return rightHit;
-        }
+        return chooseNodeHits(ray);
     }
 
     object::primitive::IPrimitive::BoundingBox BVHNode::boundingBox() {

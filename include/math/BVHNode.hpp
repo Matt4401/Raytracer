@@ -40,5 +40,6 @@ namespace raytracer::maths {
 
         bool isLeaf() const;
         maths::Vector computeCenter() const;
+        double chooseNodeHits(const Ray &ray) const;
     };
 }  // namespace raytracer::maths
