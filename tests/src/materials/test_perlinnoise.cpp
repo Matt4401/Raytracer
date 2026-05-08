@@ -46,7 +46,7 @@ TEST(PerlinNoiseMaterial, Builds) {
     plugManager.fillFactory(objFactory);
 
     auto perlinArgs = makePerlinArgs();
-    auto matObj = objFactory.build("perlinnoise", perlinArgs);
+    auto matObj = objFactory.build("perlin_noise", perlinArgs);
     ASSERT_NE(matObj, nullptr);
     auto matPtr =
         std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(
@@ -65,7 +65,7 @@ TEST(PerlinNoiseMaterial, IntegratesWithPrimitive) {
     plugManager.fillFactory(objFactory);
 
     auto perlinArgs = makePerlinArgs();
-    auto matObj = objFactory.build("perlinnoise", perlinArgs);
+    auto matObj = objFactory.build("perlin_noise", perlinArgs);
     ASSERT_NE(matObj, nullptr);
     auto matPtr =
         std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(
@@ -105,7 +105,7 @@ TEST(PerlinNoiseMaterial, VariesAcrossPoints) {
     plugManager.fillFactory(objFactory);
 
     auto perlinArgs = makePerlinArgs();
-    auto matObj = objFactory.build("perlinnoise", perlinArgs);
+    auto matObj = objFactory.build("perlin_noise", perlinArgs);
     ASSERT_NE(matObj, nullptr);
     auto matPtr =
         std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(
