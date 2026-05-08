@@ -111,7 +111,8 @@ namespace raytracer::object::material {
             _reflectivity = mat.ns() / 1000.0;
             _transparency = mat.d();
             _ior = mat.ni();
-            // I don't know if it's perfect, but gemini told me it was a good start for roughness and metalness
+            // I don't know if it's perfect, but gemini told me it was a good
+            // start for roughness and metalness
             _roughness =
                 std::clamp(1.0 - std::sqrt(mat.ns() / 1000.0), 0.0, 1.0);
             _metalness = std::clamp(
