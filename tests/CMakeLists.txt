@@ -30,8 +30,13 @@ if (NOT SKIP_INTERNET)
     FetchContent_MakeAvailable(googletest)
     include(GoogleTest)
 
-    find_package(SFML 3 REQUIRED COMPONENTS Graphics)
-    target_link_libraries(exception_tests PRIVATE SFML::Graphics)
+        if (APPLE)
+                find_package(SFML 3 REQUIRED COMPONENTS Graphics)
+                set(SFML_GRAPHICS_TARGET SFML::Graphics)
+        else ()
+                find_package(SFML 2.6 REQUIRED COMPONENTS graphics)
+                set(SFML_GRAPHICS_TARGET sfml-graphics)
+        endif ()
 
     add_executable(exception_tests
             src/main.cpp
@@ -46,6 +51,7 @@ if (NOT SKIP_INTERNET)
             GTest::gtest
             GTest::gmock
             raytracer_core
+            ${SFML_GRAPHICS_TARGET}
     )
 
     target_include_directories(exception_tests PRIVATE
@@ -84,7 +90,7 @@ if (NOT SKIP_INTERNET)
             GTest::gtest
             GTest::gmock
             raytracer_core
-            SFML::Graphics
+            ${SFML_GRAPHICS_TARGET}
     )
 
     target_include_directories(material_tests PRIVATE
