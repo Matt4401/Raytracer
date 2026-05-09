@@ -17,7 +17,8 @@ namespace raytracer::object::material {
     primitive::MaterialProperties Rust::evaluate(
         const primitive::SurfaceData& data,
         const maths::Vector& hitPoint) const {
-        double noise = calculateFBM(hitPoint.x * _scale, hitPoint.y * _scale, hitPoint.z * _scale);
+        double noise = calculateFBM(hitPoint.x * _scale, hitPoint.y * _scale,
+                                    hitPoint.z * _scale);
         double n = (noise + 1.0) * 0.5;
 
         maths::Color finalColor;
