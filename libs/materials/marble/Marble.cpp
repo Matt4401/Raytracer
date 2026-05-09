@@ -2,26 +2,28 @@
 ** EPITECH PROJECT, 2026
 ** Raytracer
 ** File description:
-** PerlinNoise
+** Marble
 */
 
-#include "PerlinNoise.hpp"
+#include "Marble.hpp"
 
 #include <algorithm>
 #include <cmath>
 
 namespace raytracer::object::material {
-    PerlinNoise::PerlinNoise(const std::map<std::string, std::any>& args)
+    Marble::Marble(const std::map<std::string, std::any>& args)
         : APerlinBasedMaterial(args) {
     }
 
-    primitive::MaterialProperties PerlinNoise::evaluate(
+    primitive::MaterialProperties Marble::evaluate(
         const primitive::SurfaceData& data,
         const maths::Vector& hitPoint) const {
         double noise = calculateFBM(hitPoint.x * _scale, hitPoint.y * _scale,
                                     hitPoint.z * _scale);
 
-        const double n = (noise + 1.0) * 0.5;
+        double basePattern = (hitPoint.x + hitPoint.z) * _scale;
+        double marbleValue = std::sin(basePattern + noise * _turbulence);
+        double n = (marbleValue + 1.0) * 0.5;
 
         maths::Color finalColor = maths::Color(
             static_cast<unsigned char>(
