@@ -10,6 +10,8 @@
 #include <bvh/BVHBuilder.hpp>
 #include <bvh/bvhSplitStrategy/SAHStrategy.hpp>
 
+#include "object/primitive/APrimitive.hpp"
+
 #include "exception/PluginException.hpp"
 #include "util/middleware/Helpers.hpp"
 #include "util/middleware/ObjectMiddleware.hpp"
@@ -39,11 +41,12 @@ namespace raytracer::object::scene {
 
     void AScene::addPrimitive(const std::shared_ptr<IObject> &primitive) {
         auto primPtr =
-            std::dynamic_pointer_cast<primitive::IPrimitive>(primitive);
+            std::dynamic_pointer_cast<primitive::APrimitive>(primitive);
         if (!primPtr) {
             throw exception::PluginException(
                 "Invalid primitive object added to scene");
         }
+        primPtr->setId(static_cast<int>(_primitives.size()));
         _primitives.push_back(primPtr);
     }
 

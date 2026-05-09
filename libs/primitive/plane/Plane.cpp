@@ -48,6 +48,7 @@ namespace raytracer::object::primitive {
         const double t = (_center - ray.origin).dot(_normal) / denom;
         if (t >= EPS) {
             rec.t = t;
+            rec.objectId = this->getId();
             return true;
         }
         return false;

@@ -29,45 +29,16 @@ namespace raytracer::bvh {
 
     bool BVHNode::hitLeaf(const maths::Ray &ray,
                           object::primitive::HitRecord &rec) const {
-        struct Candidate {
-            std::shared_ptr<IPrimitive> primitive;
-            double boxT;
-        };
-
-        std::vector<Candidate> candidates;
-        candidates.reserve(_primitives.size());
-        for (const auto &primitive : _primitives) {
-            const double boxT = primitive->boundingBox().intersects(ray);
-            if (boxT < 0.0) {
-                continue;
-            }
-            candidates.push_back({primitive, boxT});
-        }
-        std::ranges::sort(candidates,
-                  [](const Candidate &lhs, const Candidate &rhs) {
-                      return lhs.boxT < rhs.boxT;
-                  });
-
-        object::primitive::HitRecord bestHit;
         bool hitAnything = false;
-        for (const auto &[primitive, boxT] : candidates) {
-            if (hitAnything && boxT >= 0.0 &&
-                boxT >= bestHit.t) {
-                break;
+        for (const auto &primitive : _primitives) {
+            if (object::primitive::HitRecord currentHit;
+                primitive->hits(ray, currentHit)) {
+                if (!hitAnything || currentHit.t < rec.t) {
+                    rec = currentHit;
+                    rec.primitive = primitive;
+                    hitAnything = true;
+                }
             }
-            object::primitive::HitRecord currentHit;
-            if (!primitive->hits(ray, currentHit)) {
-                continue;
-            }
-            currentHit.primitive = primitive;
-            if (!hitAnything || currentHit.t < bestHit.t) {
-                bestHit = currentHit;
-                hitAnything = true;
-            }
-        }
-
-        if (hitAnything) {
-            rec = bestHit;
         }
         return hitAnything;
     }

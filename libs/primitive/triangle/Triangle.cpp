@@ -80,6 +80,7 @@ namespace raytracer::object::primitive {
             return false;  // Ray intersection behind the origin
         } else {
             rec.t = t;
+            rec.objectId = this->getId();
             return true;
         }
     }
