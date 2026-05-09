@@ -19,6 +19,8 @@
 namespace raytracer::object::primitive {
     class Plane : public APrimitive {
       public:
+        using object::primitive::IPrimitive::hits;
+
         explicit Plane(const std::map<std::string, std::any> &args);
         explicit Plane(const maths::Vector &vector,
                        const maths::Vector &normal);
@@ -30,7 +32,8 @@ namespace raytracer::object::primitive {
 
         const maths::Vector &normal() const noexcept;
 
-        double hits(const maths::Ray &ray) override;
+        bool hits(const maths::Ray &ray,
+            HitRecord &rec) const override;
         AABoundingBox boundingBox() override;
         SurfaceData surfaceData(const maths::Vector &hitPoint) const override;
 

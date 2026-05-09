@@ -5,11 +5,16 @@
 ** BVHNode
 */
 
-#include "../../../include/util/bvh/BVHNode.hpp"
+#include "bvh/BVHNode.hpp"
 
+#include <algorithm>
+#include <vector>
+#include <array>
+
+#include "exception/CoreException.hpp"
 #include "object/primitive/IPrimitive.hpp"
 
-namespace raytracer::maths {
+namespace raytracer::bvh {
     BVHNode::BVHNode(const AABoundingBox &box, std::shared_ptr<IPrimitive> left,
                      std::shared_ptr<IPrimitive> right)
         : _bbox(box), _left(std::move(left)), _right(std::move(right)) {
@@ -22,42 +27,114 @@ namespace raytracer::maths {
         _center = computeCenter();
     }
 
-    double BVHNode::chooseNodeHits(const Ray &ray) const {
-        const double tMinLeft =
-            _left ? _left->boundingBox().intersects(ray) : -1.0;
-        const double tMinRight =
-            _right ? _right->boundingBox().intersects(ray) : -1.0;
-        const auto first =
-            (tMinLeft <= tMinRight && tMinLeft > 0) ? _left : _right;
-        const auto second = (first == _left) ? _right : _left;
-        const double hit1 = first ? first->hits(ray) : -1.0;
+    bool BVHNode::hitLeaf(const maths::Ray &ray,
+                          object::primitive::HitRecord &rec) const {
+        struct Candidate {
+            std::shared_ptr<IPrimitive> primitive;
+            double boxT;
+        };
 
-        if (const double tMinSecond = (second == _left) ? tMinLeft : tMinRight;
-            hit1 > 0 && (tMinSecond < 0 || hit1 < tMinSecond)) {
-            return hit1;
+        std::vector<Candidate> candidates;
+        candidates.reserve(_primitives.size());
+        for (const auto &primitive : _primitives) {
+            const double boxT = primitive->boundingBox().intersects(ray);
+            if (boxT < 0.0) {
+                continue;
+            }
+            candidates.push_back({primitive, boxT});
         }
-        const double hit2 = second ? second->hits(ray) : -1.0;
-        if (hit1 > 0 && hit2 > 0)
-            return std::min(hit1, hit2);
-        return (hit1 > 0) ? hit1 : hit2;
+        std::ranges::sort(candidates,
+                  [](const Candidate &lhs, const Candidate &rhs) {
+                      return lhs.boxT < rhs.boxT;
+                  });
+
+        object::primitive::HitRecord bestHit;
+        bool hitAnything = false;
+        for (const auto &[primitive, boxT] : candidates) {
+            if (hitAnything && boxT >= 0.0 &&
+                boxT >= bestHit.t) {
+                break;
+            }
+            object::primitive::HitRecord currentHit;
+            if (!primitive->hits(ray, currentHit)) {
+                continue;
+            }
+            currentHit.primitive = primitive;
+            if (!hitAnything || currentHit.t < bestHit.t) {
+                bestHit = currentHit;
+                hitAnything = true;
+            }
+        }
+
+        if (hitAnything) {
+            rec = bestHit;
+        }
+        return hitAnything;
     }
 
-    double BVHNode::hits(const Ray &ray) {
-        if (!_bbox.intersects(ray)) {
+    double BVHNode::hits(const maths::Ray &ray) {
+        object::primitive::HitRecord rec;
+        if (!hits(ray, rec)) {
             return -1.0;
+        }
+        return rec.t;
+    }
+
+    bool BVHNode::hits(const maths::Ray &ray,
+                       object::primitive::HitRecord &rec) const {
+        if (_bbox.intersects(ray) < 0.0) {
+            return false;
         }
 
         if (isLeaf()) {
-            double closestHit = -1.0;
-            for (const auto &primitive : _primitives) {
-                if (const double hit = primitive->hits(ray);
-                    hit > 0 && (closestHit < 0 || hit < closestHit)) {
-                    closestHit = hit;
-                }
-            }
-            return closestHit;
+            return hitLeaf(ray, rec);
         }
-        return chooseNodeHits(ray);
+
+        const double leftBoxT = _left ? _left->boundingBox().intersects(ray)
+                                      : -1.0;
+        const double rightBoxT = _right ? _right->boundingBox().intersects(ray)
+                                        : -1.0;
+        const std::array<std::shared_ptr<IPrimitive>, 2> children = {_left, _right};
+        const std::array<double, 2> boxTs = {leftBoxT, rightBoxT};
+        int firstIdx = 0;
+        int secondIdx = 1;
+
+        if (rightBoxT >= 0.0 && (leftBoxT < 0.0 || rightBoxT < leftBoxT)) {
+            firstIdx = 1;
+            secondIdx = 0;
+        }
+
+        if (object::primitive::HitRecord firstRec;
+            children[firstIdx] && boxTs[firstIdx] >= 0.0 &&
+                children[firstIdx]->hits(ray, firstRec)) {
+            firstRec.primitive = children[firstIdx];
+            if (boxTs[secondIdx] < 0.0 || firstRec.t <= boxTs[secondIdx]) {
+                rec = firstRec;
+                return true;
+            }
+            if (object::primitive::HitRecord secondRec;
+                children[secondIdx] &&
+                children[secondIdx]->hits(ray, secondRec)) {
+                secondRec.primitive = children[secondIdx];
+                if (secondRec.t < firstRec.t) {
+                    rec = secondRec;
+                } else {
+                    rec = firstRec;
+                }
+                return true;
+            }
+
+            rec = firstRec;
+            return true;
+        }
+        if (object::primitive::HitRecord secondRec;
+            children[secondIdx] && boxTs[secondIdx] >= 0.0 &&
+                children[secondIdx]->hits(ray, secondRec)) {
+            secondRec.primitive = children[secondIdx];
+            rec = secondRec;
+            return true;
+        }
+        return false;
     }
 
     object::primitive::IPrimitive::AABoundingBox BVHNode::boundingBox() {
@@ -66,7 +143,8 @@ namespace raytracer::maths {
 
     object::primitive::SurfaceData BVHNode::surfaceData(
         const maths::Vector &hitPoint) const {
-        throw std::runtime_error("BVHNode has no surface data");
+        throw exception::CoreException(
+            "BVHNode::surfaceData should not be called on a BVHNode");
     }
 
     const std::string &BVHNode::name() const noexcept {
@@ -77,11 +155,11 @@ namespace raytracer::maths {
     }
 
     bool BVHNode::isLeaf() const {
-        return _left == nullptr;
+        return !_left && !_right;
     }
 
     maths::Vector BVHNode::computeCenter() const {
-        return Vector(_bbox.x + _bbox.w / 2, _bbox.y + _bbox.h / 2,
-                      _bbox.z + _bbox.d / 2);
+        return maths::Vector(_bbox.x + _bbox.w / 2, _bbox.y + _bbox.h / 2,
+                             _bbox.z + _bbox.d / 2);
     }
-}  // namespace raytracer::maths
+}  // namespace raytracer::bvh

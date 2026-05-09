@@ -45,7 +45,7 @@ namespace raytracer::object::primitive {
         return _radius;
     }
 
-    double Sphere::hits(const maths::Ray &ray) {
+    bool Sphere::hits(const maths::Ray &ray, HitRecord &rec) const {
         const maths::Vector oc = ray.origin - _center;
         const maths::Vector ocVec(oc.x, oc.y, oc.z);
         const double a = ray.direction.dot(ray.direction);
@@ -54,7 +54,7 @@ namespace raytracer::object::primitive {
         const double discriminant = b * b - 4 * a * c;
 
         if (discriminant < 0) {
-            return -1.0;
+            return false;
         }
 
         const double sqrtDiscriminant = std::sqrt(discriminant);
@@ -62,12 +62,14 @@ namespace raytracer::object::primitive {
         const double t1 = (-b + sqrtDiscriminant) / (2.0 * a);
 
         if (t0 > K_RAY_EPSILON) {
-            return t0;
+            rec.t = t0;
+            return true;
         }
         if (t1 > K_RAY_EPSILON) {
-            return t1;
+            rec.t = t1;
+            return true;
         }
-        return -1.0;
+        return false;
     }
 
     IPrimitive::AABoundingBox Sphere::boundingBox() {

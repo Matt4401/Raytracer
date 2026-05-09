@@ -7,6 +7,9 @@
 
 #include "object/AScene.hpp"
 
+#include <bvh/BVHBuilder.hpp>
+#include <bvh/bvhSplitStrategy/SAHStrategy.hpp>
+
 #include "exception/PluginException.hpp"
 #include "util/middleware/Helpers.hpp"
 #include "util/middleware/ObjectMiddleware.hpp"
@@ -117,4 +120,13 @@ namespace raytracer::object::scene {
         return _cameras;
     }
 
+    void AScene::buildBVH(std::string_view strategy) {
+        if (_primitives.empty())
+            return;
+        if (strategy.empty()) {
+            strategy = "sah";
+        }
+        auto builder = bvh::BVHBuilder<raytracer::bvh::ISplitStrategy>(strategy);
+        _bvhRoot = builder.build(_primitives);
+    }
 }  // namespace raytracer::object::scene

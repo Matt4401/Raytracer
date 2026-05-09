@@ -19,6 +19,8 @@
 namespace raytracer::object::primitive {
     class Sphere : public APrimitive {
       public:
+        using object::primitive::IPrimitive::hits;
+
         explicit Sphere(const std::map<std::string, std::any> &args);
         explicit Sphere(const maths::Vector &vector, double radius);
         explicit Sphere(
@@ -29,7 +31,8 @@ namespace raytracer::object::primitive {
 
         const double &radius() const noexcept;
 
-        double hits(const maths::Ray &ray) override;
+        bool hits(const maths::Ray &ray,
+            HitRecord &rec) const override;
         AABoundingBox boundingBox() override;
         SurfaceData surfaceData(const maths::Vector &hitPoint) const override;
 

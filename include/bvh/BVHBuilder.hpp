@@ -35,14 +35,15 @@ namespace raytracer::bvh {
         std::shared_ptr<object::primitive::IPrimitive> build(
             const PrimitiveVec& objects) {
             maths::AABoundingBox box = calculateGlobalBox(objects);
-            const SplitResult res = _strategy.findSplit(objects, box);
-            auto [leftObjs, rightObjs] = partition(objects, res);
+            const SplitResult res = _strategy->findSplit(objects, box);
 
-            if (leftObjs.empty() ||
-                rightObjs.empty()) {  // avoid infinite loop ;)
+            if (shouldCreateLeaf(objects, res)) {
                 return std::make_shared<BVHNode>(box, objects);
             }
-
+            auto [leftObjs, rightObjs] = partition(objects, res);
+            if (leftObjs.empty() || rightObjs.empty()) {
+                return std::make_shared<BVHNode>(box, objects);
+            }
             auto leftChild = build(leftObjs);
             auto rightChild = build(rightObjs);
             return std::make_shared<BVHNode>(box, leftChild, rightChild);
@@ -56,17 +57,20 @@ namespace raytracer::bvh {
             return !res.shouldSplit || objs.size() <= MIN_OBJECTS_PER_LEAF;
         }
 
-        double getCenterOnAxis(const PrimitiveVec& objs, const int axis) {
-            if (axis == 0) {
-                return objs[0]->boundingBox().x + objs[0]->boundingBox().w / 2;
+        static double getCenterOnAxis(
+            const std::shared_ptr<object::primitive::IPrimitive>& obj,
+            const Axis axis) {
+            const auto [x, y, z, w, h, d] = obj->boundingBox();
+            if (axis == Axis::X) {
+                return x + w / 2;
             }
-            if (axis == 1) {
-                return objs[0]->boundingBox().y + objs[0]->boundingBox().h / 2;
+            if (axis == Axis::Y) {
+                return y + h / 2;
             }
-            return objs[0]->boundingBox().z + objs[0]->boundingBox().d / 2;
+            return z + d / 2;
         }
 
-        std::pair<PrimitiveVec, PrimitiveVec> partition(
+        static std::pair<PrimitiveVec, PrimitiveVec> partition(
             const PrimitiveVec& objs, const SplitResult& res) {
             PrimitiveVec left;
             PrimitiveVec right;
@@ -86,8 +90,12 @@ namespace raytracer::bvh {
             if (objs.empty()) {
                 return {0, 0, 0, 0, 0, 0};
             }
-            double minX, minY, minZ, maxX, maxY,
-                maxZ = std::numeric_limits<double>::infinity();
+            double minX = std::numeric_limits<double>::infinity();
+            double minY = std::numeric_limits<double>::infinity();
+            double minZ = std::numeric_limits<double>::infinity();
+            double maxX = -std::numeric_limits<double>::infinity();
+            double maxY = -std::numeric_limits<double>::infinity();
+            double maxZ = -std::numeric_limits<double>::infinity();
 
             for (const auto& obj : objs) {
                 auto [x, y, z, w, h, d] = obj->boundingBox();

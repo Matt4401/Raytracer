@@ -19,6 +19,8 @@
 namespace raytracer::object::primitive {
     class Triangle : public APrimitive {
       public:
+        using object::primitive::IPrimitive::hits;
+
         explicit Triangle(const std::map<std::string, std::any> &args);
         explicit Triangle(const maths::Vector &center, const maths::Vector &v1,
                           const maths::Vector &v2);
@@ -32,7 +34,8 @@ namespace raytracer::object::primitive {
         maths::Vector v1() const noexcept;
         maths::Vector v2() const noexcept;
 
-        double hits(const maths::Ray &ray) override;
+        bool hits(const maths::Ray &ray,
+            HitRecord &rec) const override;
         AABoundingBox boundingBox() override;
         SurfaceData surfaceData(const maths::Vector &hitPoint) const override;
 
