@@ -8,6 +8,7 @@
 #pragma once
 
 #include <optional>
+#include <memory>
 #include <string>
 #include <unordered_map>
 
@@ -18,6 +19,8 @@
 #include "object/primitive/ReflTypes.hpp"
 
 namespace raytracer::object::primitive {
+    class IPrimitive;
+
     struct MaterialProperties {
         maths::Color color;
         maths::Vector emission;
@@ -35,6 +38,12 @@ namespace raytracer::object::primitive {
         maths::Vector uv;
         std::unordered_map<std::string, double> extraParams;
         MaterialProperties material;
+    };
+
+    struct HitRecord {
+        double t = -1.0;
+        int objectId = -1;
+        std::shared_ptr<IPrimitive> primitive = nullptr;
     };
 
     class IPrimitive {
@@ -56,7 +65,13 @@ namespace raytracer::object::primitive {
          * intersection with the primitive, or a specific value if no
          * intersection occurs
          */
-        virtual double hits(const maths::Ray &ray) = 0;
+        virtual bool hits(const maths::Ray &ray,
+                          HitRecord &rec) const = 0;
+
+        virtual double hits(const maths::Ray &ray) {
+            HitRecord rec;
+            return hits(ray, rec) ? rec.t : -1.0;
+        }
 
         /**
          * @brief Get surface data at hit point (normal, uv, etc.) and evaluates

@@ -259,6 +259,7 @@ namespace raytracer {
             std::cerr << "Failed to create scene object\n";
         }
         _scene = scenePtr;
+        _scene->buildBVH("sah");  // to change
     }
 
     void Core::run() {

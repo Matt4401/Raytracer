@@ -8,6 +8,8 @@
 #include "Scene.hpp"
 
 #include <algorithm>
+#include <bvh/BVHBuilder.hpp>
+#include <bvh/ISplitStrategy.hpp>
 
 #include "object/IScene.hpp"
 #include "object/primitive/IPrimitive.hpp"
@@ -44,17 +46,24 @@ namespace raytracer::object::scene {
 
     bool Scene::intersect(const maths::Ray &ray, double &t,
                           int &objectId) const {
-        const double infinity = std::numeric_limits<double>::infinity();
-        t = infinity;
-        objectId = -1;
-        for (size_t i = 0; i < _primitives.size(); ++i) {
-            const double distance = _primitives.at(i)->hits(ray);
-            if (distance >= 0.0 && distance < t) {
-                t = distance;
-                objectId = static_cast<int>(i);
-            }
+        if (!_bvhRoot) {
+            return false;
         }
-        return objectId != -1;
+
+        primitive::HitRecord rec;
+        if (!_bvhRoot->hits(ray, rec) || !rec.primitive) {
+            return false;
+        }
+
+        const auto primitiveIt = std::find(_primitives.begin(), _primitives.end(),
+                                           rec.primitive);
+        if (primitiveIt == _primitives.end()) {
+            return false;
+        }
+
+        t = rec.t;
+        objectId = static_cast<int>(std::distance(_primitives.begin(), primitiveIt));
+        return true;
     }
 
     maths::Vector Scene::radiance(const maths::Ray &ray, int depth,

@@ -18,8 +18,9 @@ namespace raytracer::object::primitive {
             : _wrapped(std::move(wrapped)) {
         }
 
-        double hits(const maths::Ray &ray) override {
-            return _wrapped->hits(ray);
+                bool hits(const maths::Ray &ray,
+                                    HitRecord &rec) const override {
+                        return _wrapped->hits(ray, rec);
         }
 
         AABoundingBox boundingBox() override {
