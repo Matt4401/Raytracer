@@ -16,9 +16,9 @@ namespace raytracer::object::material {
         const std::map<std::string, std::any>& args)
         : AMaterial() {
         try {
-            auto mltPath = util::ObjectMiddleware::validate<std::string>(
-                args, "mltPath", "TexturedMaterial");
-            _materialLoader = std::make_unique<MltLoader>(mltPath);
+            auto mtlPath = util::ObjectMiddleware::validate<std::string>(
+                args, "mtlPath", "TexturedMaterial");
+            _materialLoader = std::make_unique<MtlLoader>(mtlPath);
         } catch (const exception::PluginException&) {
             _materialLoader = nullptr;
             _color = util::Helpers::toColor(args, "color", "TexturedMaterial");
@@ -71,17 +71,17 @@ namespace raytracer::object::material {
             const auto& mat = _materialLoader->materials().at(matName);
 
             if (mat.mapKd().empty()) {
-                _color = maths::Color(mat.Kd().x, mat.Kd().y, mat.Kd().z);
+                _color = maths::Color(mat.kd().x, mat.kd().y, mat.kd().z);
             } else {
                 // TODO : load texture and sample color based on UV coordinates
                 // color = sampleTexture(mat.mapKd(), data.uv);
             }
-            _emission = mat.Ke();
+            _emission = mat.ke();
             _refl = primitive::RefltT::DIFF;  // TODO: derive reflection type
                                               // from material properties
-            _reflectivity = mat.Ns() / 1000.0;
+            _reflectivity = mat.ns() / 1000.0;
             _transparency = mat.d();
-            _ior = mat.Ni();
+            _ior = mat.ni();
             _roughness =
                 0.5;  // TODO: derive roughness from material properties
             _metalness =

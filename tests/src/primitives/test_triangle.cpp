@@ -90,9 +90,10 @@ TEST(PRIMITIVE_TRIANGLE, hits_center) {
     raytracer::maths::Ray ray(raytracer::maths::Vector(0.25, 0.25, -1),
                               raytracer::maths::Vector(0, 0, 1));
 
-    const double t = tri->hits(ray);
-    ASSERT_GT(t, 0.0);
-    ASSERT_NEAR(t, 1.0, 1e-6);
+    const auto hitCtx = tri->hits(ray);
+    ASSERT_TRUE(hitCtx.has_value());
+    ASSERT_GT(hitCtx->distance, 0.0);
+    ASSERT_NEAR(hitCtx->distance, 1.0, 1e-6);
 }
 
 TEST(PRIMITIVE_TRIANGLE, misses_outside) {
@@ -107,8 +108,8 @@ TEST(PRIMITIVE_TRIANGLE, misses_outside) {
     raytracer::maths::Ray ray(raytracer::maths::Vector(1, 1, -1),
                               raytracer::maths::Vector(0, 0, 1));
 
-    const double t = tri->hits(ray);
-    ASSERT_LT(t, 0.0);
+    const auto hitCtx = tri->hits(ray);
+    ASSERT_FALSE(hitCtx.has_value());
 }
 
 TEST(PRIMITIVE_TRIANGLE, surface_normal_and_uv) {
@@ -120,7 +121,11 @@ TEST(PRIMITIVE_TRIANGLE, surface_normal_and_uv) {
                              raytracer::maths::Vector(0, 1, 0));
     ASSERT_NE(tri, nullptr);
 
-    const auto data = tri->surfaceData(raytracer::maths::Vector(0.2, 0.2, 0));
+    raytracer::maths::Ray ray(raytracer::maths::Vector(0.2, 0.2, -1),
+                              raytracer::maths::Vector(0, 0, 1));
+    const auto hitCtx = tri->hits(ray);
+    ASSERT_TRUE(hitCtx.has_value());
+    const auto data = hitCtx->surfaceData;
 
     ASSERT_NEAR(data.normal.x, 0.0, 1e-6);
     ASSERT_NEAR(data.normal.y, 0.0, 1e-6);

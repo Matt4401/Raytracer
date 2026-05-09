@@ -8,9 +8,16 @@
 #ifndef SCENE_HPP_
 #define SCENE_HPP_
 
+#include <optional>
+
 #include "object/AScene.hpp"
 
 namespace raytracer::object::scene {
+
+    struct SceneHitContext {
+        std::size_t objectId;
+        primitive::HitContext hit;
+    };
 
     struct RadianceContext {
         maths::Vector x;
@@ -20,6 +27,7 @@ namespace raytracer::object::scene {
         int depth;
         unsigned short *xi;
         const int emissive;
+        primitive::SurfaceData surfaceData;
     };
 
     class Scene : public AScene {
@@ -35,6 +43,11 @@ namespace raytracer::object::scene {
                                int emissive = 1) const override;
 
       private:
+        /// @brief Find the closest intersection with any primitive in the
+        /// scene. Returns the primitive index and its full hit context.
+        std::optional<SceneHitContext> intersectClosest(
+            const maths::Ray &ray, bool computeSurfaceData = true) const;
+
         /// @brief build an orthonormal basis (u, v, w) given a normal vector w.
         /// The vectors u and v are perpendicular
         /// to w and to each other. This is used to generate random directions
@@ -62,13 +75,10 @@ namespace raytracer::object::scene {
         maths::Vector randomCosineDir(const maths::Vector &nl,
                                       unsigned short *xi) const;
         maths::Vector radianceDiffuse(const maths::Ray &ray,
-                                      const primitive::IPrimitive &obj,
                                       const RadianceContext &ctx) const;
         maths::Vector radianceSpecular(const maths::Ray &ray,
-                                       const primitive::IPrimitive &obj,
                                        const RadianceContext &ctx) const;
         maths::Vector radianceRefractive(const maths::Ray &ray,
-                                         const primitive::IPrimitive &obj,
                                          const RadianceContext &ctx) const;
     };
 }  // namespace raytracer::object::scene

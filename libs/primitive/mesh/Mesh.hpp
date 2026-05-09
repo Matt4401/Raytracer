@@ -22,12 +22,14 @@ namespace raytracer::object::primitive {
       public:
         Mesh(const std::map<std::string, std::any> &params);
         ~Mesh() override = default;
-        double hits(const maths::Ray &ray) override;
+        std::optional<HitContext> hits(const maths::Ray &ray,
+                                       bool computeSurfaceData = true) override;
         BoundingBox boundingBox() override;
-        SurfaceData surfaceData(const maths::Vector &hitPoint) const override;
 
       protected:
       private:
+        SurfaceData surfaceData(int triangleIndex,
+                                const maths::Vector &hitPoint) const;
         BoundingBox triangleBoundingBox(int triangleIndex) const;
         void buildTrianglesFromFaces();
 
@@ -35,7 +37,6 @@ namespace raytracer::object::primitive {
 
         std::unique_ptr<MeshSurfaceHelper> _surfaceHelper;
         std::unique_ptr<ObjLoader> _objLoader;
-        std::optional<MeshSurfaceHelper::TriangleIntersection> _lastHitTriangleIndex;
     };
 }  // namespace raytracer::object::primitive
 #endif /* !MESH_HPP_ */
