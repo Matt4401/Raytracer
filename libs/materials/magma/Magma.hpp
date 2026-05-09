@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** Raytracer
 ** File description:
-** PerlinNoise
+** Magma
 */
 
 #pragma once
@@ -14,10 +14,10 @@
 #include "object/material/APerlinBasedMaterial.hpp"
 
 namespace raytracer::object::material {
-    class PerlinNoise : public APerlinBasedMaterial {
+    class Magma : public APerlinBasedMaterial {
       public:
-        explicit PerlinNoise(const std::map<std::string, std::any>& args);
-        ~PerlinNoise() override = default;
+        explicit Magma(const std::map<std::string, std::any>& args);
+        ~Magma() override = default;
 
         primitive::MaterialProperties evaluate(
             const primitive::SurfaceData& data,

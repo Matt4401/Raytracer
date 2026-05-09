@@ -2,26 +2,33 @@
 ** EPITECH PROJECT, 2026
 ** Raytracer
 ** File description:
-** PerlinNoise
+** Wood
 */
 
-#include "PerlinNoise.hpp"
+#include "Wood.hpp"
 
 #include <algorithm>
 #include <cmath>
 
 namespace raytracer::object::material {
-    PerlinNoise::PerlinNoise(const std::map<std::string, std::any>& args)
+    Wood::Wood(const std::map<std::string, std::any>& args)
         : APerlinBasedMaterial(args) {
     }
 
-    primitive::MaterialProperties PerlinNoise::evaluate(
+    primitive::MaterialProperties Wood::evaluate(
         const primitive::SurfaceData& data,
         const maths::Vector& hitPoint) const {
-        double noise = calculateFBM(hitPoint.x * _scale, hitPoint.y * _scale,
-                                    hitPoint.z * _scale);
+        const double nx = hitPoint.x * _scale;
+        const double ny = hitPoint.y * _scale * 0.1;
+        const double nz = hitPoint.z * _scale;
 
-        const double n = (noise + 1.0) * 0.5;
+        const double noise = calculateFBM(nx, ny, nz);
+        const double radius =
+            std::sqrt(hitPoint.x * hitPoint.x + hitPoint.z * hitPoint.z);
+        const double woodValue =
+            std::sin(radius * _scale * 3.0 + noise * _turbulence);
+        double n = (woodValue + 1.0) * 0.5;
+        n = std::pow(n, 0.7);
 
         maths::Color finalColor = maths::Color(
             static_cast<unsigned char>(
