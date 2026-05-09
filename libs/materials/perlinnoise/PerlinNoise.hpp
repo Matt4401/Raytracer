@@ -23,7 +23,7 @@ namespace raytracer::object::material {
 
         primitive::MaterialProperties evaluate(
             const primitive::SurfaceData& data,
-            const maths::Vector& hitPoint) const override;
+            const maths::Vector& hitPoint) override;
 
       private:
         maths::Color _color1;

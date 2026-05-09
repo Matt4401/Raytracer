@@ -7,19 +7,20 @@
 
 #pragma once
 
+#include <SFML/Graphics.hpp>
 #include <any>
 #include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "MtlLoader.hpp"
 #include "math/Color.hpp"
 #include "math/Vector.hpp"
-#include "object/material/AMaterial.hpp"
-#include "object/primitive/ReflTypes.hpp"
+#include "object/material/ABasicMaterial.hpp"
 
 namespace raytracer::object::material {
-    class TexturedMaterial : public AMaterial {
+    class TexturedMaterial : public ABasicMaterial {
       public:
         explicit TexturedMaterial(const std::map<std::string, std::any>& args);
         ~TexturedMaterial() override = default;
@@ -29,15 +30,14 @@ namespace raytracer::object::material {
             const maths::Vector& hitPoint) override;
 
       private:
-        maths::Color _color;
-        maths::Vector _emission;
-        primitive::RefltT _refl;
-        double _reflectivity;
-        double _transparency;
-        double _ior;
-        double _roughness;
-        double _metalness;
         std::string _texturePath;
+        double _scale;
         std::unique_ptr<MtlLoader> _materialLoader;
+        mutable std::unordered_map<std::string, sf::Image> _loadedTextures;
+
+        maths::Color sampleTexture(const std::string& path,
+                                   const maths::Vector& uv) const;
+
+        void preloadTexture(const std::string& path) const;
     };
 }  // namespace raytracer::object::material
