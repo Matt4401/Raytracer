@@ -22,5 +22,17 @@ namespace raytracer::object::material {
         primitive::MaterialProperties evaluate(
             const primitive::SurfaceData& data,
             const maths::Vector& hitPoint) const override;
+
+      private:
+        maths::Color _color1;
+        maths::Color _color2;
+        double _scale;
+        int _octaves;
+        double _persistence;
+
+        double fade(double t) const;
+        double grad(int hash, double x, double y, double z) const;
+        double lerp(double a, double b, double t) const;
+        double perlin(double x, double y, double z) const;
     };
 }  // namespace raytracer::object::material
