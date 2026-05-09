@@ -33,47 +33,46 @@ namespace raytracer::object::primitive {
         _surfaceHelper =
             std::make_unique<MeshSurfaceHelper>(_objLoader->vertices());
         buildTrianglesFromFaces();
+        _lastHitTriangleIndex = std::nullopt;
     }
 
-    SurfaceData Mesh::surfaceData(int triangleIndex,
-                                  const maths::Vector &hitPoint) const {
+    SurfaceData Mesh::surfaceData(const maths::Vector &hitPoint) const {
+        SurfaceData data{.normal = maths::Vector(0, 1, 0),
+                         .uv = maths::Vector(0, 0, 0),
+                         .extraParams = {},
+                         .material = {}};
+        if (!_lastHitTriangleIndex.has_value())
+            return data;
+
+        int triangleIndex = static_cast<int>(_lastHitTriangleIndex.value());
         maths::Vector normal = _surfaceHelper->computeNormal(
             triangleIndex, hitPoint, _objLoader->normals());
         maths::Vector uv = _surfaceHelper->computeUV(
             triangleIndex, hitPoint, _objLoader->textureCoords());
 
-        SurfaceData surfData{
-            .normal = normal, .uv = uv, .extraParams = {}, .material = {}};
+        data.normal = normal;
+        data.uv = uv;
 
-        surfData.extraParams["materialName"] =
+        data.extraParams["materialName"] =
             _objLoader->getMaterialForFace(triangleIndex);
 
         if (this->_material) {
-            surfData.material = this->_material->evaluate(surfData, hitPoint);
+            data.material = this->_material->evaluate(data, hitPoint);
         }
 
-        return surfData;
+        return data;
     }
 
-    std::optional<HitContext> Mesh::hits(const maths::Ray &ray,
-                                         bool computeSurfaceData) {
+    double Mesh::hits(const maths::Ray &ray) {
         auto intersection = _surfaceHelper->findClosestTriangle(ray);
         if (!intersection) {
-            return std::nullopt;
+            _lastHitTriangleIndex = std::nullopt;
+            return -1.0;
         }
 
-        int triangleIndex = intersection->triangleIndex;
-        const maths::Vector &hitPoint = intersection->hitPoint;
-
-        if (!computeSurfaceData) {
-            return HitContext{.distance = intersection->distance,
-                              .hitPoint = hitPoint,
-                              .surfaceData = {}};
-        }
-
-        return HitContext{.distance = intersection->distance,
-                          .hitPoint = hitPoint,
-                          .surfaceData = surfaceData(triangleIndex, hitPoint)};
+        _lastHitTriangleIndex =
+            static_cast<std::size_t>(intersection->triangleIndex);
+        return intersection->distance;
     }
 
     IPrimitive::BoundingBox Mesh::boundingBox() {

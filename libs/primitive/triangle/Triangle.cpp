@@ -76,45 +76,35 @@ namespace raytracer::object::primitive {
         return surfData;
     }
 
-    std::optional<HitContext> Triangle::hits(const maths::Ray &ray,
-                                             bool computeSurfaceData) {
+    double Triangle::hits(const maths::Ray &ray) {
         const maths::Vector edge1 = _v1 - _center;
         const maths::Vector edge2 = _v2 - _center;
         const maths::Vector rayCrossE2 = ray.direction.cross(edge2);
         const double det = edge1.dot(rayCrossE2);
 
         if (std::abs(det) < K_RAY_EPSILON) {
-            return std::nullopt;  // Ray is parallel to triangle
+            return -1.0;  // Ray is parallel to triangle
         }
 
         const double invDet = 1.0 / det;
         const maths::Vector s = ray.origin - _center;
         const double u = s.dot(rayCrossE2) * invDet;
         if (u < -K_RAY_EPSILON || u - 1 > K_RAY_EPSILON) {
-            return std::nullopt;  // Ray pass outside edge2 bounds
+            return -1.0;  // Ray pass outside edge2 bounds
         }
 
         const maths::Vector sCrossE1 = s.cross(edge1);
         const double v = ray.direction.dot(sCrossE1) * invDet;
         if (v < -K_RAY_EPSILON || u + v - 1 > K_RAY_EPSILON) {
-            return std::nullopt;  // Ray pass outside edge1 bounds
+            return -1.0;  // Ray pass outside edge1 bounds
         }
 
         const double t = edge2.dot(sCrossE1) * invDet;
         if (t < K_RAY_EPSILON) {
-            return std::nullopt;  // Ray intersection behind the origin
+            return -1.0;  // Ray intersection behind the origin
         }
 
-        const maths::Vector hitPoint = ray.origin + ray.direction * t;
-
-        if (!computeSurfaceData) {
-            return HitContext{
-                .distance = t, .hitPoint = hitPoint, .surfaceData = {}};
-        }
-
-        return HitContext{.distance = t,
-                          .hitPoint = hitPoint,
-                          .surfaceData = surfaceData(hitPoint)};
+        return t;
     }
 
     IPrimitive::BoundingBox Triangle::boundingBox() {

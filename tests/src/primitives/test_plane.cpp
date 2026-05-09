@@ -27,26 +27,27 @@ TEST(PRIMITIVE, plane_hits_front_face) {
     Plane plane(Vector(0, 0, 0), Vector(0, 1, 0));
     Ray ray(Vector(0, -1, 0), Vector(0, 1, 0));
 
-    auto hitCtx = plane.hits(ray);
-    ASSERT_TRUE(hitCtx.has_value());
-    ASSERT_DOUBLE_EQ(hitCtx->distance, 1.0);
+    auto hit = plane.hits(ray);
+    ASSERT_GT(hit, 0.0);
+    ASSERT_DOUBLE_EQ(hit, 1.0);
 }
 
 TEST(PRIMITIVE, plane_parallel_no_hit) {
     Plane plane(Vector(0, 0, 0), Vector(0, 1, 0));
     Ray ray(Vector(0, -1, 0), Vector(1, 0, 0));
 
-    auto hitCtx = plane.hits(ray);
-    ASSERT_FALSE(hitCtx.has_value());
+    auto hit = plane.hits(ray);
+    ASSERT_LT(hit, 0.0);
 }
 
 TEST(PRIMITIVE, plane_surface_data_uv_and_normal) {
     Plane plane(Vector(0, 0, 0), Vector(0, 1, 0));
     Ray ray(Vector(1, -1, 0), Vector(0, 1, 0));
 
-    auto hitCtx = plane.hits(ray);
-    ASSERT_TRUE(hitCtx.has_value());
-    auto data = hitCtx->surfaceData;
+    auto hit = plane.hits(ray);
+    ASSERT_GT(hit, 0.0);
+    const auto &prim = static_cast<const raytracer::object::primitive::IPrimitive &>(plane);
+    auto data = prim.surfaceData(ray.origin + ray.direction * hit);
 
     ASSERT_DOUBLE_EQ(data.normal.x, 0.0);
     ASSERT_DOUBLE_EQ(data.normal.y, 1.0);

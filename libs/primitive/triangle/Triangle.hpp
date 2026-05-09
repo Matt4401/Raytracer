@@ -32,15 +32,14 @@ namespace raytracer::object::primitive {
         maths::Vector v1() const noexcept;
         maths::Vector v2() const noexcept;
 
-        std::optional<HitContext> hits(const maths::Ray &ray,
-                                       bool computeSurfaceData = true) override;
+        double hits(const maths::Ray &ray) override;
         BoundingBox boundingBox() override;
 
       private:
         maths::Vector _v1;
         maths::Vector _v2;
 
-        SurfaceData surfaceData(const maths::Vector &hitPoint) const;
+        SurfaceData surfaceData(const maths::Vector &hitPoint) const override;
 
         static constexpr std::size_t EXPECTED_ARGS = 4;
     };

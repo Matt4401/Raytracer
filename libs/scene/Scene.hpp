@@ -13,12 +13,6 @@
 #include "object/AScene.hpp"
 
 namespace raytracer::object::scene {
-
-    struct SceneHitContext {
-        std::size_t objectId;
-        primitive::HitContext hit;
-    };
-
     struct RadianceContext {
         maths::Vector x;
         maths::Vector n;
@@ -43,10 +37,8 @@ namespace raytracer::object::scene {
                                int emissive = 1) const override;
 
       private:
-        /// @brief Find the closest intersection with any primitive in the
-        /// scene. Returns the primitive index and its full hit context.
-        std::optional<SceneHitContext> intersectClosest(
-            const maths::Ray &ray, bool computeSurfaceData = true) const;
+                bool intersectClosest(const maths::Ray &ray, double &t,
+                                                            int &objectId) const;
 
         /// @brief build an orthonormal basis (u, v, w) given a normal vector w.
         /// The vectors u and v are perpendicular

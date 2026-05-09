@@ -62,9 +62,9 @@ TEST(MATERIAL, flatcolor_decorator) {
 
     raytracer::maths::Ray ray(raytracer::maths::Vector(0, 20, 0),
                               raytracer::maths::Vector(0, -1, 0).normalized());
-    auto hitCtx = basePrim->hits(ray);
-    ASSERT_TRUE(hitCtx.has_value());
-    auto finalData = hitCtx->surfaceData;
+    auto hit = basePrim->hits(ray);
+    ASSERT_GT(hit, 0.0);
+    auto finalData = basePrim->surfaceData(ray.origin + ray.direction * hit);
 
     ASSERT_DOUBLE_EQ(finalData.normal.y, 1.0);
 
@@ -112,9 +112,9 @@ TEST(MATERIAL, flatcolor_preserves_normal) {
     raytracer::maths::Vector rayOrigin(7, -5, 5);
     raytracer::maths::Vector rayDir = (hitPoint - rayOrigin).normalized();
     raytracer::maths::Ray ray(rayOrigin, rayDir);
-    auto hitCtx = basePrim->hits(ray);
-    ASSERT_TRUE(hitCtx.has_value());
-    auto data = hitCtx->surfaceData;
+    auto hit = basePrim->hits(ray);
+    ASSERT_GT(hit, 0.0);
+    auto data = basePrim->surfaceData(ray.origin + ray.direction * hit);
 
     ASSERT_DOUBLE_EQ(data.normal.x, 1.0);
     ASSERT_NEAR(data.normal.y, 0.0, 1e-10);
