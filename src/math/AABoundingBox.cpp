@@ -30,7 +30,7 @@ namespace raytracer::maths {
         return 2 * (w * h + w * d + h * d);
     }
 
-    bool AABoundingBox::intersects(const Ray &ray) const {
+    double AABoundingBox::intersects(const Ray &ray) const {
         double tMin = -std::numeric_limits<double>::infinity();
         double tMax = std::numeric_limits<double>::infinity();
         const double axes[3][3] = {{ray.origin.x, ray.direction.x, x},
@@ -39,17 +39,26 @@ namespace raytracer::maths {
         const double dims[3] = {w, h, d};
 
         for (int i = 0; i < 3; ++i) {
-            const double invD = 1.0 / axes[i][1];
-            double t0 = (axes[i][2] - axes[i][0]) * invD;
-            double t1 = (axes[i][2] + dims[i] - axes[i][0]) * invD;
-
-            if (invD < 0.0)
-                std::swap(t0, t1);
-            tMin = std::max(tMin, t0);
-            tMax = std::min(tMax, t1);
-            if (tMax <= tMin)
-                return false;
+            const double direction = axes[i][1];
+            const double min = axes[i][2];
+            const double max = axes[i][2] + dims[i];
+            if (direction == 0.0) {
+                if (axes[i][0] < min || axes[i][0] > max) {
+                    return -1.0;
+                }
+                continue;
+            }
+            const double invD = 1.0 / direction;
+            double t0 = (min - axes[i][0]) * invD;
+            double t1 = (max - axes[i][0]) * invD;
+            tMin = std::max(tMin, std::min(t0, t1));
+            tMax = std::min(tMax, std::max(t0, t1));
+            if (tMax < tMin)
+                return -1.0;
         }
-        return tMax >= 0.0;
+        if (tMax < 0.0) {
+            return -1.0;
+        }
+        return std::max(0.0, tMin);
     }
 }  // namespace raytracer::maths

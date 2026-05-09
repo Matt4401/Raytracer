@@ -47,9 +47,9 @@ namespace raytracer::maths {
         /// @param ray The ray to test for intersection with the bounding box.
         /// This should be a valid Ray object with defined origin and direction
         /// components.
-        /// @return true if the ray intersects with the bounding box, false
-        /// otherwise
-        bool intersects(const Ray &ray) const;
+        /// @return the entry distance of the ray in the box, or -1 if there
+        /// is no intersection.
+        double intersects(const Ray &ray) const;
     };
 
 }  // namespace raytracer::maths
