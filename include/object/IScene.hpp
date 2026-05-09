@@ -70,6 +70,7 @@ namespace raytracer::object::scene {
             const = 0;
 
         virtual void buildBVH(std::string_view strategy) = 0;
+
       protected:
       private:
     };

@@ -8,8 +8,8 @@
 #include "bvh/BVHNode.hpp"
 
 #include <algorithm>
-#include <vector>
 #include <array>
+#include <vector>
 
 #include "exception/CoreException.hpp"
 #include "object/primitive/IPrimitive.hpp"
@@ -63,10 +63,11 @@ namespace raytracer::bvh {
     //
     //     const double leftBoxT = _left ? _left->boundingBox().intersects(ray)
     //                                   : -1.0;
-    //     const double rightBoxT = _right ? _right->boundingBox().intersects(ray)
+    //     const double rightBoxT = _right ?
+    //     _right->boundingBox().intersects(ray)
     //                                     : -1.0;
-    //     const std::array<std::shared_ptr<IPrimitive>, 2> children = {_left, _right};
-    //     const std::array<double, 2> boxTs = {leftBoxT, rightBoxT};
+    //     const std::array<std::shared_ptr<IPrimitive>, 2> children = {_left,
+    //     _right}; const std::array<double, 2> boxTs = {leftBoxT, rightBoxT};
     //     int firstIdx = 0;
     //     int secondIdx = 1;
     //
@@ -108,7 +109,8 @@ namespace raytracer::bvh {
     //     return false;
     // }
 
-    // This function will not stay, she is juste here for avoid BVHNode to be abstract
+    // This function will not stay, she is juste here for avoid BVHNode to be
+    // abstract
     double BVHNode::hits(const maths::Ray &ray) {
         return -1.0;
     }

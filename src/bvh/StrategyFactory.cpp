@@ -31,8 +31,7 @@ namespace raytracer::bvh {
         static std::unordered_map<std::string, StrategyCreator> registry = {
             {"sah", []() { return std::make_unique<SAHStrategy>(); }},
             {"median", []() { return std::make_unique<MedianStrategy>(); }},
-            {"midpoint",
-             []() { return std::make_unique<MidpointStrategy>(); }},
+            {"midpoint", []() { return std::make_unique<MidpointStrategy>(); }},
         };
 
         return registry;

@@ -60,7 +60,7 @@ namespace raytracer::object::primitive {
         const double t1 = (-b + sqrtDiscriminant) / (2.0 * a);
 
         if (t0 > K_RAY_EPSILON) {
-          return t0;
+            return t0;
         }
         if (t1 > K_RAY_EPSILON) {
             return t1;

@@ -95,11 +95,11 @@ namespace raytracer::object::primitive {
         const auto maxZ = std::max({v0.z, v1.z, v2.z});
 
         return maths::AABoundingBox{.x = minX,
-                .y = minY,
-                .z = minZ,
-                .w = maxX - minX,
-                .h = maxY - minY,
-                .d = maxZ - minZ};
+                                    .y = minY,
+                                    .z = minZ,
+                                    .w = maxX - minX,
+                                    .h = maxY - minY,
+                                    .d = maxZ - minZ};
     }
 
     SurfaceData Triangle::surfaceData(const maths::Vector &hitPoint) const {
