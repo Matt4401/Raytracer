@@ -23,6 +23,6 @@ namespace raytracer::object::material {
          */
         virtual raytracer::object::primitive::MaterialProperties evaluate(
             const raytracer::object::primitive::SurfaceData& data,
-            const maths::Vector& hitPoint) = 0;
+            const maths::Vector& hitPoint) const = 0;
     };
 }  // namespace raytracer::object::material

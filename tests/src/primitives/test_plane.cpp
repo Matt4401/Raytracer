@@ -46,7 +46,8 @@ TEST(PRIMITIVE, plane_surface_data_uv_and_normal) {
 
     auto hit = plane.hits(ray);
     ASSERT_GT(hit, 0.0);
-    const auto &prim = static_cast<const raytracer::object::primitive::IPrimitive &>(plane);
+    const auto &prim =
+        static_cast<const raytracer::object::primitive::IPrimitive &>(plane);
     auto data = prim.surfaceData(ray.origin + ray.direction * hit);
 
     ASSERT_DOUBLE_EQ(data.normal.x, 0.0);

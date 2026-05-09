@@ -61,7 +61,8 @@ namespace raytracer::object::material {
     }
 
     primitive::MaterialProperties TexturedMaterial::evaluate(
-        const primitive::SurfaceData& data, const maths::Vector& hitPoint) {
+        const primitive::SurfaceData& data,
+        const maths::Vector& hitPoint) const {
         if (_materialLoader->materials().empty()) {
             return {};
         }

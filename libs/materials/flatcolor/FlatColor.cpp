@@ -17,7 +17,8 @@ namespace raytracer::object::material {
     }
 
     primitive::MaterialProperties FlatColor::evaluate(
-        const primitive::SurfaceData& data, const maths::Vector& hitPoint) {
+        const primitive::SurfaceData& data,
+        const maths::Vector& hitPoint) const {
         return {.color = _color,
                 .emission = _emission,
                 .reflType = _refl,

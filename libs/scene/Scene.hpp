@@ -37,8 +37,8 @@ namespace raytracer::object::scene {
                                int emissive = 1) const override;
 
       private:
-                bool intersectClosest(const maths::Ray &ray, double &t,
-                                                            int &objectId) const;
+        bool intersectClosest(const maths::Ray &ray, double &t,
+                              int &objectId) const;
 
         /// @brief build an orthonormal basis (u, v, w) given a normal vector w.
         /// The vectors u and v are perpendicular
