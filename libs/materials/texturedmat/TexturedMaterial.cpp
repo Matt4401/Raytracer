@@ -93,9 +93,11 @@ namespace raytracer::object::material {
     }
 
     primitive::MaterialProperties TexturedMaterial::evaluate(
-        const primitive::SurfaceData& data, const maths::Vector& hitPoint) {
-        maths::Color finalColor(255, 0, 255);
-
+        const primitive::SurfaceData& data,
+        const maths::Vector& hitPoint) const {
+        if (_materialLoader->materials().empty()) {
+            return {};
+        }
         if (_materialLoader) {
             auto matName = util::ObjectMiddleware::validate<std::string>(
                 data.extraParams, "materialName", "TexturedMaterial");

@@ -18,22 +18,8 @@ namespace raytracer::object::material {
     primitive::MaterialProperties PerlinNoise::evaluate(
         const primitive::SurfaceData& data,
         const maths::Vector& hitPoint) const {
-        const double x = hitPoint.x * _scale;
-        const double y = hitPoint.y * _scale;
-        const double z = hitPoint.z * _scale;
-
-        double amplitude = 1.0;
-        double frequency = 1.0;
-        double noise = 0.0;
-        double maxValue = 0.0;
-        for (int i = 0; i < _octaves; ++i) {
-            noise +=
-                perlin(x * frequency, y * frequency, z * frequency) * amplitude;
-            maxValue += amplitude;
-            amplitude *= _persistence;
-            frequency *= 2.0;
-        }
-        noise /= maxValue;
+        double noise = calculateFBM(hitPoint.x * _scale, hitPoint.y * _scale,
+                                    hitPoint.z * _scale);
 
         const double n = (noise + 1.0) * 0.5;
 

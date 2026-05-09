@@ -61,27 +61,17 @@ namespace raytracer::object::primitive {
         return surfData;
     }
 
-    std::optional<HitContext> Plane::hits(const maths::Ray &ray,
-                                          bool computeSurfaceData) {
+    double Plane::hits(const maths::Ray &ray) {
         const double denom = _normal.dot(ray.direction);
         if (std::abs(denom) < EPS) {
-            return std::nullopt;
+            return -1.0;
         }
         const double t = (_center - ray.origin).dot(_normal) / denom;
         if (t < EPS) {
-            return std::nullopt;
+            return -1.0;
         }
 
-        const maths::Vector hitPoint = ray.origin + ray.direction * t;
-
-        if (!computeSurfaceData) {
-            return HitContext{
-                .distance = t, .hitPoint = hitPoint, .surfaceData = {}};
-        }
-
-        return HitContext{.distance = t,
-                          .hitPoint = hitPoint,
-                          .surfaceData = surfaceData(hitPoint)};
+        return t;
     }
 
     IPrimitive::BoundingBox Plane::boundingBox() {
