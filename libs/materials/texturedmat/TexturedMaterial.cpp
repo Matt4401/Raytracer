@@ -16,9 +16,9 @@ namespace raytracer::object::material {
         const std::map<std::string, std::any>& args)
         : AMaterial() {
         try {
-            auto mltPath = util::ObjectMiddleware::validate<std::string>(
-                args, "mltPath", "TexturedMaterial");
-            _materialLoader = std::make_unique<MltLoader>(mltPath);
+            auto mtlPath = util::ObjectMiddleware::validate<std::string>(
+                args, "mtlPath", "TexturedMaterial");
+            _materialLoader = std::make_unique<MtlLoader>(mtlPath);
         } catch (const exception::PluginException&) {
             _materialLoader = nullptr;
             _color = util::Helpers::toColor(args, "color", "TexturedMaterial");
