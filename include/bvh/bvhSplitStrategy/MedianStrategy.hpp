@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <bvh/ASplitStrategy.hpp>
-#include <bvh/BVHBuilder.hpp>
+#include "bvh/ASplitStrategy.hpp"
+#include "bvh/BVHBuilder.hpp"
 
 namespace raytracer::bvh {
     class MedianStrategy : public ASplitStrategy {
