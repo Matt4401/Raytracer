@@ -42,6 +42,7 @@ set(SRCS
         src/math/Vector.cpp
         src/math/Rectangle.cpp
         src/object/primitive/APrimitive.cpp
+        src/object/material/ABasicMaterial.cpp
         src/util/middleware/Helpers.cpp
         src/plugin/PluginManager.cpp
         src/plugin/ObjectFactory.cpp
@@ -66,5 +67,11 @@ target_include_directories(raytracer_core PUBLIC
 
 add_executable(${NAME} src/main.cpp ${HEADERS})
 target_link_libraries(${NAME} PRIVATE raytracer_core)
+
+add_custom_command(TARGET ${NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:${NAME}>
+        ${CMAKE_SOURCE_DIR}/${NAME}
+)
 
 add_subdirectory(libs)
