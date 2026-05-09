@@ -30,6 +30,8 @@ if (NOT SKIP_INTERNET)
     FetchContent_MakeAvailable(googletest)
     include(GoogleTest)
 
+        find_package(SFML 2.6 COMPONENTS graphics REQUIRED)
+
     add_executable(exception_tests
             src/main.cpp
             src/exception/exception.cpp
@@ -62,6 +64,9 @@ if (NOT SKIP_INTERNET)
             src/main.cpp
             src/materials/test_flatcolor.cpp
             ${CMAKE_SOURCE_DIR}/libs/materials/flatcolor/FlatColor.cpp
+            src/materials/test_texturedmaterial.cpp
+            ${CMAKE_SOURCE_DIR}/libs/materials/texturedmat/TexturedMaterial.cpp
+            ${CMAKE_SOURCE_DIR}/libs/materials/texturedmat/MtlLoader.cpp
             src/materials/test_chessboard.cpp
             ${CMAKE_SOURCE_DIR}/libs/materials/chessboard/Chessboard.cpp
             src/materials/test_perlinnoise.cpp
@@ -78,6 +83,7 @@ if (NOT SKIP_INTERNET)
             GTest::gtest
             GTest::gmock
             raytracer_core
+            sfml-graphics
     )
 
     target_include_directories(material_tests PRIVATE

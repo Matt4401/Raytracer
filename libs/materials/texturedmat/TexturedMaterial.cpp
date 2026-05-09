@@ -7,6 +7,10 @@
 
 #include "TexturedMaterial.hpp"
 
+#include <algorithm>
+#include <cmath>
+#include <filesystem>
+
 #include "exception/PluginException.hpp"
 #include "util/middleware/Helpers.hpp"
 #include "util/middleware/ObjectMiddleware.hpp"
@@ -14,50 +18,78 @@
 namespace raytracer::object::material {
     TexturedMaterial::TexturedMaterial(
         const std::map<std::string, std::any>& args)
-        : AMaterial() {
+        : ABasicMaterial(args) {
         try {
             auto mtlPath = util::ObjectMiddleware::validate<std::string>(
                 args, "mtlPath", "TexturedMaterial");
             _materialLoader = std::make_unique<MtlLoader>(mtlPath);
+            _scale = util::ObjectMiddleware::optional<double>(
+                args, "scale", 1.0, "TexturedMaterial");
+            util::Helpers::unsignedDouble(_scale, "scale", "TexturedMaterial");
+            if (_scale <= 0.0)
+                _scale = 1.0;
         } catch (const exception::PluginException&) {
-            _materialLoader = nullptr;
-            _color = util::Helpers::toColor(args, "color", "TexturedMaterial");
-            _refl = util::ObjectMiddleware::validate<
-                raytracer::object::primitive::RefltT>(args, "reflType",
-                                                      "FlatColor");
-            _emission = util::Helpers::optionalVector(args, "emission",
-                                                      _emission, "FlatColor");
-            _reflectivity = util::ObjectMiddleware::optional<double>(
-                args, "reflectivity", 0.0, "FlatColor");
-            util::Helpers::unsignedDouble(_reflectivity, "reflectivity",
-                                          "FlatColor");
-            _reflectivity = std::min(_reflectivity, 1.0);
-
-            _transparency = util::ObjectMiddleware::optional<double>(
-                args, "transparency", 0.0, "FlatColor");
-            util::Helpers::unsignedDouble(_transparency, "transparency",
-                                          "FlatColor");
-            _transparency = std::min(_transparency, 1.0);
-
-            _ior = util::ObjectMiddleware::optional<double>(args, "ior", 1.0,
-                                                            "FlatColor");
-            util::Helpers::unsignedDouble(_ior, "ior", "FlatColor");
-            if (_ior <= 0.0)
-                _ior = 1.0;
-
-            _roughness = util::ObjectMiddleware::optional<double>(
-                args, "roughness", 0.0, "FlatColor");
-            util::Helpers::unsignedDouble(_roughness, "roughness", "FlatColor");
-            _roughness = std::min(_roughness, 1.0);
-
-            _metalness = util::ObjectMiddleware::optional<double>(
-                args, "metalness", 0.0, "FlatColor");
-            util::Helpers::unsignedDouble(_metalness, "metalness", "FlatColor");
-            _metalness = std::min(_metalness, 1.0);
-
             _texturePath = util::ObjectMiddleware::validate<std::string>(
                 args, "texturePath", "TexturedMaterial");
+            _scale = util::ObjectMiddleware::optional<double>(
+                args, "scale", 1.0, "TexturedMaterial");
+            util::Helpers::unsignedDouble(_scale, "scale", "TexturedMaterial");
+            if (_scale <= 0.0)
+                _scale = 1.0;
+
+            if (!_texturePath.empty()) {
+                preloadTexture(_texturePath);
+            }
         }
+    }
+
+    void TexturedMaterial::preloadTexture(const std::string& path) const {
+        if (!_loadedTextures.contains(path)) {
+            sf::Image img;
+            if (img.loadFromFile(path)) {
+                _loadedTextures[path] = img;
+            } else if (img.loadFromFile(std::filesystem::path(
+                           "assets/images/missingTexture.png"))) {
+                _loadedTextures[path] = img;
+            } else {
+                throw exception::PluginException("Failed to load texture: " +
+                                                 path);
+            }
+        }
+    }
+
+    maths::Color TexturedMaterial::sampleTexture(
+        const std::string& path, const maths::Vector& uv) const {
+        auto it = _loadedTextures.find(path);
+        if (it == _loadedTextures.end()) {
+            try {
+                preloadTexture(path);
+            } catch (const std::exception&) {
+                return maths::Color(255, 0, 255);
+            }
+            it = _loadedTextures.find(path);
+            if (it == _loadedTextures.end())
+                return maths::Color(255, 0, 255);
+        }
+
+        const sf::Image& img = it->second;
+        unsigned int width = img.getSize().x;
+        unsigned int height = img.getSize().y;
+
+        if (width == 0 || height == 0)
+            return maths::Color(255, 0, 0);
+
+        double scaledU = uv.x / _scale;
+        double scaledV = uv.y / _scale;
+
+        double u = scaledU - std::floor(scaledU);
+        double v = scaledV - std::floor(scaledV);
+
+        unsigned int x = static_cast<unsigned int>(u * (width - 1));
+        unsigned int y = static_cast<unsigned int>((1.0 - v) * (height - 1));
+
+        sf::Color sfCol = img.getPixel(x, y);
+        return maths::Color(sfCol.r, sfCol.g, sfCol.b);
     }
 
     primitive::MaterialProperties TexturedMaterial::evaluate(
@@ -69,29 +101,29 @@ namespace raytracer::object::material {
         if (_materialLoader) {
             auto matName = util::ObjectMiddleware::validate<std::string>(
                 data.extraParams, "materialName", "TexturedMaterial");
-            const auto& mat = _materialLoader->materials().at(matName);
+            const auto& mat = _materialLoader->get(matName);
 
             if (mat.mapKd().empty()) {
-                _color = maths::Color(mat.kd().x, mat.kd().y, mat.kd().z);
+                finalColor = maths::Color(mat.kd().x, mat.kd().y, mat.kd().z);
             } else {
-                // TODO : load texture and sample color based on UV coordinates
-                // color = sampleTexture(mat.mapKd(), data.uv);
+                finalColor = sampleTexture(mat.mapKd(), data.uv);
             }
             _emission = mat.ke();
-            _refl = primitive::RefltT::DIFF;  // TODO: derive reflection type
-                                              // from material properties
+            _refl = primitive::RefltT::DIFF;
             _reflectivity = mat.ns() / 1000.0;
             _transparency = mat.d();
             _ior = mat.ni();
+            // I don't know if it's perfect, but gemini told me it was a good
+            // start for roughness and metalness
             _roughness =
-                0.5;  // TODO: derive roughness from material properties
-            _metalness =
-                0.0;  // TODO: derive metalness from material properties
+                std::clamp(1.0 - std::sqrt(mat.ns() / 1000.0), 0.0, 1.0);
+            _metalness = std::clamp(
+                (mat.ks().x + mat.ks().y + mat.ks().z) / 3.0, 0.0, 1.0);
         } else {
-            // TODO: load Texture and sample color based on UV coordinates
-            // _color = sampleTexture(_texturePath, data.uv);
+            finalColor = sampleTexture(_texturePath, data.uv);
         }
-        return {.color = _color,
+
+        return {.color = finalColor,
                 .emission = _emission,
                 .reflType = _refl,
                 .reflectivity = _reflectivity,
