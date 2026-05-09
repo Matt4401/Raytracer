@@ -13,6 +13,12 @@
 #include "object/primitive/IPrimitive.hpp"
 
 namespace raytracer::bvh {
+    struct HitRecord {
+        double t = -1.0;
+        int objectId = -1;
+        std::shared_ptr<IPrimitive> primitive = nullptr;
+    };
+
     class BVHNode : public object::primitive::IPrimitive {
       public:
         using object::primitive::IPrimitive::hits;
