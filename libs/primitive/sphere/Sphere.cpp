@@ -45,7 +45,7 @@ namespace raytracer::object::primitive {
         return _radius;
     }
 
-    double Sphere::hits(const maths::Ray &ray) const {
+    double Sphere::hits(const maths::Ray &ray) {
         const maths::Vector oc = ray.origin - _center;
         const double a = ray.direction.dot(ray.direction);
         const double b = 2.0 * oc.dot(ray.direction);

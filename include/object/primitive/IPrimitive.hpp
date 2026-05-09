@@ -40,6 +40,12 @@ namespace raytracer::object::primitive {
         MaterialProperties material;
     };
 
+    struct HitRecord {
+        double t = -1.0;
+        int objectId = -1;
+        std::shared_ptr<IPrimitive> primitive = nullptr;
+    };
+
     class IPrimitive {
       public:
         using AABoundingBox = maths::AABoundingBox;

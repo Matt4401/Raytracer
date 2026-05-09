@@ -13,12 +13,6 @@
 #include "object/primitive/IPrimitive.hpp"
 
 namespace raytracer::bvh {
-    struct HitRecord {
-        double t = -1.0;
-        int objectId = -1;
-        std::shared_ptr<IPrimitive> primitive = nullptr;
-    };
-
     class BVHNode : public object::primitive::IPrimitive {
       public:
         using object::primitive::IPrimitive::hits;
@@ -29,8 +23,8 @@ namespace raytracer::bvh {
                 std::vector<std::shared_ptr<IPrimitive>> primitives);
         ~BVHNode() override = default;
 
-      bool hits(const maths::Ray &ray,
-          object::primitive::HitRecord &rec) const override;
+        // bool hits(const maths::Ray &ray,
+        //   object::primitive::HitRecord &rec) const override;
         double hits(const maths::Ray &ray) override;
         AABoundingBox boundingBox() override;
 
@@ -50,7 +44,7 @@ namespace raytracer::bvh {
 
         bool isLeaf() const;
         maths::Vector computeCenter() const;
-        bool hitLeaf(const maths::Ray &ray,
-               object::primitive::HitRecord &rec) const;
+        // bool hitLeaf(const maths::Ray &ray,
+        //        object::primitive::HitRecord &rec) const;
     };
 }  // namespace raytracer::bvh

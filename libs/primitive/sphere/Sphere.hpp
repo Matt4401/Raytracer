@@ -28,7 +28,7 @@ namespace raytracer::object::primitive {
         ~Sphere() override = default;
 
         const double &radius() const noexcept;
-        double hits(const maths::Ray &ray) const;
+        double hits(const maths::Ray &ray) override;
         AABoundingBox boundingBox() override;
         SurfaceData surfaceData(const maths::Vector &hitPoint) const override;
 

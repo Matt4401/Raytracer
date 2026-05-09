@@ -40,7 +40,7 @@ namespace raytracer::object::primitive {
         return _normal;
     }
 
-    double Plane::hits(const maths::Ray &ray) const {
+    double Plane::hits(const maths::Ray &ray) {
         const double denom = _normal.dot(ray.direction);
         if (std::abs(denom) < EPS) {
             return -1.0;

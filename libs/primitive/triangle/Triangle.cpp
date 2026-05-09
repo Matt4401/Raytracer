@@ -53,7 +53,7 @@ namespace raytracer::object::primitive {
         return _v2;
     }
 
-    double Triangle::hits(const maths::Ray &ray) const {
+    double Triangle::hits(const maths::Ray &ray) {
         const maths::Vector edge1 = _v1 - _center;
         const maths::Vector edge2 = _v2 - _center;
         const maths::Vector rayCrossE2 = ray.direction.cross(edge2);
