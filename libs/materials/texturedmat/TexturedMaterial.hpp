@@ -12,7 +12,7 @@
 #include <memory>
 #include <string>
 
-#include "MltLoader.hpp"
+#include "MtlLoader.hpp"
 #include "math/Color.hpp"
 #include "math/Vector.hpp"
 #include "object/material/AMaterial.hpp"
@@ -38,6 +38,6 @@ namespace raytracer::object::material {
         double _roughness;
         double _metalness;
         std::string _texturePath;
-        std::unique_ptr<MltLoader> _materialLoader;
+        std::unique_ptr<MtlLoader> _materialLoader;
     };
 }  // namespace raytracer::object::material
