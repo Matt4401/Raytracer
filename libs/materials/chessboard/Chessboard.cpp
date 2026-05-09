@@ -29,7 +29,8 @@ namespace raytracer::object::material {
     }
 
     primitive::MaterialProperties Chessboard::evaluate(
-        const primitive::SurfaceData& data, const maths::Vector& hitPoint) {
+        const primitive::SurfaceData& data,
+        const maths::Vector& hitPoint) const {
         double uCoord = data.uv.x * _frequency;
         double vCoord = data.uv.y * _frequency;
 

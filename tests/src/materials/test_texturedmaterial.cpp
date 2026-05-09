@@ -58,9 +58,10 @@ TEST(MATERIAL, texturedmaterial_basic) {
 
     raytracer::maths::Ray ray(raytracer::maths::Vector(0, 20, 0),
                               raytracer::maths::Vector(0, -1, 0).normalized());
-    auto hitCtx = basePrim->hits(ray);
-    ASSERT_TRUE(hitCtx.has_value());
-    auto finalData = hitCtx->surfaceData;
+    double dist = basePrim->hits(ray);
+    ASSERT_GT(dist, 0);
+    raytracer::maths::Vector hitPoint = ray.origin + ray.direction * dist;
+    auto finalData = basePrim->surfaceData(hitPoint);
 
     ASSERT_GE(static_cast<int>(finalData.material.color.r), 0);
     ASSERT_LE(static_cast<int>(finalData.material.color.r), 255);

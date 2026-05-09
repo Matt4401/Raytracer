@@ -95,41 +95,39 @@ namespace raytracer::object::material {
     primitive::MaterialProperties TexturedMaterial::evaluate(
         const primitive::SurfaceData& data,
         const maths::Vector& hitPoint) const {
-        if (_materialLoader->materials().empty()) {
-            return {};
-        }
-        if (_materialLoader) {
+        if (_materialLoader && !_materialLoader->materials().empty()) {
             auto matName = util::ObjectMiddleware::validate<std::string>(
                 data.extraParams, "materialName", "TexturedMaterial");
             const auto& mat = _materialLoader->get(matName);
 
+            maths::Color finalColor;
             if (mat.mapKd().empty()) {
                 finalColor = maths::Color(mat.kd().x, mat.kd().y, mat.kd().z);
             } else {
                 finalColor = sampleTexture(mat.mapKd(), data.uv);
             }
-            _emission = mat.ke();
-            _refl = primitive::RefltT::DIFF;
-            _reflectivity = mat.ns() / 1000.0;
-            _transparency = mat.d();
-            _ior = mat.ni();
-            // I don't know if it's perfect, but gemini told me it was a good
-            // start for roughness and metalness
-            _roughness =
-                std::clamp(1.0 - std::sqrt(mat.ns() / 1000.0), 0.0, 1.0);
-            _metalness = std::clamp(
-                (mat.ks().x + mat.ks().y + mat.ks().z) / 3.0, 0.0, 1.0);
-        } else {
-            finalColor = sampleTexture(_texturePath, data.uv);
-        }
 
-        return {.color = finalColor,
-                .emission = _emission,
-                .reflType = _refl,
-                .reflectivity = _reflectivity,
-                .transparency = _transparency,
-                .ior = _ior,
-                .roughness = _roughness,
-                .metalness = _metalness};
+            return {
+                .color = finalColor,
+                .emission = mat.ke(),
+                .reflType = primitive::RefltT::DIFF,
+                .reflectivity = mat.ns() / 1000.0,
+                .transparency = mat.d(),
+                .ior = mat.ni(),
+                .roughness =
+                    std::clamp(1.0 - std::sqrt(mat.ns() / 1000.0), 0.0, 1.0),
+                .metalness = std::clamp(
+                    (mat.ks().x + mat.ks().y + mat.ks().z) / 3.0, 0.0, 1.0)};
+        } else {
+            maths::Color finalColor = sampleTexture(_texturePath, data.uv);
+            return {.color = finalColor,
+                    .emission = _emission,
+                    .reflType = _refl,
+                    .reflectivity = _reflectivity,
+                    .transparency = _transparency,
+                    .ior = _ior,
+                    .roughness = _roughness,
+                    .metalness = _metalness};
+        }
     }
 }  // namespace raytracer::object::material

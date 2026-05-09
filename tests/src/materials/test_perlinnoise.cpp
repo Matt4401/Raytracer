@@ -88,9 +88,10 @@ TEST(PerlinNoiseMaterial, IntegratesWithPrimitive) {
     // Use a ray that hits the sphere at (0,10,0)
     raytracer::maths::Ray ray(raytracer::maths::Vector(0, 20, 0),
                               raytracer::maths::Vector(0, -1, 0).normalized());
-    auto hitCtx = basePrim->hits(ray);
-    ASSERT_TRUE(hitCtx.has_value());
-    auto sd = hitCtx->surfaceData;
+    double dist = basePrim->hits(ray);
+    ASSERT_GT(dist, 0);
+    raytracer::maths::Vector hitPoint = ray.origin + ray.direction * dist;
+    auto sd = basePrim->surfaceData(hitPoint);
     EXPECT_GE(sd.material.color.r, 0);
     EXPECT_LE(sd.material.color.r, 255);
     EXPECT_GE(sd.material.color.g, 0);
@@ -143,9 +144,10 @@ TEST(PerlinNoiseMaterial, VariesAcrossPoints) {
         raytracer::maths::Ray r(
             raytracer::maths::Vector(pt.x, pt.y + 10.0, pt.z),
             raytracer::maths::Vector(0, -1, 0).normalized());
-        auto h = basePrim->hits(r);
-        ASSERT_TRUE(h.has_value());
-        auto sd = h->surfaceData;
+        double dist = basePrim->hits(r);
+        ASSERT_GT(dist, 0);
+        raytracer::maths::Vector hitPt = r.origin + r.direction * dist;
+        auto sd = basePrim->surfaceData(hitPt);
         int packed = (static_cast<int>(sd.material.color.r) << 16) |
                      (static_cast<int>(sd.material.color.g) << 8) |
                      (static_cast<int>(sd.material.color.b));

@@ -30,7 +30,8 @@ if (NOT SKIP_INTERNET)
     FetchContent_MakeAvailable(googletest)
     include(GoogleTest)
 
-        find_package(SFML 2.6 COMPONENTS graphics REQUIRED)
+    find_package(SFML 3 REQUIRED COMPONENTS Graphics)
+    target_link_libraries(exception_tests PRIVATE SFML::Graphics)
 
     add_executable(exception_tests
             src/main.cpp
@@ -83,7 +84,7 @@ if (NOT SKIP_INTERNET)
             GTest::gtest
             GTest::gmock
             raytracer_core
-            sfml-graphics
+            SFML::Graphics
     )
 
     target_include_directories(material_tests PRIVATE

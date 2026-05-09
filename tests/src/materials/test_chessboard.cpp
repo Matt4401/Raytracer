@@ -73,9 +73,10 @@ TEST(ChessboardMaterial, BasicTiles) {
     raytracer::maths::Ray ray1(
         raytracer::maths::Vector(0.2, 10.0, 0.0),
         raytracer::maths::Vector(0.0, -1.0, 0.0).normalized());
-    auto hit1 = basePrim->hits(ray1);
-    ASSERT_TRUE(hit1.has_value());
-    auto sd1 = hit1->surfaceData;
+    double dist1 = basePrim->hits(ray1);
+    ASSERT_GT(dist1, 0);
+    raytracer::maths::Vector hitPoint1 = ray1.origin + ray1.direction * dist1;
+    auto sd1 = basePrim->surfaceData(hitPoint1);
     EXPECT_EQ(sd1.material.color.r, 0);
     EXPECT_EQ(sd1.material.color.g, 0);
     EXPECT_EQ(sd1.material.color.b, 0);
@@ -84,9 +85,10 @@ TEST(ChessboardMaterial, BasicTiles) {
     raytracer::maths::Ray ray2(
         raytracer::maths::Vector(1.2, 10.0, 0.0),
         raytracer::maths::Vector(0.0, -1.0, 0.0).normalized());
-    auto hit2 = basePrim->hits(ray2);
-    ASSERT_TRUE(hit2.has_value());
-    auto sd2 = hit2->surfaceData;
+    double dist2 = basePrim->hits(ray2);
+    ASSERT_GT(dist2, 0);
+    raytracer::maths::Vector hitPoint2 = ray2.origin + ray2.direction * dist2;
+    auto sd2 = basePrim->surfaceData(hitPoint2);
     EXPECT_EQ(sd2.material.color.r, 255);
     EXPECT_EQ(sd2.material.color.g, 255);
     EXPECT_EQ(sd2.material.color.b, 255);
