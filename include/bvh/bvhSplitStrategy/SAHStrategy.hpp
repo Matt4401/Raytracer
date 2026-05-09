@@ -7,9 +7,8 @@
 
 #pragma once
 
-#include <bvh/ASplitStrategy.hpp>
-#include <bvh/BVHBuilder.hpp>
-
+#include "bvh/ASplitStrategy.hpp"
+#include "bvh/BVHBuilder.hpp"
 #include "math/AABoundingBox.hpp"
 #include "object/primitive/IPrimitive.hpp"
 
