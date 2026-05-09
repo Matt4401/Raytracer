@@ -46,58 +46,17 @@ namespace raytracer::object::scene {
 
     bool Scene::intersect(const maths::Ray &ray, double &t,
                           int &objectId) const {
-        if (!_bvhRoot) {
-            return false;
+        const double infinity = std::numeric_limits<double>::infinity();
+        t = infinity;
+        objectId = -1;
+        for (size_t i = 0; i < _primitives.size(); ++i) {
+            const double distance = _primitives.at(i)->hits(ray);
+            if (distance >= 0.0 && distance < t) {
+                t = distance;
+                objectId = static_cast<int>(i);
+            }
         }
-
-        primitive::HitRecord rec;
-        if (!_bvhRoot->hits(ray, rec)) {
-            return false;
-        }
-
-        if (rec.objectId < 0 || rec.objectId >=
-                                 static_cast<int>(_primitives.size())) {
-            return false;
-        }
-
-        t = rec.t;
-        objectId = rec.objectId;
-        return true;
-
-        // const double infinity = std::numeric_limits<double>::infinity();
-        // t = infinity;
-        // objectId = -1;
-        // for (size_t i = 0; i < _primitives.size(); ++i) {
-        //     const double distance = _primitives.at(i)->hits(ray);
-        //     if (distance >= 0.0 && distance < t) {
-        //         t = distance;
-        //         objectId = static_cast<int>(i);
-        //     }
-        // }
-        // return objectId != -1;
-
-
-        // const double infinity = std::numeric_limits<double>::infinity();
-        // t = infinity;
-        // objectId = -1;
-        //
-        // primitive::HitRecord bestRec;
-        // bool hitAnything = false;
-        //
-        // // 1. Utilise un itérateur ou la boucle "range-based"
-        // // 2. Évite .at()
-        // for (size_t i = 0; i < _primitives.size(); ++i) {
-        //     primitive::HitRecord currentRec;
-        //     // Appel direct à la fonction virtuelle pure, sans passer par le wrapper
-        //     if (_primitives[i]->hits(ray, currentRec)) {
-        //         if (currentRec.t < t) {
-        //             t = currentRec.t;
-        //             objectId = static_cast<int>(i);
-        //             hitAnything = true;
-        //         }
-        //     }
-        // }
-        // return hitAnything;
+        return objectId != -1;
     }
 
     maths::Vector Scene::radiance(const maths::Ray &ray, int depth,

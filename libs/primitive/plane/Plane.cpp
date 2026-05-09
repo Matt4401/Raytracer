@@ -40,18 +40,13 @@ namespace raytracer::object::primitive {
         return _normal;
     }
 
-    bool Plane::hits(const maths::Ray &ray, HitRecord &rec) const {
+    double Plane::hits(const maths::Ray &ray) const {
         const double denom = _normal.dot(ray.direction);
         if (std::abs(denom) < EPS) {
-            return false;
+            return -1.0;
         }
         const double t = (_center - ray.origin).dot(_normal) / denom;
-        if (t >= EPS) {
-            rec.t = t;
-            rec.objectId = this->getId();
-            return true;
-        }
-        return false;
+        return (t >= EPS) ? t : -1.0;
     }
 
     IPrimitive::AABoundingBox Plane::boundingBox() {

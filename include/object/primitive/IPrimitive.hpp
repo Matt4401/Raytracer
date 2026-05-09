@@ -40,12 +40,6 @@ namespace raytracer::object::primitive {
         MaterialProperties material;
     };
 
-    struct HitRecord {
-        double t = -1.0;
-        int objectId = -1;
-        std::shared_ptr<IPrimitive> primitive = nullptr;
-    };
-
     class IPrimitive {
       public:
         using AABoundingBox = maths::AABoundingBox;
@@ -65,13 +59,7 @@ namespace raytracer::object::primitive {
          * intersection with the primitive, or a specific value if no
          * intersection occurs
          */
-        virtual bool hits(const maths::Ray &ray,
-                          HitRecord &rec) const = 0;
-
-        virtual double hits(const maths::Ray &ray) {
-            HitRecord rec;
-            return hits(ray, rec) ? rec.t : -1.0;
-        }
+        virtual double hits(const maths::Ray &ray) = 0;
 
         /**
          * @brief Get surface data at hit point (normal, uv, etc.) and evaluates
