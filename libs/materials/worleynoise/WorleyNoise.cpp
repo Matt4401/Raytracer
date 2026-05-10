@@ -16,8 +16,10 @@ namespace raytracer::object::material {
     }
 
     primitive::MaterialProperties WorleyNoise::evaluate(
-        const primitive::SurfaceData& data, const maths::Vector& hitPoint) const {
-        auto [F1, F2] = getWorley(hitPoint.x * _scale, hitPoint.y * _scale, hitPoint.z * _scale);
+        const primitive::SurfaceData& data,
+        const maths::Vector& hitPoint) const {
+        auto [F1, F2] = getWorley(hitPoint.x * _scale, hitPoint.y * _scale,
+                                  hitPoint.z * _scale);
 
         double n = std::clamp(F1, 0.0, 1.0);
 
