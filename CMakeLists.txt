@@ -45,6 +45,7 @@ set(SRCS
         src/object/primitive/APrimitive.cpp
         src/object/material/ABasicMaterial.cpp
         src/object/material/APerlinBasedMaterial.cpp
+        src/object/material/AWorleyBasedMaterial.cpp
         src/util/middleware/Helpers.cpp
         src/plugin/PluginManager.cpp
         src/plugin/ObjectFactory.cpp
