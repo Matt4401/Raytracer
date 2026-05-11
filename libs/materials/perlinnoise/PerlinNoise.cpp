@@ -24,7 +24,7 @@ namespace raytracer::object::material {
 
         const double n = (noise + 1.0) * 0.5;
 
-        maths::Color finalColor =
+        const maths::Color finalColor =
             raytracer::materials::helpers::interpolateColors(_color1, _color2,
                                                              n);
 

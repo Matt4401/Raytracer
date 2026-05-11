@@ -28,7 +28,7 @@ namespace raytracer::object::material {
             n = edgeDistance * 10.0;
         }
 
-        maths::Color finalColor =
+        const maths::Color finalColor =
             raytracer::materials::helpers::interpolateColors(_color1, _color2,
                                                              n);
 

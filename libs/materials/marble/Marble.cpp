@@ -26,7 +26,7 @@ namespace raytracer::object::material {
         double marbleValue = std::sin(basePattern + noise * _turbulence);
         double n = (marbleValue + 1.0) * 0.5;
 
-        maths::Color finalColor =
+        const maths::Color finalColor =
             raytracer::materials::helpers::interpolateColors(_color1, _color2,
                                                              n);
 
