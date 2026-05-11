@@ -61,11 +61,21 @@ namespace raytracer::object::primitive {
          * the ray intersects with the primitive, returning a double value that
          * represents the distance from the ray's origin to the point of
          * intersection.
+         * @param record
          * @return the distance from the ray's origin to the point of
          * intersection with the primitive, or a specific value if no
          * intersection occurs
          */
-        virtual double hits(const maths::Ray &ray) = 0;
+        virtual bool hits(const maths::Ray &ray,
+                          HitRecord &record) const = 0;
+
+        // ONLY USED FOR PRIMITIVES TESTS
+        virtual double hits(const maths::Ray &ray) const {
+            if (HitRecord record; hits(ray, record)) {
+                return record.t;
+            }
+            return -1.0;
+        }
 
         /**
          * @brief Get surface data at hit point (normal, uv, etc.) and evaluates
@@ -92,6 +102,13 @@ namespace raytracer::object::primitive {
 
         virtual const std::string &name() const noexcept = 0;
         virtual maths::Vector center() const noexcept = 0;
-    };
 
+        // SECURITY GUARDS
+        virtual void setId(int id) {
+            (void)id;
+        }
+        virtual int getId() const {
+            return -1;
+        }
+    };
 }  // namespace raytracer::object::primitive

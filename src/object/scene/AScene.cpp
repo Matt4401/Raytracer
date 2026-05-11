@@ -128,6 +128,9 @@ namespace raytracer::object::scene {
         if (strategy.empty()) {
             strategy = "sah";
         }
+        for (std::size_t i = 0; i < _primitives.size(); ++i) {
+            _primitives[i]->setId(static_cast<int>(i));
+        }
         auto builder =
             bvh::BVHBuilder<raytracer::bvh::ISplitStrategy>(strategy);
         _bvhRoot = builder.build(_primitives);
