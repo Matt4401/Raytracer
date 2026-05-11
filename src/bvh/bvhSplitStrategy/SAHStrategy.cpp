@@ -17,10 +17,17 @@ namespace raytracer::bvh {
             const double c = (res.axis == Axis::X)   ? obj->center().x
                              : (res.axis == Axis::Y) ? obj->center().y
                                                      : obj->center().z;
-            const double offset =
-                (res.axis == Axis::X)   ? (c - nodeBox.x) / nodeBox.w
-                : (res.axis == Axis::Y) ? (c - nodeBox.y) / nodeBox.h
-                                        : (c - nodeBox.z) / nodeBox.d;
+            const double denom =
+                (res.axis == Axis::X)   ? nodeBox.w
+                : (res.axis == Axis::Y) ? nodeBox.h
+                                        : nodeBox.d;
+            const double base =
+                (res.axis == Axis::X)   ? nodeBox.x
+                : (res.axis == Axis::Y) ? nodeBox.y
+                                        : nodeBox.z;
+            const double offset = (denom > 0.0 && std::isfinite(denom))
+                                      ? (c - base) / denom
+                                      : 0.0;
             size_t b = static_cast<size_t>(N_BUCKETS * offset);
 
             if (b >= N_BUCKETS)
@@ -65,6 +72,11 @@ namespace raytracer::bvh {
         const size_t nObjs = objs.size();
 
         res.axis = longestAxis(nodeBox);
+        if (nodeBox.surfaceData() <= 0.0) {
+            res.shouldSplit = false;
+            res.splitPos = 0;
+            return res;
+        }
         if (!hasEnoughPrimitives(nObjs)) {
             res.shouldSplit = false;
             res.splitPos = 0;
