@@ -110,9 +110,13 @@ namespace raytracer::maths {
                     int cellX = cx + i;
                     int cellY = cy + j;
                     int cellZ = cz + k;
+                    int maskedCellX = cellX & 255;
+                    int maskedCellY = cellY & 255;
+                    int maskedCellZ = cellZ & 255;
 
                     int hash =
-                        perm[(cellX + perm[(cellY + perm[cellZ & 255]) & 255]) &
+                        perm[(maskedCellX +
+                              perm[(maskedCellY + perm[maskedCellZ]) & 255]) &
                              255];
 
                     double ptX = (hash & 15) / 15.0;
