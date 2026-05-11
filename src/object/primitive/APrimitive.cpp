@@ -15,4 +15,12 @@ namespace raytracer::object::primitive {
     maths::Vector APrimitive::center() const noexcept {
         return _center;
     }
+
+    void APrimitive::setId(const int id) {
+        _id = id;
+    }
+
+    int APrimitive::getId() const {
+        return _id;
+    }
 }  // namespace raytracer::object::primitive
