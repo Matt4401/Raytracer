@@ -9,6 +9,16 @@
 
 namespace raytracer::maths {
     void AABoundingBox::extend(const AABoundingBox &other) {
+        if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z) ||
+            !std::isfinite(w) || !std::isfinite(h) || !std::isfinite(d)) {
+            *this = other;
+            return;
+        }
+        if (!std::isfinite(other.x) || !std::isfinite(other.y) ||
+            !std::isfinite(other.z) || !std::isfinite(other.w) ||
+            !std::isfinite(other.h) || !std::isfinite(other.d)) {
+            return;
+        }
         const double minX = std::min(x, other.x);
         const double minY = std::min(y, other.y);
         const double minZ = std::min(z, other.z);
