@@ -30,8 +30,19 @@ namespace raytracer::bvh {
         }
         ~BVHBuilder() = default;
 
-        static constexpr std::size_t MIN_OBJECTS_PER_LEAF = 2;
-
+        /**
+         * Builds a bounding volume hierarchy (BVH) from a given vector of
+         * primitive objects. The function takes in a vector of shared pointers
+         * to primitive objects and constructs a BVH that optimizes ray tracing
+         * performance by recursively partitioning the primitives based on their
+         * spatial distribution.
+         * @param objects a vector of shared pointers to primitive objects that
+         * are to be organized into a bounding volume hierarchy (BVH). Each
+         * primitive object represents a geometric shape or entity in the scene,
+         * such as a triangle, sphere, or other 3D object.
+         * @return a shared pointer to an IPrimitive object that represents the
+         * root of the constructed BVH.
+         */
         std::shared_ptr<object::primitive::IPrimitive> build(
             const PrimitiveVec& objects) {
             maths::AABoundingBox box = calculateGlobalBox(objects);
@@ -48,6 +59,8 @@ namespace raytracer::bvh {
             auto rightChild = build(rightObjs);
             return std::make_shared<BVHNode>(box, leftChild, rightChild);
         }
+
+        static constexpr std::size_t MIN_OBJECTS_PER_LEAF = 2;
 
       private:
         std::unique_ptr<Strategy> _strategy;
