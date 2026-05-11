@@ -22,8 +22,9 @@ namespace raytracer::object::material {
         primitive::MaterialProperties evaluate(
             const primitive::SurfaceData& data,
             const maths::Vector& hitPoint) const override;
+
       private:
-          double _offset;
-          double _threshold;
+        double _offset;
+        double _threshold;
     };
 }  // namespace raytracer::object::material

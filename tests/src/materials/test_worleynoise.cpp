@@ -24,11 +24,11 @@
 static std::map<std::string, std::any> makeWorleyArgs() {
     return std::map<std::string, std::any>{
         {"color1", std::map<std::string, std::any>{{"r", (unsigned char)0},
-                                                    {"g", (unsigned char)0},
-                                                    {"b", (unsigned char)0}}},
+                                                   {"g", (unsigned char)0},
+                                                   {"b", (unsigned char)0}}},
         {"color2", std::map<std::string, std::any>{{"r", (unsigned char)255},
-                                                    {"g", (unsigned char)255},
-                                                    {"b", (unsigned char)255}}},
+                                                   {"g", (unsigned char)255},
+                                                   {"b", (unsigned char)255}}},
         {"scale", 0.5},
         {"reflType", raytracer::object::primitive::RefltT::DIFF}};
 }
@@ -46,7 +46,9 @@ TEST(WorleyNoiseMaterial, Builds) {
     auto args = makeWorleyArgs();
     auto matObj = objFactory.build("worley_noise", args);
     ASSERT_NE(matObj, nullptr);
-    auto matPtr = std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(matObj);
+    auto matPtr =
+        std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(
+            matObj);
     ASSERT_NE(matPtr, nullptr);
 }
 
@@ -63,16 +65,21 @@ TEST(WorleyNoiseMaterial, IntegratesWithPrimitive) {
     auto args = makeWorleyArgs();
     auto matObj = objFactory.build("worley_noise", args);
     ASSERT_NE(matObj, nullptr);
-    auto matPtr = std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(matObj);
+    auto matPtr =
+        std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(
+            matObj);
     ASSERT_NE(matPtr, nullptr);
 
     std::map<std::string, std::any> sphereArgs = {
         {"material", matPtr},
-        {"center", std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
+        {"center",
+         std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
         {"radius", 10.0}};
     auto sphere = objFactory.build("sphere", sphereArgs);
     ASSERT_NE(sphere, nullptr);
-    auto basePrim = std::dynamic_pointer_cast<raytracer::object::primitive::IPrimitive>(sphere);
+    auto basePrim =
+        std::dynamic_pointer_cast<raytracer::object::primitive::IPrimitive>(
+            sphere);
     ASSERT_NE(basePrim, nullptr);
 
     auto sd = basePrim->surfaceData(raytracer::maths::Vector(0, 10, 0));
@@ -97,16 +104,21 @@ TEST(WorleyNoiseMaterial, VariesAcrossPoints) {
     auto args = makeWorleyArgs();
     auto matObj = objFactory.build("worley_noise", args);
     ASSERT_NE(matObj, nullptr);
-    auto matPtr = std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(matObj);
+    auto matPtr =
+        std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(
+            matObj);
     ASSERT_NE(matPtr, nullptr);
 
     std::map<std::string, std::any> sphereArgs = {
         {"material", matPtr},
-        {"center", std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
+        {"center",
+         std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
         {"radius", 10.0}};
     auto sphere = objFactory.build("sphere", sphereArgs);
     ASSERT_NE(sphere, nullptr);
-    auto basePrim = std::dynamic_pointer_cast<raytracer::object::primitive::IPrimitive>(sphere);
+    auto basePrim =
+        std::dynamic_pointer_cast<raytracer::object::primitive::IPrimitive>(
+            sphere);
     ASSERT_NE(basePrim, nullptr);
 
     std::vector<raytracer::maths::Vector> samples;

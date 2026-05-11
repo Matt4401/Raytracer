@@ -16,8 +16,8 @@
 namespace raytracer::object::material {
     TuringPattern::TuringPattern(const std::map<std::string, std::any>& args)
         : APerlinBasedMaterial(args) {
-        _offset = util::ObjectMiddleware::optional<double>(
-            args, "offset", 0.0, "TuringPattern");
+        _offset = util::ObjectMiddleware::optional<double>(args, "offset", 0.0,
+                                                           "TuringPattern");
         _threshold = util::ObjectMiddleware::optional<double>(
             args, "threshold", 0.05, "TuringPattern");
         util::Helpers::unsignedDouble(_threshold, "threshold", "TuringPattern");
@@ -28,7 +28,8 @@ namespace raytracer::object::material {
     primitive::MaterialProperties TuringPattern::evaluate(
         const primitive::SurfaceData& data,
         const maths::Vector& hitPoint) const {
-        double noise = calculateFBM(hitPoint.x * _scale, hitPoint.y * _scale, hitPoint.z * _scale);
+        double noise = calculateFBM(hitPoint.x * _scale, hitPoint.y * _scale,
+                                    hitPoint.z * _scale);
         double dist = std::abs(noise - _offset);
 
         double edgeSoftness = 0.03;
@@ -46,10 +47,18 @@ namespace raytracer::object::material {
         }
 
         maths::Color finalColor = maths::Color(
-            static_cast<unsigned char>(std::clamp(static_cast<int>(std::round(_color1.r * (1 - n) + _color2.r * n)), 0, 255)),
-            static_cast<unsigned char>(std::clamp(static_cast<int>(std::round(_color1.g * (1 - n) + _color2.g * n)), 0, 255)),
-            static_cast<unsigned char>(std::clamp(static_cast<int>(std::round(_color1.b * (1 - n) + _color2.b * n)), 0, 255))
-        );
+            static_cast<unsigned char>(
+                std::clamp(static_cast<int>(
+                               std::round(_color1.r * (1 - n) + _color2.r * n)),
+                           0, 255)),
+            static_cast<unsigned char>(
+                std::clamp(static_cast<int>(
+                               std::round(_color1.g * (1 - n) + _color2.g * n)),
+                           0, 255)),
+            static_cast<unsigned char>(
+                std::clamp(static_cast<int>(
+                               std::round(_color1.b * (1 - n) + _color2.b * n)),
+                           0, 255)));
 
         return {.color = finalColor,
                 .emission = _emission,
