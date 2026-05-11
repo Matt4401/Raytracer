@@ -24,18 +24,17 @@ namespace raytracer::materials::helpers {
                                           const maths::Color& color2,
                                           double factor) {
         return maths::Color(
-            static_cast<unsigned char>(
-                std::clamp(static_cast<int>(std::round(
-                               color1.r * (1.0 - factor) + color2.r * factor)),
-                           0, 255)),
-            static_cast<unsigned char>(
-                std::clamp(static_cast<int>(std::round(
-                               color1.g * (1.0 - factor) + color2.g * factor)),
-                           0, 255)),
-            static_cast<unsigned char>(
-                std::clamp(
-                    static_cast<int>(std::round(
-                        color1.b * (1.0 - factor) + color2.b * factor)),
-                    0, 255)));
+            static_cast<unsigned char>(std::clamp(
+                static_cast<int>(
+                    std::round(color1.r * (1.0 - factor) + color2.r * factor)),
+                0, 255)),
+            static_cast<unsigned char>(std::clamp(
+                static_cast<int>(
+                    std::round(color1.g * (1.0 - factor) + color2.g * factor)),
+                0, 255)),
+            static_cast<unsigned char>(std::clamp(
+                static_cast<int>(
+                    std::round(color1.b * (1.0 - factor) + color2.b * factor)),
+                0, 255)));
     }
 }  // namespace raytracer::materials::helpers

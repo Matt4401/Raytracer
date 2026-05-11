@@ -22,11 +22,11 @@
 static std::map<std::string, std::any> makeTuringArgs() {
     return std::map<std::string, std::any>{
         {"color1", std::map<std::string, std::any>{{"r", (unsigned char)50},
-                                                    {"g", (unsigned char)50},
-                                                    {"b", (unsigned char)50}}},
+                                                   {"g", (unsigned char)50},
+                                                   {"b", (unsigned char)50}}},
         {"color2", std::map<std::string, std::any>{{"r", (unsigned char)200},
-                                                    {"g", (unsigned char)200},
-                                                    {"b", (unsigned char)200}}},
+                                                   {"g", (unsigned char)200},
+                                                   {"b", (unsigned char)200}}},
         {"scale", 0.05},
         {"octaves", 4},
         {"persistence", 0.6},
@@ -48,7 +48,9 @@ TEST(TuringPatternMaterial, Builds) {
     auto args = makeTuringArgs();
     auto matObj = objFactory.build("turing_pattern", args);
     ASSERT_NE(matObj, nullptr);
-    auto matPtr = std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(matObj);
+    auto matPtr =
+        std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(
+            matObj);
     ASSERT_NE(matPtr, nullptr);
 }
 
@@ -65,16 +67,21 @@ TEST(TuringPatternMaterial, IntegratesWithPrimitive) {
     auto args = makeTuringArgs();
     auto matObj = objFactory.build("turing_pattern", args);
     ASSERT_NE(matObj, nullptr);
-    auto matPtr = std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(matObj);
+    auto matPtr =
+        std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(
+            matObj);
     ASSERT_NE(matPtr, nullptr);
 
     std::map<std::string, std::any> sphereArgs = {
         {"material", matPtr},
-        {"center", std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
+        {"center",
+         std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
         {"radius", 10.0}};
     auto sphere = objFactory.build("sphere", sphereArgs);
     ASSERT_NE(sphere, nullptr);
-    auto basePrim = std::dynamic_pointer_cast<raytracer::object::primitive::IPrimitive>(sphere);
+    auto basePrim =
+        std::dynamic_pointer_cast<raytracer::object::primitive::IPrimitive>(
+            sphere);
     ASSERT_NE(basePrim, nullptr);
 
     auto sd = basePrim->surfaceData(raytracer::maths::Vector(0, 10, 0));

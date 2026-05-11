@@ -46,8 +46,9 @@ namespace raytracer::object::material {
             n = 1.0 - (t * t * (3.0 - 2.0 * t));
         }
 
-        maths::Color finalColor = raytracer::materials::helpers::interpolateColors(
-            _color1, _color2, n);
+        maths::Color finalColor =
+            raytracer::materials::helpers::interpolateColors(_color1, _color2,
+                                                             n);
 
         return {.color = finalColor,
                 .emission = _emission,

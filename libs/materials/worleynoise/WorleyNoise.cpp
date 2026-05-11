@@ -27,8 +27,9 @@ namespace raytracer::object::material {
         if (F2 - F1 < 0.02)
             n = 0.0;
 
-        maths::Color finalColor = raytracer::materials::helpers::interpolateColors(
-            _color1, _color2, n);
+        maths::Color finalColor =
+            raytracer::materials::helpers::interpolateColors(_color1, _color2,
+                                                             n);
 
         return {.color = finalColor,
                 .emission = _emission,

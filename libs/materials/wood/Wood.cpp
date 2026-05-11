@@ -31,8 +31,9 @@ namespace raytracer::object::material {
         double n = (woodValue + 1.0) * 0.5;
         n = std::pow(n, 0.7);
 
-        maths::Color finalColor = raytracer::materials::helpers::interpolateColors(
-            _color1, _color2, n);
+        maths::Color finalColor =
+            raytracer::materials::helpers::interpolateColors(_color1, _color2,
+                                                             n);
 
         return {.color = finalColor,
                 .emission = _emission,
