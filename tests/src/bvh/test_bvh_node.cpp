@@ -24,16 +24,19 @@ using raytracer::tests::bvh::makePrimitive;
 namespace {
     std::shared_ptr<raytracer::object::primitive::IPrimitive> makeLeafPrimitive(
         const std::string &name, const AABoundingBox &box, const Vector &center,
-        double hitT) {
-        return makePrimitive(name, box, center, hitT);
+        double hitT, int id) {
+        return makePrimitive(name, box, center, hitT, id);
     }
 }  // namespace
 
 TEST(BVH_NODE, leaf_returns_closest_hit) {
     std::vector<std::shared_ptr<raytracer::object::primitive::IPrimitive>> primitives = {
-        makeLeafPrimitive("far", {0, 0, 0, 1, 1, 1}, Vector(0.5, 0.5, 0.5), 4.0),
-        makeLeafPrimitive("near", {0, 0, 0, 1, 1, 1}, Vector(0.5, 0.5, 0.5), 2.0),
-        makeLeafPrimitive("mid", {0, 0, 0, 1, 1, 1}, Vector(0.5, 0.5, 0.5), 3.0),
+        makeLeafPrimitive("far", {0, 0, 0, 1, 1, 1}, Vector(0.5, 0.5, 0.5), 4.0,
+                          0),
+        makeLeafPrimitive("near", {0, 0, 0, 1, 1, 1}, Vector(0.5, 0.5, 0.5), 2.0,
+                          1),
+        makeLeafPrimitive("mid", {0, 0, 0, 1, 1, 1}, Vector(0.5, 0.5, 0.5), 3.0,
+                          2),
     };
     BVHNode node({0, 0, 0, 1, 1, 1}, primitives);
     Ray ray(Vector(0.5, 0.5, -1), Vector(0, 0, 1));
@@ -42,15 +45,14 @@ TEST(BVH_NODE, leaf_returns_closest_hit) {
 
     ASSERT_TRUE(node.hits(ray, record));
     ASSERT_DOUBLE_EQ(record.t, 2.0);
-    ASSERT_NE(record.primitive, nullptr);
-    ASSERT_EQ(record.primitive->name(), "near");
+    ASSERT_EQ(record.objectId, 1);
 }
 
 TEST(BVH_NODE, internal_returns_closest_child_hit) {
     auto left = makeLeafPrimitive("left", {0, 0, 0, 1, 1, 1}, Vector(0.5, 0.5, 0.5),
-                                  3.0);
+                                  3.0, 10);
     auto right = makeLeafPrimitive("right", {0, 0, 0, 1, 1, 1}, Vector(0.5, 0.5, 0.5),
-                                   1.0);
+                                   1.0, 11);
     BVHNode node({0, 0, 0, 1, 1, 1}, left, right);
     Ray ray(Vector(0.5, 0.5, -1), Vector(0, 0, 1));
 
@@ -58,13 +60,12 @@ TEST(BVH_NODE, internal_returns_closest_child_hit) {
 
     ASSERT_TRUE(node.hits(ray, record));
     ASSERT_DOUBLE_EQ(record.t, 1.0);
-    ASSERT_NE(record.primitive, nullptr);
-    ASSERT_EQ(record.primitive->name(), "right");
+    ASSERT_EQ(record.objectId, 11);
 }
 
 TEST(BVH_NODE, bbox_miss_returns_false_and_scalar_hit_is_minus_one) {
     auto primitive = makeLeafPrimitive("single", {0, 0, 0, 1, 1, 1}, Vector(0.5, 0.5, 0.5),
-                                       1.0);
+                                       1.0, 5);
     BVHNode node({0, 0, 0, 1, 1, 1}, std::vector<std::shared_ptr<raytracer::object::primitive::IPrimitive>>{primitive});
     Ray ray(Vector(5, 5, 5), Vector(1, 0, 0));
 

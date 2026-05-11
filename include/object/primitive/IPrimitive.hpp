@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <memory>
 #include <optional>
 #include <string>
 #include <unordered_map>
@@ -43,7 +42,6 @@ namespace raytracer::object::primitive {
     struct HitRecord {
         double t = -1.0;
         int objectId = -1;
-        std::shared_ptr<IPrimitive> primitive = nullptr;
     };
 
     class IPrimitive {

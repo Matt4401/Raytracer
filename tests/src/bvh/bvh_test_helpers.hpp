@@ -20,12 +20,15 @@
 #include "object/primitive/IPrimitive.hpp"
 
 namespace raytracer::tests::bvh {
-    class TestPrimitive final : public object::primitive::IPrimitive,
-                                public std::enable_shared_from_this<TestPrimitive> {
+    class TestPrimitive final : public object::primitive::IPrimitive {
       public:
         TestPrimitive(std::string name, maths::AABoundingBox box,
-                      maths::Vector center, double hitT)
-            : _name(std::move(name)), _box(box), _center(center), _hitT(hitT) {}
+                      maths::Vector center, double hitT, int id = -1)
+            : _name(std::move(name)),
+              _box(box),
+              _center(center),
+              _hitT(hitT),
+              _id(id) {}
 
         bool hits(const maths::Ray &,
                   object::primitive::HitRecord &record) const override {
@@ -33,7 +36,7 @@ namespace raytracer::tests::bvh {
                 return false;
             }
             record.t = _hitT;
-            record.primitive = const_cast<TestPrimitive *>(this)->shared_from_this();
+            record.objectId = _id;
             return true;
         }
 
@@ -54,17 +57,26 @@ namespace raytracer::tests::bvh {
             return _center;
         }
 
+        void setId(int id) override {
+            _id = id;
+        }
+
+        int getId() const override {
+            return _id;
+        }
+
       private:
         std::string _name;
         maths::AABoundingBox _box;
         maths::Vector _center;
         double _hitT;
+        int _id = -1;
     };
 
     inline std::shared_ptr<TestPrimitive> makePrimitive(
         const std::string &name, const maths::AABoundingBox &box,
-        const maths::Vector &center, double hitT) {
-        return std::make_shared<TestPrimitive>(name, box, center, hitT);
+        const maths::Vector &center, double hitT, int id = -1) {
+        return std::make_shared<TestPrimitive>(name, box, center, hitT, id);
     }
 
     class ExposedASplitStrategy : public raytracer::bvh::ASplitStrategy {

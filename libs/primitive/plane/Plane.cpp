@@ -49,7 +49,6 @@ namespace raytracer::object::primitive {
         if (t >= EPS) {
             record.t = t;
             record.objectId = getId();
-            record.primitive.reset();
             return true;
         }
         return false;

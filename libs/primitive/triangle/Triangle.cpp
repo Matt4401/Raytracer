@@ -82,7 +82,6 @@ namespace raytracer::object::primitive {
         }
         record.t = t;
         record.objectId = getId();
-        record.primitive.reset();
         return true;
     }
 
