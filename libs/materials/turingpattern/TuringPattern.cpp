@@ -7,9 +7,9 @@
 
 #include "TuringPattern.hpp"
 
-#include <algorithm>
 #include <cmath>
 
+#include "../ColorHelpers.hpp"
 #include "util/middleware/Helpers.hpp"
 #include "util/middleware/ObjectMiddleware.hpp"
 
@@ -46,19 +46,8 @@ namespace raytracer::object::material {
             n = 1.0 - (t * t * (3.0 - 2.0 * t));
         }
 
-        maths::Color finalColor = maths::Color(
-            static_cast<unsigned char>(
-                std::clamp(static_cast<int>(
-                               std::round(_color1.r * (1 - n) + _color2.r * n)),
-                           0, 255)),
-            static_cast<unsigned char>(
-                std::clamp(static_cast<int>(
-                               std::round(_color1.g * (1 - n) + _color2.g * n)),
-                           0, 255)),
-            static_cast<unsigned char>(
-                std::clamp(static_cast<int>(
-                               std::round(_color1.b * (1 - n) + _color2.b * n)),
-                           0, 255)));
+        maths::Color finalColor = raytracer::materials::helpers::interpolateColors(
+            _color1, _color2, n);
 
         return {.color = finalColor,
                 .emission = _emission,
