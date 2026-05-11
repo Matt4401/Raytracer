@@ -74,6 +74,8 @@ if (NOT SKIP_INTERNET)
             ${CMAKE_SOURCE_DIR}/libs/materials/worleynoise/WorleyNoise.cpp
             src/materials/test_crackeddirt.cpp
             ${CMAKE_SOURCE_DIR}/libs/materials/crackeddirt/CrackedDirt.cpp
+            src/materials/test_turingpattern.cpp
+            ${CMAKE_SOURCE_DIR}/libs/materials/turingpattern/TuringPattern.cpp
             ${CMAKE_SOURCE_DIR}/src/plugin/ObjectFactory.cpp
             ${CMAKE_SOURCE_DIR}/src/plugin/PluginManager.cpp
     )
