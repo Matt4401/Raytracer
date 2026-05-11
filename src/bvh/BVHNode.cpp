@@ -43,7 +43,8 @@ namespace raytracer::bvh {
                     continue;
                 }
                 if (object::primitive::HitRecord tempRecord;
-                    primitive->hits(ray, tempRecord) && tempRecord.t < closestSoFar) {
+                    primitive->hits(ray, tempRecord) &&
+                    tempRecord.t < closestSoFar) {
                     closestSoFar = tempRecord.t;
                     hitRecord = std::move(tempRecord);
                     hitAnything = true;
@@ -58,7 +59,8 @@ namespace raytracer::bvh {
             _right ? _right->boundingBox().intersects(ray) : -1.0;
         const std::shared_ptr<IPrimitive> first =
             (tLeft <= tRight && tLeft >= 0.0) ? _left : _right;
-        const std::shared_ptr<IPrimitive> second = (first == _left) ? _right : _left;
+        const std::shared_ptr<IPrimitive> second =
+            (first == _left) ? _right : _left;
         const double tFirst = (first == _left) ? tLeft : tRight;
         const double tSecond = (first == _left) ? tRight : tLeft;
         bool hitAny = false;

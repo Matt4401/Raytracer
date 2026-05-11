@@ -17,14 +17,12 @@ namespace raytracer::bvh {
             const double c = (res.axis == Axis::X)   ? obj->center().x
                              : (res.axis == Axis::Y) ? obj->center().y
                                                      : obj->center().z;
-            const double denom =
-                (res.axis == Axis::X)   ? nodeBox.w
-                : (res.axis == Axis::Y) ? nodeBox.h
-                                        : nodeBox.d;
-            const double base =
-                (res.axis == Axis::X)   ? nodeBox.x
-                : (res.axis == Axis::Y) ? nodeBox.y
-                                        : nodeBox.z;
+            const double denom = (res.axis == Axis::X)   ? nodeBox.w
+                                 : (res.axis == Axis::Y) ? nodeBox.h
+                                                         : nodeBox.d;
+            const double base = (res.axis == Axis::X)   ? nodeBox.x
+                                : (res.axis == Axis::Y) ? nodeBox.y
+                                                        : nodeBox.z;
             const double offset = (denom > 0.0 && std::isfinite(denom))
                                       ? (c - base) / denom
                                       : 0.0;

@@ -19,6 +19,8 @@
 namespace raytracer::object::primitive {
     class Sphere : public APrimitive {
       public:
+        using object::primitive::IPrimitive::hits;
+
         explicit Sphere(const std::map<std::string, std::any> &args);
         explicit Sphere(const maths::Vector &vector, double radius);
         explicit Sphere(

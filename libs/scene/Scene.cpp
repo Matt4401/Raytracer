@@ -8,12 +8,9 @@
 #include "Scene.hpp"
 
 #include <algorithm>
+#include <bvh/BVHBuilder.hpp>
 #include <iterator>
 #include <limits>
-#include <bvh/BVHBuilder.hpp>
-#include <bvh/ISplitStrategy.hpp>
-
-#include "bvh/BVHNode.hpp"
 
 #include "object/IScene.hpp"
 #include "object/primitive/IPrimitive.hpp"

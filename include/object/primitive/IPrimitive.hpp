@@ -64,8 +64,7 @@ namespace raytracer::object::primitive {
          * intersection with the primitive, or a specific value if no
          * intersection occurs
          */
-        virtual bool hits(const maths::Ray &ray,
-                          HitRecord &record) const = 0;
+        virtual bool hits(const maths::Ray &ray, HitRecord &record) const = 0;
 
         // ONLY USED FOR PRIMITIVES TESTS
         virtual double hits(const maths::Ray &ray) const {
