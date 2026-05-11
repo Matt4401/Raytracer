@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** Raytracer
 ** File description:
-** FlatColor
+** CrackedDirt
 */
 
 #pragma once
@@ -11,20 +11,16 @@
 #include <map>
 #include <string>
 
-#include "math/Color.hpp"
-#include "object/material/ABasicMaterial.hpp"
+#include "object/material/AWorleyBasedMaterial.hpp"
 
 namespace raytracer::object::material {
-    class FlatColor : public ABasicMaterial {
+    class CrackedDirt : public AWorleyBasedMaterial {
       public:
-        explicit FlatColor(const std::map<std::string, std::any>& args);
-        ~FlatColor() override = default;
+        explicit CrackedDirt(const std::map<std::string, std::any>& args);
+        ~CrackedDirt() override = default;
 
         primitive::MaterialProperties evaluate(
             const primitive::SurfaceData& data,
             const maths::Vector& hitPoint) const override;
-
-      private:
-        maths::Color _color;
     };
 }  // namespace raytracer::object::material

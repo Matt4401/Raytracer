@@ -40,6 +40,7 @@ set(SRCS
         src/exception/Exception.cpp
         src/math/Color.cpp
         src/math/Vector.cpp
+        src/math/Noise.cpp
         src/math/Rectangle.cpp
         src/math/AABoundingBox.cpp
         src/bvh/BVHNode.cpp
@@ -49,6 +50,9 @@ set(SRCS
         src/bvh/bvhSplitStrategy/MedianStrategy.cpp
         src/bvh/bvhSplitStrategy/MidpointStrategy.cpp
         src/object/primitive/APrimitive.cpp
+        src/object/material/ABasicMaterial.cpp
+        src/object/material/APerlinBasedMaterial.cpp
+        src/object/material/AWorleyBasedMaterial.cpp
         src/util/middleware/Helpers.cpp
         src/plugin/PluginManager.cpp
         src/plugin/ObjectFactory.cpp

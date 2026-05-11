@@ -62,6 +62,18 @@ if (NOT SKIP_INTERNET)
             src/main.cpp
             src/materials/test_flatcolor.cpp
             ${CMAKE_SOURCE_DIR}/libs/materials/flatcolor/FlatColor.cpp
+            src/materials/test_chessboard.cpp
+            ${CMAKE_SOURCE_DIR}/libs/materials/chessboard/Chessboard.cpp
+            src/materials/test_perlinnoise.cpp
+            ${CMAKE_SOURCE_DIR}/libs/materials/perlinnoise/PerlinNoise.cpp
+            src/materials/test_marble.cpp
+            ${CMAKE_SOURCE_DIR}/libs/materials/marble/Marble.cpp
+            src/materials/test_wood.cpp
+            ${CMAKE_SOURCE_DIR}/libs/materials/wood/Wood.cpp
+            src/materials/test_worleynoise.cpp
+            ${CMAKE_SOURCE_DIR}/libs/materials/worleynoise/WorleyNoise.cpp
+            src/materials/test_crackeddirt.cpp
+            ${CMAKE_SOURCE_DIR}/libs/materials/crackeddirt/CrackedDirt.cpp
             ${CMAKE_SOURCE_DIR}/src/plugin/ObjectFactory.cpp
             ${CMAKE_SOURCE_DIR}/src/plugin/PluginManager.cpp
     )
