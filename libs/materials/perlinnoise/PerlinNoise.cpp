@@ -7,8 +7,9 @@
 
 #include "PerlinNoise.hpp"
 
-#include <algorithm>
 #include <cmath>
+
+#include "../ColorHelpers.hpp"
 
 namespace raytracer::object::material {
     PerlinNoise::PerlinNoise(const std::map<std::string, std::any>& args)
@@ -23,19 +24,9 @@ namespace raytracer::object::material {
 
         const double n = (noise + 1.0) * 0.5;
 
-        maths::Color finalColor = maths::Color(
-            static_cast<unsigned char>(
-                std::clamp(static_cast<int>(
-                               std::round(_color1.r * (1 - n) + _color2.r * n)),
-                           0, 255)),
-            static_cast<unsigned char>(
-                std::clamp(static_cast<int>(
-                               std::round(_color1.g * (1 - n) + _color2.g * n)),
-                           0, 255)),
-            static_cast<unsigned char>(
-                std::clamp(static_cast<int>(
-                               std::round(_color1.b * (1 - n) + _color2.b * n)),
-                           0, 255)));
+        const maths::Color finalColor =
+            raytracer::materials::helpers::interpolateColors(_color1, _color2,
+                                                             n);
 
         return {.color = finalColor,
                 .emission = _emission,
