@@ -47,7 +47,7 @@ namespace raytracer::object::scene {
 
     bool Scene::intersect(const maths::Ray &ray, double &t,
                           int &objectId) const {
-        constexpr double INF= std::numeric_limits<double>::infinity();
+        constexpr double INF = std::numeric_limits<double>::infinity();
         t = INF;
         objectId = -1;
 
