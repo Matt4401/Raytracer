@@ -46,7 +46,7 @@ namespace raytracer::bvh {
                     primitive->hits(ray, tempRecord) &&
                     tempRecord.t < closestSoFar) {
                     closestSoFar = tempRecord.t;
-                    hitRecord = std::move(tempRecord);
+                    hitRecord = tempRecord;
                     hitAnything = true;
                 }
             }
@@ -72,7 +72,7 @@ namespace raytracer::bvh {
             if (object::primitive::HitRecord secondRecord;
                 second->hits(ray, secondRecord) &&
                 (!hitAny || secondRecord.t < hitRecord.t)) {
-                hitRecord = std::move(secondRecord);
+                hitRecord = secondRecord;
                 hitAny = true;
             }
         }

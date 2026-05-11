@@ -47,8 +47,8 @@ namespace raytracer::object::scene {
 
     bool Scene::intersect(const maths::Ray &ray, double &t,
                           int &objectId) const {
-        constexpr double infinity = std::numeric_limits<double>::infinity();
-        t = infinity;
+        constexpr double INF= std::numeric_limits<double>::infinity();
+        t = INF;
         objectId = -1;
 
         if (_bvhRoot) {
@@ -59,15 +59,7 @@ namespace raytracer::object::scene {
             }
             return false;
         }
-
-        for (size_t i = 0; i < _primitives.size(); ++i) {
-            if (const double distance = _primitives.at(i)->hits(ray);
-                distance >= 0.0 && distance < t) {
-                t = distance;
-                objectId = static_cast<int>(i);
-            }
-        }
-        return objectId != -1;
+        return false;
     }
 
     maths::Vector Scene::radiance(const maths::Ray &ray, int depth,
