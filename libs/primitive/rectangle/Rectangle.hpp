@@ -23,12 +23,12 @@ namespace raytracer::object::primitive {
 
         explicit Rectangle(const std::map<std::string, std::any> &args);
         explicit Rectangle(const maths::Vector &center,
-                   const maths::Vector &maxPoint,
-                   const maths::Vector &normal);
+                           const maths::Vector &maxPoint,
+                           const maths::Vector &normal);
         explicit Rectangle(
             std::shared_ptr<raytracer::object::material::IMaterial> material,
-          const maths::Vector &center, const maths::Vector &maxPoint,
-          const maths::Vector &normal);
+            const maths::Vector &center, const maths::Vector &maxPoint,
+            const maths::Vector &normal);
 
         ~Rectangle() override = default;
 
@@ -41,6 +41,11 @@ namespace raytracer::object::primitive {
       private:
         maths::Vector _maxPoint;
         maths::Vector _normal;
+
+        static bool verifyHitPoint(const maths::Vector &minP,
+                                   const maths::Vector &maxP,
+                                   const maths::Vector &normal,
+                                   const maths::Vector &hitPoint);
 
         static constexpr std::size_t EXPECTED_ARGS = 4;
         static constexpr double EPS = K_RAY_EPSILON;
