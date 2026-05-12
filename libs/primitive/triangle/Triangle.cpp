@@ -82,6 +82,7 @@ namespace raytracer::object::primitive {
         }
         record.t = t;
         record.objectId = getId();
+        record.hitPoint = ray.origin + ray.direction * t;
         return true;
     }
 

@@ -44,8 +44,7 @@ namespace raytracer::object::primitive {
             const maths::Ray &ray) const;
 
         bool pointInTriangle(const maths::Vector &point,
-                             const maths::Vector &v0,
-                             const maths::Vector &v1,
+                             const maths::Vector &v0, const maths::Vector &v1,
                              const maths::Vector &v2) const;
 
         maths::Vector computeNormal(

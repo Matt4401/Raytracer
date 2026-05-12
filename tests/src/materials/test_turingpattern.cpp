@@ -21,12 +21,10 @@
 
 static std::map<std::string, std::any> makeTuringArgs() {
     return std::map<std::string, std::any>{
-        {"color1", std::map<std::string, std::any>{{"r", 50},
-                                                   {"g", 50},
-                                                   {"b", 50}}},
-        {"color2", std::map<std::string, std::any>{{"r", 200},
-                                                   {"g", 200},
-                                                   {"b", 200}}},
+        {"color1",
+         std::map<std::string, std::any>{{"r", 50}, {"g", 50}, {"b", 50}}},
+        {"color2",
+         std::map<std::string, std::any>{{"r", 200}, {"g", 200}, {"b", 200}}},
         {"scale", 0.05},
         {"octaves", 4},
         {"persistence", 0.6},
@@ -84,9 +82,8 @@ TEST(TuringPatternMaterial, IntegratesWithPrimitive) {
             sphere);
     ASSERT_NE(basePrim, nullptr);
 
-    auto sd = basePrim->surfaceData(
-        raytracer::object::primitive::HitRecord{0, -1, 0,
-                                                raytracer::maths::Vector(0, 10, 0)});
+    auto sd = basePrim->surfaceData(raytracer::object::primitive::HitRecord{
+        0, -1, 0, raytracer::maths::Vector(0, 10, 0)});
     EXPECT_GE(sd.material.color.r, 0);
     EXPECT_LE(sd.material.color.r, 255);
     EXPECT_GE(sd.material.color.g, 0);

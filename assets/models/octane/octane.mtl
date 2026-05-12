@@ -9,7 +9,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 3
-map_Kd octane-rocket-league-car/textures/png_RocketLeague_W512_H512_F827611204_T_0X.png
+map_Kd assets/models/octane/textures/png_RocketLeague_W512_H512_F827611204_T_0X.png
 
 newmtl Dieci_Tread
 Ns 440.413361
@@ -19,7 +19,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 3
-map_Kd octane-rocket-league-car/textures/png_RocketLeague_W512_H512_F827611204_T_0X.png
+map_Kd assets/models/octane/textures/png_RocketLeague_W512_H512_F827611204_T_0X.png
 map_Bump -bm 0.200000 /d/Models/Dieci/WHEEL_Caliber_SF/Texture2D/NormalMap.png
 
 newmtl Headlights
@@ -40,7 +40,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 3
-map_Kd octane-rocket-league-car/textures/png_RocketLeague_W2048_H2048_F894720068_T_.png
+map_Kd assets/models/octane/textures/png_RocketLeague_W2048_H2048_F894720068_T_.png
 
 newmtl Octane_Chassis
 Ns 434.400787
@@ -50,7 +50,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 3
-map_Kd octane-rocket-league-car/textures/Octane_Chasis_Map.png
+map_Kd assets/models/octane/textures/Octane_Chasis_Map.png
 
 newmtl Paint
 Ns 322.830566

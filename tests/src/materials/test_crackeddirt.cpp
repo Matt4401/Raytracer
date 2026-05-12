@@ -23,12 +23,10 @@
 
 static std::map<std::string, std::any> makeCrackedDirtArgs() {
     return std::map<std::string, std::any>{
-        {"color1", std::map<std::string, std::any>{{"r", 120},
-                                                   {"g", 80},
-                                                   {"b", 40}}},
-        {"color2", std::map<std::string, std::any>{{"r", 200},
-                                                   {"g", 180},
-                                                   {"b", 150}}},
+        {"color1",
+         std::map<std::string, std::any>{{"r", 120}, {"g", 80}, {"b", 40}}},
+        {"color2",
+         std::map<std::string, std::any>{{"r", 200}, {"g", 180}, {"b", 150}}},
         {"scale", 1.0},
         {"reflType", std::string("DIFF")}};
 }
@@ -82,9 +80,8 @@ TEST(CrackedDirtMaterial, IntegratesWithPrimitive) {
             sphere);
     ASSERT_NE(basePrim, nullptr);
 
-    auto sd = basePrim->surfaceData(
-        raytracer::object::primitive::HitRecord{0, -1, 0,
-                                                raytracer::maths::Vector(0, 10, 0)});
+    auto sd = basePrim->surfaceData(raytracer::object::primitive::HitRecord{
+        0, -1, 0, raytracer::maths::Vector(0, 10, 0)});
     EXPECT_GE(sd.material.color.r, 0);
     EXPECT_LE(sd.material.color.r, 255);
     EXPECT_GE(sd.material.color.g, 0);

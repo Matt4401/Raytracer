@@ -26,7 +26,7 @@ namespace raytracer::bvh {
         AABoundingBox boundingBox() override;
 
         object::primitive::SurfaceData surfaceData(
-          const object::primitive::HitRecord &record) const override;
+            const object::primitive::HitRecord &record) const override;
         const std::string &name() const noexcept override;
         maths::Vector center() const noexcept override;
 

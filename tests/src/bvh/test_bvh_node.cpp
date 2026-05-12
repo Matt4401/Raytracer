@@ -108,6 +108,7 @@ TEST(BVH_NODE, surface_data_throws) {
         std::vector<
             std::shared_ptr<raytracer::object::primitive::IPrimitive>>{});
 
-    ASSERT_THROW(node.surfaceData(raytracer::object::primitive::HitRecord{0, -1, 0, Vector(0, 0, 0)}),
+    ASSERT_THROW(node.surfaceData(raytracer::object::primitive::HitRecord{
+                     0, -1, 0, Vector(0, 0, 0)}),
                  raytracer::exception::CoreException);
 }

@@ -59,9 +59,9 @@ TEST(MATERIAL, flatcolor_decorator) {
         std::dynamic_pointer_cast<raytracer::object::primitive::IPrimitive>(
             sphere);
     ASSERT_NE(basePrim, nullptr);
-    auto finalData = basePrim->surfaceData(
-        raytracer::object::primitive::HitRecord{0, -1, 0,
-                                                raytracer::maths::Vector(0, 10, 0)});
+    auto finalData =
+        basePrim->surfaceData(raytracer::object::primitive::HitRecord{
+            0, -1, 0, raytracer::maths::Vector(0, 10, 0)});
 
     ASSERT_DOUBLE_EQ(finalData.normal.y, 1.0);
 
