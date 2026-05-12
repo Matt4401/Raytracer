@@ -136,11 +136,12 @@ namespace raytracer::object::scene {
         for (const auto &prim : _primitives) {
             prim->setLimitBox(globalBox);
         }
-        if (strategy.empty()) {
-            strategy = DEFAULT_SPLIT_STRATEGY;
-        }
         for (std::size_t i = 0; i < _primitives.size(); ++i) {
             _primitives[i]->setId(static_cast<int>(i));
+        }
+        if (strategy.empty()) {
+            _bvhRoot = nullptr;
+            return;
         }
         auto builder =
             bvh::BVHBuilder<raytracer::bvh::ISplitStrategy>(strategy);

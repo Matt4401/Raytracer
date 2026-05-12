@@ -91,8 +91,6 @@ namespace raytracer::object::scene {
                      addCamera(obj);
                  }},
             };
-
-        static constexpr std::string_view DEFAULT_SPLIT_STRATEGY = "sah";
     };
 }  // namespace raytracer::object::scene
 

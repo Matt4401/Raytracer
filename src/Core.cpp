@@ -165,92 +165,45 @@ namespace raytracer {
             std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(
                 refractiveMaterial);
 
-        // // Red wall sphere
-        // std::map<std::string, std::any> redWallSphereParams;
-        // redWallSphereParams["center"] = vec(1e5 + 1, 40.8, 81.6);
-        // redWallSphereParams["radius"] = 1e5;
-        // redWallSphereParams["material"] = redMaterialPtr;
-        // auto redWallSphere =
-        //     this->_objFactory.build("sphere", redWallSphereParams);
-        //
-        // // Blue wall sphere
-        // std::map<std::string, std::any> blueWallSphereParams;
-        // blueWallSphereParams["center"] = vec(-1e5 + 99, 40.8, 81.6);
-        // blueWallSphereParams["radius"] = 1e5;
-        // blueWallSphereParams["material"] = blueMaterialPtr;
-        // auto blueWallSphere =
-        //     this->_objFactory.build("sphere", blueWallSphereParams);
-        //
-        // // Back white wall sphere
-        // std::map<std::string, std::any> backWallSphereParams;
-        // backWallSphereParams["center"] = vec(50.0, 40.8, 1e5);
-        // backWallSphereParams["radius"] = 1e5;
-        // backWallSphereParams["material"] = whiteMaterialPtr;
-        // auto backWallSphere =
-        //     this->_objFactory.build("sphere", backWallSphereParams);
-        //
-        // // Floor sphere
-        // std::map<std::string, std::any> floorSphereParams;
-        // floorSphereParams["center"] = vec(50.0, 1e5, 81.6);
-        // floorSphereParams["radius"] = 1e5;
-        // floorSphereParams["material"] = whiteMaterialPtr;
-        // auto floorSphere = this->_objFactory.build("sphere", floorSphereParams);
-        //
-        // // Ceiling sphere
-        // std::map<std::string, std::any> ceilingSphereParams;
-        // ceilingSphereParams["center"] = vec(50.0, -1e5 + 81.6, 81.6);
-        // ceilingSphereParams["radius"] = 1e5;
-        // ceilingSphereParams["material"] = whiteMaterialPtr;
-        // auto ceilingSphere =
-        //     this->_objFactory.build("sphere", ceilingSphereParams);
-        //
-        // // Behind sphere
-        // std::map<std::string, std::any> behindSphereParams;
-        // behindSphereParams["center"] = vec(50.0, 40.8, -1e5 + 170.0);
-        // behindSphereParams["radius"] = 1e5;
-        // behindSphereParams["material"] = whiteMaterialPtr;
-        // auto behindSphere =
-        //     this->_objFactory.build("sphere", behindSphereParams);
-        //
-
-        // Mur Gauche (Rouge)
+        // Mur Gauche (Rouge), plan x = 1
         std::map<std::string, std::any> leftWallParams;
-        leftWallParams["center"] =
-            vec(1.0, 40.8, 81.6);
-        leftWallParams["normal"] =
-            vec(1.0, 0.0, 0.0);
+        leftWallParams["center"] = vec(1.0, 0.0, 0.0);
+        leftWallParams["maxPoint"] = vec(1.0, 81.6, 170.0);
+        leftWallParams["normal"] = vec(1.0, 0.0, 0.0);
         leftWallParams["material"] = redMaterialPtr;
-        auto leftWall = this->_objFactory.build("plane", leftWallParams);
+        auto leftWall = this->_objFactory.build("rectangle", leftWallParams);
 
-        // Mur Droit (Bleu)
+        // Mur Droit (Bleu), plan x = 99
         std::map<std::string, std::any> rightWallParams;
-        rightWallParams["center"] = vec(99.0, 40.8, 81.6);
-        rightWallParams["normal"] =
-            vec(-1.0, 0.0, 0.0);
+        rightWallParams["center"] = vec(99.0, 0.0, 0.0);
+        rightWallParams["maxPoint"] = vec(99.0, 81.6, 170.0);
+        rightWallParams["normal"] = vec(-1.0, 0.0, 0.0);
         rightWallParams["material"] = blueMaterialPtr;
-        auto rightWall = this->_objFactory.build("plane", rightWallParams);
+        auto rightWall = this->_objFactory.build("rectangle", rightWallParams);
 
-        // Mur du Fond (Blanc)
+        // Mur du Fond (Blanc), plan z = 0
         std::map<std::string, std::any> backWallParams;
-        backWallParams["center"] = vec(50.0, 40.8, 0.0);
-        backWallParams["normal"] =
-            vec(0.0, 0.0, 1.0);
+        backWallParams["center"] = vec(1.0, 0.0, 0.0);
+        backWallParams["maxPoint"] = vec(99.0, 81.6, 0.0);
+        backWallParams["normal"] = vec(0.0, 0.0, 1.0);
         backWallParams["material"] = whiteMaterialPtr;
-        auto backWall = this->_objFactory.build("plane", backWallParams);
+        auto backWall = this->_objFactory.build("rectangle", backWallParams);
 
-        // Sol (Blanc)
+        // Sol (Blanc), plan y = 0
         std::map<std::string, std::any> floorParams;
-        floorParams["center"] = vec(50.0, 0.0, 81.6);
+        floorParams["center"] = vec(1.0, 0.0, 0.0);
+        floorParams["maxPoint"] = vec(99.0, 0.0, 170.0);
         floorParams["normal"] = vec(0.0, 1.0, 0.0);
         floorParams["material"] = whiteMaterialPtr;
-        auto floor = this->_objFactory.build("plane", floorParams);
+        auto floor = this->_objFactory.build("rectangle", floorParams);
 
-        // Plafond (Blanc)
+        // Plafond (Blanc), plan y = 81.6
         std::map<std::string, std::any> ceilingParams;
-        ceilingParams["center"] = vec(50.0, 81.6, 81.6);
+        ceilingParams["center"] = vec(1.0, 81.6, 0.0);
+        ceilingParams["maxPoint"] = vec(99.0, 81.6, 170.0);
         ceilingParams["normal"] = vec(0.0, -1.0, 0.0);
         ceilingParams["material"] = whiteMaterialPtr;
-        auto ceiling = this->_objFactory.build("plane", ceilingParams);
+        auto ceiling = this->_objFactory.build("rectangle", ceilingParams);
 
         // Mirror sphere
         std::map<std::string, std::any> mirrorSphereParams;
@@ -285,12 +238,6 @@ namespace raytracer {
             std::dynamic_pointer_cast<raytracer::object::scene::IScene>(
                 sceneObj);
         if (scenePtr) {
-            // scenePtr->addObject(redWallSphere);
-            // scenePtr->addObject(blueWallSphere);
-            // scenePtr->addObject(backWallSphere);
-            // scenePtr->addObject(floorSphere);
-            // scenePtr->addObject(ceilingSphere);
-            // scenePtr->addObject(behindSphere);
             scenePtr->addObject(leftWall);
             scenePtr->addObject(rightWall);
             scenePtr->addObject(backWall);
