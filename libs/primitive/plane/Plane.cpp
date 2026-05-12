@@ -45,8 +45,8 @@ namespace raytracer::object::primitive {
         if (std::abs(denom) < EPS) {
             return false;
         }
-        const double t = (_center - ray.origin).dot(_normal) / denom;
-        if (t >= EPS) {
+        if (const double t = (_center - ray.origin).dot(_normal) / denom;
+            t >= EPS) {
             record.t = t;
             record.objectId = id();
             return true;

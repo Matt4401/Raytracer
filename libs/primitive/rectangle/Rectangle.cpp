@@ -24,21 +24,27 @@ namespace raytracer::object::primitive {
                      util::ObjectMiddleware::validate<
                          std::shared_ptr<material::IMaterial>>(args, "material",
                                                                "Rectangle")),
-          _maxPoint(util::Helpers::toVector(args, "maxPoint", "Rectangle")) {
+                    _maxPoint(util::Helpers::toVector(args, "maxPoint", "Rectangle")),
+                    _normal(util::Helpers::toVector(args, "normal", "Rectangle")) {
+                _normal = util::Helpers::normalVector(_normal);
         util::Helpers::notCollinearVector(_maxPoint, _center, "maxPoint",
                                           "center", "Rectangle");
     }
 
     Rectangle::Rectangle(const maths::Vector &center,
-                         const maths::Vector &maxPoint)
-        : Rectangle(nullptr, center, maxPoint) {
+                                                 const maths::Vector &maxPoint,
+                                                 const maths::Vector &normal)
+                : Rectangle(nullptr, center, maxPoint, normal) {
     }
 
     Rectangle::Rectangle(std::shared_ptr<material::IMaterial> material,
                          const maths::Vector &center,
-                         const maths::Vector &maxPoint)
+                                                 const maths::Vector &maxPoint,
+                                                 const maths::Vector &normal)
         : APrimitive("Rectangle", center, std::move(material)),
-          _maxPoint(maxPoint) {
+                    _maxPoint(maxPoint),
+                    _normal(normal) {
+                _normal = util::Helpers::normalVector(_normal);
         util::Helpers::notCollinearVector(_maxPoint, _center, "maxPoint",
                                           "center", "Rectangle");
     }
@@ -48,37 +54,78 @@ namespace raytracer::object::primitive {
     }
 
     bool Rectangle::hits(const maths::Ray &ray, HitRecord &record) const {
-        const double k = _center.z;
-
-        if (std::abs(ray.direction.z) < 1e-9)
+        const double denom = _normal.dot(ray.direction);
+        if (std::abs(denom) < EPS)
             return false;
 
-        const double t = (k - ray.origin.z) / ray.direction.z;
-        if (t < 0.001)
+        const double t = (_center - ray.origin).dot(_normal) / denom;
+        if (t < EPS)
             return false;
 
         const maths::Vector hitPoint = ray.origin + ray.direction * t;
-        const double minX = std::min(_center.x, _maxPoint.x);
-        const double maxX = std::max(_center.x, _maxPoint.x);
-        const double minY = std::min(_center.y, _maxPoint.y);
+        const double absNx = std::abs(_normal.x);
+        const double absNy = std::abs(_normal.y);
+        const double absNz = std::abs(_normal.z);
 
-        if (const double maxY = std::max(_center.y, _maxPoint.y);
-            hitPoint.x < minX || hitPoint.x > maxX || hitPoint.y < minY ||
-            hitPoint.y > maxY) {
-            return false;
+        const bool xDominant = absNx >= absNy && absNx >= absNz;
+        const bool yDominant = absNy >= absNx && absNy >= absNz;
+
+        if (xDominant) {
+            const double minY = std::min(_center.y, _maxPoint.y);
+            const double maxY = std::max(_center.y, _maxPoint.y);
+            const double minZ = std::min(_center.z, _maxPoint.z);
+            const double maxZ = std::max(_center.z, _maxPoint.z);
+            if (hitPoint.y < minY || hitPoint.y > maxY || hitPoint.z < minZ ||
+                hitPoint.z > maxZ) {
+                return false;
+            }
+        } else if (yDominant) {
+            const double minX = std::min(_center.x, _maxPoint.x);
+            const double maxX = std::max(_center.x, _maxPoint.x);
+            const double minZ = std::min(_center.z, _maxPoint.z);
+            const double maxZ = std::max(_center.z, _maxPoint.z);
+            if (hitPoint.x < minX || hitPoint.x > maxX || hitPoint.z < minZ ||
+                hitPoint.z > maxZ) {
+                return false;
+            }
+        } else {
+            const double minX = std::min(_center.x, _maxPoint.x);
+            const double maxX = std::max(_center.x, _maxPoint.x);
+            const double minY = std::min(_center.y, _maxPoint.y);
+            const double maxY = std::max(_center.y, _maxPoint.y);
+            if (hitPoint.x < minX || hitPoint.x > maxX || hitPoint.y < minY ||
+                hitPoint.y > maxY) {
+                return false;
+            }
         }
+
         record.t = t;
         record.objectId = id();
         return true;
     }
 
     IPrimitive::AABoundingBox Rectangle::boundingBox() {
-        const auto minX = std::min(_center.x, _maxPoint.x);
-        const auto minY = std::min(_center.y, _maxPoint.y);
-        const auto minZ = std::min(_center.z, _maxPoint.z);
-        const auto maxX = std::max(_center.x, _maxPoint.x);
-        const auto maxY = std::max(_center.y, _maxPoint.y);
-        const auto maxZ = std::max(_center.z, _maxPoint.z);
+        auto minX = std::min(_center.x, _maxPoint.x);
+        auto minY = std::min(_center.y, _maxPoint.y);
+        auto minZ = std::min(_center.z, _maxPoint.z);
+        auto maxX = std::max(_center.x, _maxPoint.x);
+        auto maxY = std::max(_center.y, _maxPoint.y);
+        auto maxZ = std::max(_center.z, _maxPoint.z);
+
+        const double absNx = std::abs(_normal.x);
+        const double absNy = std::abs(_normal.y);
+        const double absNz = std::abs(_normal.z);
+
+        if (absNx >= absNy && absNx >= absNz && (maxX - minX) < EPS) {
+            minX -= EPS;
+            maxX += EPS;
+        } else if (absNy >= absNx && absNy >= absNz && (maxY - minY) < EPS) {
+            minY -= EPS;
+            maxY += EPS;
+        } else if ((maxZ - minZ) < EPS) {
+            minZ -= EPS;
+            maxZ += EPS;
+        }
 
         return maths::AABoundingBox{.x = minX,
                                     .y = minY,
@@ -89,9 +136,18 @@ namespace raytracer::object::primitive {
     }
 
     SurfaceData Rectangle::surfaceData(const maths::Vector &hitPoint) const {
-        const auto normal = (_maxPoint - _center).normalized();
+        const maths::Vector &normal = _normal;
+        const maths::Vector helper = (std::abs(normal.y) < 0.999)
+                                         ? maths::Vector(0, 1, 0)
+                                         : maths::Vector(1, 0, 0);
+        const maths::Vector uAxis = normal.cross(helper).normalized();
+        const maths::Vector vAxis = normal.cross(uAxis).normalized();
+        const maths::Vector localHit = hitPoint - _center;
+        const double u = localHit.dot(uAxis);
+        const double v = localHit.dot(vAxis);
+
         SurfaceData data{
-            .normal = normal, .uv = maths::Vector(0, 0, 0), .material = {}};
+            .normal = normal, .uv = maths::Vector(u, v, 0), .material = {}};
 
         if (this->_material) {
             data.material = this->_material->evaluate(data, hitPoint);
