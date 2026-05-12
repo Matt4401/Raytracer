@@ -25,8 +25,6 @@ namespace raytracer::object::primitive {
                   params, "material", "Mesh")) {
         std::string objPath = util::ObjectMiddleware::validate<std::string>(
             params, "objPath", "Mesh");
-        std::string mtlPath = util::ObjectMiddleware::validate<std::string>(
-            params, "mtlPath", "Mesh");
         maths::Vector scale = util::Helpers::toVector(params, "scale", "Mesh");
 
         if (scale.x <= 0 || scale.y <= 0 || scale.z <= 0) {
@@ -109,10 +107,6 @@ namespace raytracer::object::primitive {
     }
 
     IPrimitive::AABoundingBox Mesh::boundingBox() {
-        if (_meshBoundingBox.w > 0 && _meshBoundingBox.h > 0 &&
-            _meshBoundingBox.d > 0) {
-            return _meshBoundingBox;
-        }
         const auto &vertices = _objLoader->vertices();
         if (vertices.empty())
             return {0, 0, 0, 0, 0, 0};
