@@ -62,28 +62,22 @@ namespace raytracer::object::scene {
         return false;
     }
 
-    bool Scene::intersect(const maths::Ray &ray, double &t,
-                          int &objectId) const {
-        return intersectClosest(ray, t, objectId);
-    }
-
     maths::Vector Scene::radiance(const maths::Ray &ray, int depth,
                                   unsigned short *xi, int emissive) const {
         double t = -1.0;
         int id = -1;
-        if (!intersect(ray, t, id)) {
+        if (!intersect(ray, t, id))
             return maths::Vector();
-        }
-
-        if (depth > K_MAX_RADIANCE_DEPTH) {
-            return maths::Vector();
-        }
 
         const std::shared_ptr<primitive::IPrimitive> &obj = _primitives.at(id);
-        const maths::Vector x = ray.origin + ray.direction * t;
-        const primitive::SurfaceData surfData = obj->surfaceData(x);
-        const maths::Vector &n = surfData.normal;
-        const maths::Vector nl = n.dot(ray.direction) < 0 ? n : n * -1;
+        if (depth > K_MAX_RADIANCE_DEPTH)
+            return maths::Vector();
+
+        maths::Vector rayOrigin(ray.origin.x, ray.origin.y, ray.origin.z);
+        maths::Vector x = rayOrigin + ray.direction * t;
+        primitive::SurfaceData surfData = obj->surfaceData(x);
+        maths::Vector n = surfData.normal;
+        maths::Vector nl = n.dot(ray.direction) < 0 ? n : n * -1;
 
         maths::Vector f = surfData.material.color.toVector();
 
@@ -97,21 +91,21 @@ namespace raytracer::object::scene {
                 return surfData.material.emission * emissive;
         }
 
-        RadianceContext ctx{x, n, nl, f, depth, xi, emissive, surfData};
-
+        RadianceContext ctx{x, n, nl, f, depth, xi, emissive};
         if (surfData.material.reflType == object::primitive::RefltT::DIFF) {
-            return radianceDiffuse(ray, ctx);
+            return radianceDiffuse(ray, *obj, ctx);
         }
         if (surfData.material.reflType == object::primitive::RefltT::SPEC) {
-            return radianceSpecular(ray, ctx);
+            return radianceSpecular(ray, *obj, ctx);
         }
-        return radianceRefractive(ray, ctx);
+        return radianceRefractive(ray, *obj, ctx);
     }
 
     maths::Vector Scene::radianceDiffuse(const maths::Ray &ray,
+                                         const primitive::IPrimitive &obj,
                                          const RadianceContext &ctx) const {
         const maths::Vector &x = ctx.x;
-        const primitive::SurfaceData &surfData = ctx.surfaceData;
+        primitive::SurfaceData surfData = obj.surfaceData(x);
         const maths::Vector &n = ctx.n;
         const maths::Vector &nl = ctx.nl;
         const maths::Vector &f = ctx.f;
@@ -183,6 +177,7 @@ namespace raytracer::object::scene {
     }
 
     maths::Vector Scene::radianceSpecular(const maths::Ray &ray,
+                                          const primitive::IPrimitive &obj,
                                           const RadianceContext &ctx) const {
         const maths::Vector &x = ctx.x;
         const maths::Vector &n = ctx.n;
@@ -190,7 +185,7 @@ namespace raytracer::object::scene {
         int depth = ctx.depth;
         unsigned short *xi = ctx.xi;
         int emissive = ctx.emissive;
-        const primitive::SurfaceData &surfData = ctx.surfaceData;
+        primitive::SurfaceData surfData = obj.surfaceData(x);
 
         const double reflectivity =
             std::clamp(surfData.material.reflectivity, 0.0, 1.0);
@@ -227,12 +222,13 @@ namespace raytracer::object::scene {
     }
 
     maths::Vector Scene::radianceRefractive(const maths::Ray &ray,
+                                            const primitive::IPrimitive &obj,
                                             const RadianceContext &ctx) const {
         const maths::Vector &x = ctx.x;
         const maths::Vector &n = ctx.n;
         const maths::Vector &nl = ctx.nl;
         const maths::Vector &f = ctx.f;
-        const primitive::SurfaceData &surfData = ctx.surfaceData;
+        primitive::SurfaceData surfData = obj.surfaceData(x);
 
         int depth = ctx.depth;
         unsigned short *xi = ctx.xi;

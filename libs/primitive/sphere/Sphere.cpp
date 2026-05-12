@@ -60,7 +60,6 @@ namespace raytracer::object::primitive {
         const double t0 = (-b - sqrtDiscriminant) / (2.0 * a);
         const double t1 = (-b + sqrtDiscriminant) / (2.0 * a);
 
-        double t = -1.0;
         if (t0 > K_RAY_EPSILON) {
             record.t = t0;
             record.objectId = getId();
@@ -83,5 +82,19 @@ namespace raytracer::object::primitive {
             .h = 2 * _radius,
             .d = 2 * _radius,
         };
+    }
+
+    SurfaceData Sphere::surfaceData(const maths::Vector &hitPoint) const {
+        const maths::Vector normal = (hitPoint - _center).normalized();
+        const double u = 0.5 + std::atan2(normal.z, normal.x) / (2 * M_PI);
+        const double v = 0.5 - std::asin(normal.y) / M_PI;
+        SurfaceData data{
+            .normal = normal, .uv = maths::Vector(u, v, 0), .material = {}};
+
+        if (this->_material) {
+            data.material = this->_material->evaluate(data, hitPoint);
+        }
+
+        return data;
     }
 }  // namespace raytracer::object::primitive

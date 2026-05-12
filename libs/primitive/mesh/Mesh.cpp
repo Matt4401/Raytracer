@@ -7,6 +7,8 @@
 
 #include "Mesh.hpp"
 
+#include <any>
+
 #include "util/middleware/Helpers.hpp"
 #include "util/middleware/ObjectMiddleware.hpp"
 
@@ -54,7 +56,7 @@ namespace raytracer::object::primitive {
         data.uv = uv;
 
         data.extraParams["materialName"] =
-            _objLoader->getMaterialForFace(triangleIndex);
+            std::any(_objLoader->getMaterialForFace(triangleIndex));
 
         if (this->_material) {
             data.material = this->_material->evaluate(data, hitPoint);
@@ -63,19 +65,20 @@ namespace raytracer::object::primitive {
         return data;
     }
 
-    double Mesh::hits(const maths::Ray &ray) {
+    bool Mesh::hits(const maths::Ray &ray, HitRecord &record) const {
         auto intersection = _surfaceHelper->findClosestTriangle(ray);
         if (!intersection) {
             _lastHitTriangleIndex = std::nullopt;
-            return -1.0;
+            return false;
         }
 
         _lastHitTriangleIndex =
             static_cast<std::size_t>(intersection->triangleIndex);
-        return intersection->distance;
+        record.t = intersection->distance;
+        return true;
     }
 
-    IPrimitive::BoundingBox Mesh::boundingBox() {
+    IPrimitive::AABoundingBox Mesh::boundingBox() {
         if (_meshBoundingBox.w > 0 && _meshBoundingBox.h > 0 &&
             _meshBoundingBox.d > 0) {
             return _meshBoundingBox;
@@ -107,7 +110,7 @@ namespace raytracer::object::primitive {
         return _meshBoundingBox;
     }
 
-    IPrimitive::BoundingBox Mesh::triangleBoundingBox(int triangleIndex) const {
+    IPrimitive::AABoundingBox Mesh::triangleBoundingBox(int triangleIndex) const {
         const auto &triangles = _surfaceHelper->triangles();
         if (triangleIndex < 0 ||
             triangleIndex >= static_cast<int>(triangles.size()))

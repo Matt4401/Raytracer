@@ -7,10 +7,11 @@
 
 #pragma once
 
-#include <any>
-#include <map>
 #include <optional>
 #include <string>
+#include <unordered_map>
+#include <vector>
+#include <any>
 
 #include "math/AABoundingBox.hpp"
 #include "math/Color.hpp"
@@ -36,7 +37,7 @@ namespace raytracer::object::primitive {
     struct SurfaceData {
         maths::Vector normal;
         maths::Vector uv;
-        std::map<std::string, std::any> extraParams;
+        std::unordered_map<std::string, std::any> extraParams;
         MaterialProperties material;
     };
 
@@ -75,6 +76,10 @@ namespace raytracer::object::primitive {
             return -1.0;
         }
 
+        /**
+         * @brief Get surface data at hit point (normal, uv, etc.) and evaluates
+         * underlying materials for color, emission, etc.
+         */
         virtual SurfaceData surfaceData(
             const maths::Vector &hitPoint) const = 0;
 

@@ -9,6 +9,7 @@
 
 #include <any>
 #include <map>
+#include <unordered_map>
 #include <string>
 #include <string_view>
 
@@ -59,6 +60,26 @@ namespace raytracer::util {
             }
         }
 
+        // Overloads for unordered_map to support SurfaceData::extraParams
+        template <typename T>
+        static T validate(
+            const std::unordered_map<std::string, std::any> &params,
+            const std::string_view key, const std::string_view className) {
+            const auto it = params.find(std::string(key));
+            if (it == params.end()) {
+                throw exception::PluginException{"{} requires parameter '{}'",
+                                                 std::string(className),
+                                                 std::string(key)};
+            }
+            try {
+                return std::any_cast<T>(it->second);
+            } catch (const std::bad_any_cast &) {
+                throw exception::PluginException{
+                    "{} parameter '{}' has invalid type",
+                    std::string{className}, std::string(key)};
+            }
+        }
+
         /**
          * @brief Retrieve an optional parameter from a parameter map.
          * @tparam T The type of the parameter.
@@ -85,6 +106,25 @@ namespace raytracer::util {
             }
         }
 
+        // Overload for unordered_map
+        template <typename T>
+        static T optional(
+            const std::unordered_map<std::string, std::any> &params,
+            const std::string_view key, const T &defaultValue,
+            const std::string_view className) {
+            const auto it = params.find(std::string(key));
+            if (it == params.end()) {
+                return defaultValue;
+            }
+            try {
+                return std::any_cast<T>(it->second);
+            } catch (const std::bad_any_cast &) {
+                throw exception::PluginException{
+                    "{} parameter '{}' has invalid type",
+                    std::string{className}, std::string(key)};
+            }
+        }
+
         /**
          @brief Retrieve a nested map parameter from a parameter map.
          * @param params The parameter map containing the nested map.
@@ -95,6 +135,27 @@ namespace raytracer::util {
          */
         static const std::map<std::string, std::any> &requireMap(
             const std::map<std::string, std::any> &params,
+            const std::string_view key, const std::string_view className) {
+            const auto it = params.find(std::string(key));
+
+            if (it == params.end()) {
+                throw exception::PluginException("{} requires parameter '{}'",
+                                                 std::string(className),
+                                                 std::string(key));
+            }
+            try {
+                return std::any_cast<const std::map<std::string, std::any> &>(
+                    it->second);
+            } catch (const std::bad_any_cast &) {
+                throw exception::PluginException(
+                    "{} parameter '{}' has invalid type",
+                    std::string(className), std::string(key));
+            }
+        }
+
+        // Overload for unordered_map
+        static const std::map<std::string, std::any> &requireMap(
+            const std::unordered_map<std::string, std::any> &params,
             const std::string_view key, const std::string_view className) {
             const auto it = params.find(std::string(key));
 

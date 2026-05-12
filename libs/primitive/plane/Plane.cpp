@@ -70,31 +70,12 @@ namespace raytracer::object::primitive {
         const double u = localHit.dot(uAxis);
         const double v = localHit.dot(vAxis);
 
-        SurfaceData surfData{
+        SurfaceData data{
             .normal = normal, .uv = maths::Vector(u, v, 0), .material = {}};
 
         if (this->_material) {
-            surfData.material = this->_material->evaluate(surfData, hitPoint);
+            data.material = this->_material->evaluate(data, hitPoint);
         }
-
-        return surfData;
-    }
-
-    double Plane::hits(const maths::Ray &ray) {
-        const double denom = _normal.dot(ray.direction);
-        if (std::abs(denom) < EPS) {
-            return -1.0;
-        }
-        const double t = (_center - ray.origin).dot(_normal) / denom;
-        if (t < EPS) {
-            return -1.0;
-        }
-
-        return t;
-    }
-
-    IPrimitive::BoundingBox Plane::boundingBox() {
-        // TODO
-        return {0, 0, 0, 0, 0, 0};
+        return data;
     }
 }  // namespace raytracer::object::primitive
