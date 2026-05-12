@@ -106,6 +106,8 @@ if (NOT SKIP_INTERNET)
             ${CMAKE_SOURCE_DIR}/libs/primitive/plane/Plane.cpp
             src/primitives/test_sphere.cpp
             ${CMAKE_SOURCE_DIR}/libs/primitive/sphere/Sphere.cpp
+            src/primitives/test_rectangle.cpp
+            ${CMAKE_SOURCE_DIR}/libs/primitive/rectangle/Rectangle.cpp
             src/primitives/test_triangle.cpp
             ${CMAKE_SOURCE_DIR}/src/plugin/ObjectFactory.cpp
             ${CMAKE_SOURCE_DIR}/src/plugin/PluginManager.cpp
