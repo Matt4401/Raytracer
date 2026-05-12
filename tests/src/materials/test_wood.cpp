@@ -20,17 +20,17 @@
 
 static std::map<std::string, std::any> makeWoodArgs() {
     return std::map<std::string, std::any>{
-        {"color1", std::map<std::string, std::any>{{"r", (unsigned char)160},
-                                                   {"g", (unsigned char)105},
-                                                   {"b", (unsigned char)60}}},
-        {"color2", std::map<std::string, std::any>{{"r", (unsigned char)80},
-                                                   {"g", (unsigned char)45},
-                                                   {"b", (unsigned char)20}}},
+        {"color1", std::map<std::string, std::any>{{"r", 160},
+                                                   {"g", 105},
+                                                   {"b", 60}}},
+        {"color2", std::map<std::string, std::any>{{"r", 80},
+                                                   {"g", 45},
+                                                   {"b", 20}}},
         {"scale", 0.8},
         {"octaves", 3},
         {"persistence", 0.5},
         {"turbulence", 3.0},
-        {"reflType", raytracer::object::primitive::RefltT::DIFF}};
+        {"reflType", std::string("DIFF")}};
 }
 
 TEST(WoodMaterial, Builds) {

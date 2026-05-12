@@ -16,7 +16,6 @@
 #include "math/Vector.hpp"
 #include "object/material/IMaterial.hpp"
 #include "object/primitive/IPrimitive.hpp"
-#include "object/primitive/ReflTypes.hpp"
 #include "plugin/ObjectFactory.hpp"
 #include "plugin/PluginManager.hpp"
 
@@ -29,13 +28,12 @@ namespace {
         raytracer::ObjectFactory &factory) {
         std::map<std::string, std::any> flatColorArgs = {
             {"color",
-             std::map<std::string, std::any>{{"r", (unsigned char)200},
-                                             {"g", (unsigned char)200},
-                                             {"b", (unsigned char)200}}},
+             std::map<std::string, std::any>{
+                 {"r", (int)200}, {"g", (int)200}, {"b", (int)200}}},
             {"emission",
              std::map<std::string, std::any>{
                  {"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
-            {"reflType", raytracer::object::primitive::RefltT::DIFF}};
+            {"reflType", std::string("DIFF")}};
         auto matObj = factory.build("flatcolor", flatColorArgs);
         EXPECT_NE(matObj, nullptr);
         return std::dynamic_pointer_cast<

@@ -9,7 +9,6 @@
 #define ASCENE_HPP_
 
 #include <any>
-#include <cmath>
 #include <functional>
 #include <map>
 #include <string>
@@ -40,6 +39,8 @@ namespace raytracer::object::scene {
         void setDiffuseLight(const maths::Color &color,
                              double intensity) override;
         void setAmbientOcclusion(int samples, double radius) override;
+
+        bool haveCamera() override;
 
         AmbientOcclusion ambientOcclusion() const override;
         AmbientLight ambientLight() const override;

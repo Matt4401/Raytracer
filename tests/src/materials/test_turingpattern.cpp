@@ -21,18 +21,18 @@
 
 static std::map<std::string, std::any> makeTuringArgs() {
     return std::map<std::string, std::any>{
-        {"color1", std::map<std::string, std::any>{{"r", (unsigned char)50},
-                                                   {"g", (unsigned char)50},
-                                                   {"b", (unsigned char)50}}},
-        {"color2", std::map<std::string, std::any>{{"r", (unsigned char)200},
-                                                   {"g", (unsigned char)200},
-                                                   {"b", (unsigned char)200}}},
+        {"color1", std::map<std::string, std::any>{{"r", 50},
+                                                   {"g", 50},
+                                                   {"b", 50}}},
+        {"color2", std::map<std::string, std::any>{{"r", 200},
+                                                   {"g", 200},
+                                                   {"b", 200}}},
         {"scale", 0.05},
         {"octaves", 4},
         {"persistence", 0.6},
         {"offset", 0.0},
         {"threshold", 0.2},
-        {"reflType", raytracer::object::primitive::RefltT::DIFF}};
+        {"reflType", std::string("DIFF")}};
 }
 
 TEST(TuringPatternMaterial, Builds) {

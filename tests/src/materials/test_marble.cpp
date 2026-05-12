@@ -21,17 +21,17 @@
 
 static std::map<std::string, std::any> makeMarbleArgs() {
     return std::map<std::string, std::any>{
-        {"color1", std::map<std::string, std::any>{{"r", (unsigned char)240},
-                                                   {"g", (unsigned char)240},
-                                                   {"b", (unsigned char)240}}},
-        {"color2", std::map<std::string, std::any>{{"r", (unsigned char)40},
-                                                   {"g", (unsigned char)40},
-                                                   {"b", (unsigned char)45}}},
+        {"color1", std::map<std::string, std::any>{{"r", 240},
+                                                   {"g", 240},
+                                                   {"b", 240}}},
+        {"color2", std::map<std::string, std::any>{{"r", 40},
+                                                   {"g", 40},
+                                                   {"b", 45}}},
         {"scale", 0.4},
         {"octaves", 5},
         {"persistence", 0.6},
         {"turbulence", 8.0},
-        {"reflType", raytracer::object::primitive::RefltT::DIFF}};
+        {"reflType", std::string("DIFF")}};
 }
 
 TEST(MarbleMaterial, Builds) {

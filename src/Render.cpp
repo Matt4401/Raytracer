@@ -8,7 +8,6 @@
 #include "Render.hpp"
 
 #include <chrono>
-#include <cstdlib>
 #include <iostream>
 
 #include "math/Color.hpp"

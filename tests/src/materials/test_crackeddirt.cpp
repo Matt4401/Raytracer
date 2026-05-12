@@ -23,14 +23,14 @@
 
 static std::map<std::string, std::any> makeCrackedDirtArgs() {
     return std::map<std::string, std::any>{
-        {"color1", std::map<std::string, std::any>{{"r", (unsigned char)120},
-                                                   {"g", (unsigned char)80},
-                                                   {"b", (unsigned char)40}}},
-        {"color2", std::map<std::string, std::any>{{"r", (unsigned char)200},
-                                                   {"g", (unsigned char)180},
-                                                   {"b", (unsigned char)150}}},
+        {"color1", std::map<std::string, std::any>{{"r", 120},
+                                                   {"g", 80},
+                                                   {"b", 40}}},
+        {"color2", std::map<std::string, std::any>{{"r", 200},
+                                                   {"g", 180},
+                                                   {"b", 150}}},
         {"scale", 1.0},
-        {"reflType", raytracer::object::primitive::RefltT::DIFF}};
+        {"reflType", std::string("DIFF")}};
 }
 
 TEST(CrackedDirtMaterial, Builds) {
