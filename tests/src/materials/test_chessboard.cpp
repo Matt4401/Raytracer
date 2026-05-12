@@ -68,12 +68,16 @@ TEST(ChessboardMaterial, BasicTiles) {
             planeObj);
     ASSERT_NE(basePrim, nullptr);
 
-    auto sd1 = basePrim->surfaceData(raytracer::maths::Vector(0.2, 0.0, 0.0));
+    auto sd1 = basePrim->surfaceData(
+        raytracer::object::primitive::HitRecord{0, -1, 0,
+                                                raytracer::maths::Vector(0.2, 0.0, 0.0)});
     EXPECT_EQ(sd1.material.color.r, 0);
     EXPECT_EQ(sd1.material.color.g, 0);
     EXPECT_EQ(sd1.material.color.b, 0);
 
-    auto sd2 = basePrim->surfaceData(raytracer::maths::Vector(1.2, 0.0, 0.0));
+    auto sd2 = basePrim->surfaceData(
+        raytracer::object::primitive::HitRecord{0, -1, 0,
+                                                raytracer::maths::Vector(1.2, 0.0, 0.0)});
     EXPECT_EQ(sd2.material.color.r, 255);
     EXPECT_EQ(sd2.material.color.g, 255);
     EXPECT_EQ(sd2.material.color.b, 255);

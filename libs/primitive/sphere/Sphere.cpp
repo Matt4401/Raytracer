@@ -84,7 +84,8 @@ namespace raytracer::object::primitive {
         };
     }
 
-    SurfaceData Sphere::surfaceData(const maths::Vector &hitPoint) const {
+    SurfaceData Sphere::surfaceData(const HitRecord &record) const {
+        const maths::Vector &hitPoint = record.hitPoint;
         const maths::Vector normal = (hitPoint - _center).normalized();
         const double u = 0.5 + std::atan2(normal.z, normal.x) / (2 * M_PI);
         const double v = 0.5 - std::asin(normal.y) / M_PI;

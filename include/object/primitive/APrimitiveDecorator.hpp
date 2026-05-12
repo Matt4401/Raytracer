@@ -30,8 +30,8 @@ namespace raytracer::object::primitive {
             return _wrapped->boundingBox();
         }
 
-        SurfaceData surfaceData(const maths::Vector &hitPoint) const override {
-            return _wrapped->surfaceData(hitPoint);
+        SurfaceData surfaceData(const HitRecord &record) const override {
+            return _wrapped->surfaceData(record);
         }
 
         void setId(int id) override {

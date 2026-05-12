@@ -20,6 +20,7 @@ namespace raytracer::object::scene {
         int depth;
         unsigned short *xi;
         const int emissive;
+      primitive::HitRecord hitRecord;
     };
 
     class Scene : public AScene {

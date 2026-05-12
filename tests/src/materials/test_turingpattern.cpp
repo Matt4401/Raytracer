@@ -84,7 +84,9 @@ TEST(TuringPatternMaterial, IntegratesWithPrimitive) {
             sphere);
     ASSERT_NE(basePrim, nullptr);
 
-    auto sd = basePrim->surfaceData(raytracer::maths::Vector(0, 10, 0));
+    auto sd = basePrim->surfaceData(
+        raytracer::object::primitive::HitRecord{0, -1, 0,
+                                                raytracer::maths::Vector(0, 10, 0)});
     EXPECT_GE(sd.material.color.r, 0);
     EXPECT_LE(sd.material.color.r, 255);
     EXPECT_GE(sd.material.color.g, 0);

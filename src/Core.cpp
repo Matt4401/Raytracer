@@ -66,7 +66,7 @@ namespace raytracer {
         cameraParams["fieldOfView"] =
             90.0;  // Example: 90 degree field of view, adjust as needed
         cameraParams["aspectRatio"] =
-            16.0 / 9.0;  // Example: standard widescreen aspect ratio
+            4.0 / 3.0;  // Example: standard widescreen aspect ratio
         cameraParams["resolution"] = std::map<std::string, std::any>{
             {"width", 400}, {"height", 200}};  // Example: 400x200 resolution
         auto camera = this->_objFactory.build("camera", cameraParams);
@@ -141,6 +141,30 @@ namespace raytracer {
         auto mirrorMaterialPtr =
             std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(
                 mirrorMaterial);
+
+        std::map<std::string, std::any> greenMaterialParams;
+        greenMaterialParams["color"] = color(63, 191, 63);  // Green color
+        greenMaterialParams["reflType"] =
+            raytracer::object::primitive::RefltT::DIFF;  // Diffuse
+        greenMaterialParams["emission"] = vec(0.0, 0.0, 0.0);
+        greenMaterialParams["reflectivity"] = 0.0;
+        greenMaterialParams["transparency"] = 0.0;
+        greenMaterialParams["ior"] = 1.0;
+        greenMaterialParams["roughness"] = 0.0;
+        greenMaterialParams["metalness"] = 0.0;
+        auto greenMaterial =
+            this->_objFactory.build("flatcolor", greenMaterialParams);
+        auto greenMaterialPtr =
+            std::dynamic_pointer_cast<raytracer::object::material::IMaterial>(
+                greenMaterial);
+
+        std::map<std::string, std::any> cubeMeshParams;
+        cubeMeshParams["center"] = vec(50.0, 16.5, 60.0);
+        cubeMeshParams["scale"] = vec(30.0, 30.0, 30.0);  // size of the cube
+        cubeMeshParams["objPath"] =
+            std::string("assets/models/cube_with_mat.obj");
+        cubeMeshParams["material"] = greenMaterialPtr;
+        auto cubeMesh = this->_objFactory.build("mesh", cubeMeshParams);
 
         // Basic Refractive material with white color
         std::map<std::string, std::any> refractiveMaterialParams;
@@ -250,7 +274,7 @@ namespace raytracer {
             scenePtr->addObject(backWallSphere);
             scenePtr->addObject(floorSphere);
             scenePtr->addObject(ceilingSphere);
-            scenePtr->addObject(behindSphere);
+            scenePtr->addObject(cubeMesh);
             scenePtr->addObject(mirrorSphere);
             scenePtr->addObject(refractiveSphere);
             scenePtr->addObject(pointLight);

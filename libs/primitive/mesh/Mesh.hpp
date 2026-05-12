@@ -1,0 +1,42 @@
+/*
+** EPITECH PROJECT, 2026
+** RayTracer
+** File description:
+** Mesh
+*/
+
+#ifndef MESH_HPP_
+#define MESH_HPP_
+
+#include <any>
+#include <map>
+#include <memory>
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "Face.hpp"
+#include "MeshSurfaceHelper.hpp"
+#include "ObjLoader.hpp"
+#include "object/primitive/APrimitive.hpp"
+
+namespace raytracer::object::primitive {
+    class Mesh : public APrimitive {
+      public:
+        Mesh(const std::map<std::string, std::any> &params);
+        ~Mesh() override = default;
+        bool hits(const maths::Ray &ray, HitRecord &record) const override;
+        SurfaceData surfaceData(const HitRecord &record) const override;
+        AABoundingBox boundingBox() override;
+
+      protected:
+      private:
+        std::unique_ptr<MeshSurfaceHelper> _surfaceHelper;
+        std::unique_ptr<ObjLoader> _objLoader;
+        std::shared_ptr<IPrimitive> _bvhRoot;
+        std::vector<std::shared_ptr<IPrimitive>> _faces;
+
+        mutable maths::AABoundingBox _meshBoundingBox;
+    };
+}  // namespace raytracer::object::primitive
+#endif /* !MESH_HPP_ */

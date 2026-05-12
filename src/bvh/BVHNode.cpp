@@ -89,7 +89,7 @@ namespace raytracer::bvh {
     }
 
     object::primitive::SurfaceData BVHNode::surfaceData(
-        const maths::Vector &hitPoint) const {
+        const object::primitive::HitRecord &record) const {
         throw exception::CoreException(
             "BVHNode::surfaceData should not be called on a BVHNode");
     }

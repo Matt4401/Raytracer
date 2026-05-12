@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <any>
+#include <map>
 #include <optional>
 #include <string>
 #include <unordered_map>
@@ -35,13 +37,15 @@ namespace raytracer::object::primitive {
     struct SurfaceData {
         maths::Vector normal;
         maths::Vector uv;
-        std::unordered_map<std::string, double> extraParams;
+        std::map<std::string, std::any> extraParams;
         MaterialProperties material;
     };
 
     struct HitRecord {
         double t = -1.0;
         int objectId = -1;
+        int triangleIndex = -1;
+        maths::Vector hitPoint{0, 0, 0};
     };
 
     class IPrimitive {
@@ -78,8 +82,7 @@ namespace raytracer::object::primitive {
          * @brief Get surface data at hit point (normal, uv, etc.) and evaluates
          * underlying materials for color, emission, etc.
          */
-        virtual SurfaceData surfaceData(
-            const maths::Vector &hitPoint) const = 0;
+        virtual SurfaceData surfaceData(const HitRecord &record) const = 0;
 
         /**
          *

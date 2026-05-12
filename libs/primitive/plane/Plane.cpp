@@ -59,7 +59,8 @@ namespace raytracer::object::primitive {
         return {0, 0, 0, 0, 0, 0};
     }
 
-    SurfaceData Plane::surfaceData(const maths::Vector &hitPoint) const {
+    SurfaceData Plane::surfaceData(const HitRecord &record) const {
+        const maths::Vector &hitPoint = record.hitPoint;
         const maths::Vector &normal = _normal;
         const maths::Vector helper = (std::abs(normal.y) < 0.999)
                                          ? maths::Vector(0, 1, 0)

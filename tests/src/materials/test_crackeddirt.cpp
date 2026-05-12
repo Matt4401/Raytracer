@@ -82,7 +82,9 @@ TEST(CrackedDirtMaterial, IntegratesWithPrimitive) {
             sphere);
     ASSERT_NE(basePrim, nullptr);
 
-    auto sd = basePrim->surfaceData(raytracer::maths::Vector(0, 10, 0));
+    auto sd = basePrim->surfaceData(
+        raytracer::object::primitive::HitRecord{0, -1, 0,
+                                                raytracer::maths::Vector(0, 10, 0)});
     EXPECT_GE(sd.material.color.r, 0);
     EXPECT_LE(sd.material.color.r, 255);
     EXPECT_GE(sd.material.color.g, 0);
@@ -130,7 +132,8 @@ TEST(CrackedDirtMaterial, VariesAcrossPoints) {
 
     std::set<int> uniqueColors;
     for (const auto &pt : samples) {
-        auto sd = basePrim->surfaceData(pt);
+        auto sd = basePrim->surfaceData(
+            raytracer::object::primitive::HitRecord{0, -1, 0, pt});
         int packed = (static_cast<int>(sd.material.color.r) << 16) |
                      (static_cast<int>(sd.material.color.g) << 8) |
                      (static_cast<int>(sd.material.color.b));
