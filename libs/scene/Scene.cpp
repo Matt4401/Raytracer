@@ -8,6 +8,9 @@
 #include "Scene.hpp"
 
 #include <algorithm>
+#include <bvh/BVHBuilder.hpp>
+#include <iterator>
+#include <limits>
 
 #include "object/IScene.hpp"
 #include "object/primitive/IPrimitive.hpp"
@@ -42,21 +45,21 @@ namespace raytracer::object::scene {
             .normalized();
     }
 
-    bool Scene::intersectClosest(const maths::Ray &ray, double &t,
-                                 int &objectId) const {
-        const double infinity = std::numeric_limits<double>::infinity();
-        t = infinity;
+    bool Scene::intersect(const maths::Ray &ray, double &t,
+                          int &objectId) const {
+        constexpr double INF = std::numeric_limits<double>::infinity();
+        t = INF;
         objectId = -1;
 
-        for (std::size_t i = 0; i < _primitives.size(); ++i) {
-            const double distance = _primitives.at(i)->hits(ray);
-            if (distance >= 0.0 && distance < t) {
-                t = distance;
-                objectId = static_cast<int>(i);
+        if (_bvhRoot) {
+            if (primitive::HitRecord rec; _bvhRoot->hits(ray, rec)) {
+                t = rec.t;
+                objectId = rec.objectId;
+                return true;
             }
+            return false;
         }
-
-        return objectId != -1;
+        return false;
     }
 
     bool Scene::intersect(const maths::Ray &ray, double &t,

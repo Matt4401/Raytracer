@@ -53,61 +53,39 @@ namespace raytracer::object::primitive {
         return _v2;
     }
 
-    SurfaceData Triangle::surfaceData(const maths::Vector &hitPoint) const {
-        const maths::Vector edge1 = _v1 - _center;
-        const maths::Vector edge2 = _v2 - _center;
-        const auto normal = edge1.cross(edge2).normalized();
-        const auto hitVector = hitPoint - _center;
-        const double d00 = edge1.dot(edge1);
-        const double d01 = edge1.dot(edge2);
-        const double d11 = edge2.dot(edge2);
-        const double d20 = hitVector.dot(edge1);
-        const double d21 = hitVector.dot(edge2);
-        const double denom = d00 * d11 - d01 * d01;
-        const double uvU = (d20 * d11 - d21 * d01) / denom;
-        const double uvV = (d21 * d00 - d20 * d01) / denom;
-
-        SurfaceData surfData{
-            .normal = normal, .uv = maths::Vector(uvU, uvV, 0), .material = {}};
-        if (this->_material) {
-            surfData.material = this->_material->evaluate(surfData, hitPoint);
-        }
-
-        return surfData;
-    }
-
-    double Triangle::hits(const maths::Ray &ray) {
+    bool Triangle::hits(const maths::Ray &ray, HitRecord &record) const {
         const maths::Vector edge1 = _v1 - _center;
         const maths::Vector edge2 = _v2 - _center;
         const maths::Vector rayCrossE2 = ray.direction.cross(edge2);
         const double det = edge1.dot(rayCrossE2);
 
         if (std::abs(det) < K_RAY_EPSILON) {
-            return -1.0;  // Ray is parallel to triangle
+            return false;  // Ray is parallel to triangle
         }
 
         const double invDet = 1.0 / det;
         const maths::Vector s = ray.origin - _center;
         const double u = s.dot(rayCrossE2) * invDet;
         if (u < -K_RAY_EPSILON || u - 1 > K_RAY_EPSILON) {
-            return -1.0;  // Ray pass outside edge2 bounds
+            return false;  // Ray pass outside edge2 bounds
         }
 
         const maths::Vector sCrossE1 = s.cross(edge1);
-        const double v = ray.direction.dot(sCrossE1) * invDet;
-        if (v < -K_RAY_EPSILON || u + v - 1 > K_RAY_EPSILON) {
-            return -1.0;  // Ray pass outside edge1 bounds
+        if (const double v = ray.direction.dot(sCrossE1) * invDet;
+            v < -K_RAY_EPSILON || u + v - 1 > K_RAY_EPSILON) {
+            return false;  // Ray pass outside edge1 bounds
         }
 
         const double t = edge2.dot(sCrossE1) * invDet;
         if (t < K_RAY_EPSILON) {
-            return -1.0;  // Ray intersection behind the origin
+            return false;  // Ray intersection behind the origin
         }
-
-        return t;
+        record.t = t;
+        record.objectId = getId();
+        return true;
     }
 
-    IPrimitive::BoundingBox Triangle::boundingBox() {
+    IPrimitive::AABoundingBox Triangle::boundingBox() {
         const auto v0 = _center;
         const auto v1 = _v1;
         const auto v2 = _v2;
@@ -118,11 +96,11 @@ namespace raytracer::object::primitive {
         const auto maxY = std::max({v0.y, v1.y, v2.y});
         const auto maxZ = std::max({v0.z, v1.z, v2.z});
 
-        return {.x = minX,
-                .y = minY,
-                .z = minZ,
-                .w = maxX - minX,
-                .h = maxY - minY,
-                .d = maxZ - minZ};
+        return maths::AABoundingBox{.x = minX,
+                                    .y = minY,
+                                    .z = minZ,
+                                    .w = maxX - minX,
+                                    .h = maxY - minY,
+                                    .d = maxZ - minZ};
     }
 }  // namespace raytracer::object::primitive

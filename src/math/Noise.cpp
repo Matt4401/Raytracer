@@ -95,4 +95,48 @@ namespace raytracer::maths {
             w);
         return res;
     }
+
+    std::pair<double, double> Noise::worley(double x, double y, double z) {
+        int cx = static_cast<int>(std::floor(x));
+        int cy = static_cast<int>(std::floor(y));
+        int cz = static_cast<int>(std::floor(z));
+
+        double f1 = 1e9;
+        double f2 = 1e9;
+
+        for (int i = -1; i <= 1; ++i) {
+            for (int j = -1; j <= 1; ++j) {
+                for (int k = -1; k <= 1; ++k) {
+                    int cellX = cx + i;
+                    int cellY = cy + j;
+                    int cellZ = cz + k;
+                    int maskedCellX = cellX & 255;
+                    int maskedCellY = cellY & 255;
+                    int maskedCellZ = cellZ & 255;
+
+                    int hash =
+                        perm[(maskedCellX +
+                              perm[(maskedCellY + perm[maskedCellZ]) & 255]) &
+                             255];
+
+                    double ptX = (hash & 15) / 15.0;
+                    double ptY = ((hash >> 4) & 15) / 15.0;
+                    double ptZ = ((hash >> 2) & 15) / 15.0;
+
+                    double dx = (cellX + ptX) - x;
+                    double dy = (cellY + ptY) - y;
+                    double dz = (cellZ + ptZ) - z;
+                    double dist = std::sqrt(dx * dx + dy * dy + dz * dz);
+
+                    if (dist < f1) {
+                        f2 = f1;
+                        f1 = dist;
+                    } else if (dist < f2) {
+                        f2 = dist;
+                    }
+                }
+            }
+        }
+        return {f1, f2};
+    }
 }  // namespace raytracer::maths

@@ -78,7 +78,7 @@ jobs:
       - name: Run linter
         run: |
           find . -not -path "./tests/*" -not -path "./build/_deps/*" \( -name "*.cpp" -o -name "*.hpp" \) | xargs clang-tidy -p build
-        timeout-minutes: 3
+        timeout-minutes: 5
   format:
     runs-on: [ self-hosted ]
     container:

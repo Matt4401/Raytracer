@@ -45,31 +45,15 @@ namespace raytracer::object::primitive {
         return _radius;
     }
 
-    SurfaceData Sphere::surfaceData(const maths::Vector &hitPoint) const {
-        const maths::Vector normal = (hitPoint - _center).normalized();
-        const double u = 0.5 + std::atan2(normal.z, normal.x) / (2 * M_PI);
-        const double v = 0.5 - std::asin(normal.y) / M_PI;
-
-        SurfaceData surfData{
-            .normal = normal, .uv = maths::Vector(u, v, 0), .material = {}};
-
-        if (this->_material) {
-            surfData.material = this->_material->evaluate(surfData, hitPoint);
-        }
-
-        return surfData;
-    }
-
-    double Sphere::hits(const maths::Ray &ray) {
+    bool Sphere::hits(const maths::Ray &ray, HitRecord &record) const {
         const maths::Vector oc = ray.origin - _center;
-        const maths::Vector ocVec(oc.x, oc.y, oc.z);
         const double a = ray.direction.dot(ray.direction);
-        const double b = 2.0 * ocVec.dot(ray.direction);
-        const double c = ocVec.dot(ocVec) - _radius * _radius;
-        const double discriminant = b * b - 4 * a * c;
+        const double b = 2.0 * oc.dot(ray.direction);
+        const double c = oc.dot(oc) - _radius * _radius;
 
+        const double discriminant = b * b - 4 * a * c;
         if (discriminant < 0) {
-            return -1.0;
+            return false;
         }
 
         const double sqrtDiscriminant = std::sqrt(discriminant);
@@ -78,18 +62,20 @@ namespace raytracer::object::primitive {
 
         double t = -1.0;
         if (t0 > K_RAY_EPSILON) {
-            t = t0;
-        } else if (t1 > K_RAY_EPSILON) {
-            t = t1;
-        } else {
-            return -1.0;
+            record.t = t0;
+            record.objectId = getId();
+            return true;
         }
-
-        return t;
+        if (t1 > K_RAY_EPSILON) {
+            record.t = t1;
+            record.objectId = getId();
+            return true;
+        }
+        return false;
     }
 
-    IPrimitive::BoundingBox Sphere::boundingBox() {
-        return {
+    IPrimitive::AABoundingBox Sphere::boundingBox() {
+        return maths::AABoundingBox{
             .x = _center.x - _radius,
             .y = _center.y - _radius,
             .z = _center.z - _radius,

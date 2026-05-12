@@ -82,6 +82,12 @@ if (NOT SKIP_INTERNET)
             ${CMAKE_SOURCE_DIR}/libs/materials/marble/Marble.cpp
             src/materials/test_wood.cpp
             ${CMAKE_SOURCE_DIR}/libs/materials/wood/Wood.cpp
+            src/materials/test_worleynoise.cpp
+            ${CMAKE_SOURCE_DIR}/libs/materials/worleynoise/WorleyNoise.cpp
+            src/materials/test_crackeddirt.cpp
+            ${CMAKE_SOURCE_DIR}/libs/materials/crackeddirt/CrackedDirt.cpp
+            src/materials/test_turingpattern.cpp
+            ${CMAKE_SOURCE_DIR}/libs/materials/turingpattern/TuringPattern.cpp
             ${CMAKE_SOURCE_DIR}/src/plugin/ObjectFactory.cpp
             ${CMAKE_SOURCE_DIR}/src/plugin/PluginManager.cpp
     )
@@ -136,6 +142,42 @@ if (NOT SKIP_INTERNET)
     )
 
     gtest_discover_tests(primitive_tests)
+
+    add_executable(bvh_tests
+            src/main.cpp
+            src/bvh/bvh_test_helpers.hpp
+            src/bvh/test_bvh_node.cpp
+            src/bvh/test_bvh_builder.cpp
+            src/bvh/test_bvh_strategies.cpp
+            src/bvh/test_strategy_factory.cpp
+            ${CMAKE_SOURCE_DIR}/src/bvh/BVHNode.cpp
+            ${CMAKE_SOURCE_DIR}/src/bvh/StrategyFactory.cpp
+            ${CMAKE_SOURCE_DIR}/src/bvh/ASplitStrategy.cpp
+            ${CMAKE_SOURCE_DIR}/src/bvh/bvhSplitStrategy/SAHStrategy.cpp
+            ${CMAKE_SOURCE_DIR}/src/bvh/bvhSplitStrategy/MedianStrategy.cpp
+            ${CMAKE_SOURCE_DIR}/src/bvh/bvhSplitStrategy/MidpointStrategy.cpp
+    )
+
+    target_link_libraries(bvh_tests PRIVATE
+            GTest::gtest
+            GTest::gmock
+            raytracer_core
+    )
+
+    target_include_directories(bvh_tests PRIVATE
+            ${CMAKE_SOURCE_DIR}
+            ${CMAKE_SOURCE_DIR}/include
+            ${CMAKE_SOURCE_DIR}/src
+    )
+
+    target_compile_definitions(bvh_tests
+            PRIVATE
+            FIXTURES_PATH="${FIXTURES_DIR}"
+            TEST_PLUGINS_PATH="${TEST_PLUGINS_DIR}"
+            PROJECT_PLUGINS_PATH="${CMAKE_SOURCE_DIR}/plugins/"
+    )
+
+    gtest_discover_tests(bvh_tests)
 else ()
     message(WARNING "GoogleTest not available. Unit tests will not be built.")
 endif ()

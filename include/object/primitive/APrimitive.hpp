@@ -32,7 +32,8 @@ namespace raytracer::object::primitive {
         }
         ~APrimitive() override = default;
 
-        double hits(const maths::Ray &ray) override = 0;
+        bool hits(const maths::Ray &ray, HitRecord &record) const override = 0;
+        AABoundingBox boundingBox() override = 0;
         SurfaceData surfaceData(const maths::Vector &hitPoint) const override =
             0;
         BoundingBox boundingBox() override = 0;
@@ -40,9 +41,13 @@ namespace raytracer::object::primitive {
         maths::Vector center() const noexcept override;
         const std::string &name() const noexcept override;
 
+        void setId(int id) override;
+        int getId() const override;
+
       protected:
         std::shared_ptr<raytracer::object::material::IMaterial> _material;
         std::string _name;
         maths::Vector _center;
+        int _id = -1;
     };
 }  // namespace raytracer::object::primitive

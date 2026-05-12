@@ -12,12 +12,15 @@
 #include <optional>
 #include <string>
 
+#include "math/AABoundingBox.hpp"
 #include "math/Color.hpp"
 #include "math/Ray.hpp"
 #include "math/Vector.hpp"
 #include "object/primitive/ReflTypes.hpp"
 
 namespace raytracer::object::primitive {
+    class IPrimitive;
+
     struct MaterialProperties {
         maths::Color color;
         maths::Vector emission;
@@ -37,39 +40,47 @@ namespace raytracer::object::primitive {
         MaterialProperties material;
     };
 
-    struct HitContext {
-        double distance;
-        maths::Vector hitPoint;
+    struct HitRecord {
+        double t = -1.0;
+        int objectId = -1;
     };
 
     class IPrimitive {
       public:
-        struct BoundingBox {
-            double x;
-            double y;
-            double z;
-            double w;
-            double h;
-            double d;
-        };
+        using AABoundingBox = maths::AABoundingBox;
 
         virtual ~IPrimitive() = default;
         /**
-         * @brief Compute ray-primitive intersection and return complete hit
-         * context.
-         * @param ray the ray to test for intersection with the primitive
-         * @param computeSurfaceData if true, compute normal, uv, and material;
-         * if false, return only distance and hitPoint with empty surfaceData
-         * @return HitContext containing distance, hit point, and surface data
-         * if intersection occurs, std::nullopt otherwise
+         *
+         * @param ray the ray to test for intersection with the primitive. The
+         * ray is expected to be a valid Ray object with defined origin and
+         * direction components. The origin represents the starting point of the
+         * ray in 3D space, while the direction represents the vector along
+         * which the ray is cast. The hits function will calculate if and where
+         * the ray intersects with the primitive, returning a double value that
+         * represents the distance from the ray's origin to the point of
+         * intersection.
+         * @param record
+         * @return the distance from the ray's origin to the point of
+         * intersection with the primitive, or a specific value if no
+         * intersection occurs
          */
-        virtual double hits(const maths::Ray &ray) = 0;
+        virtual bool hits(const maths::Ray &ray, HitRecord &record) const = 0;
+
+        // ONLY USED FOR PRIMITIVES TESTS
+        virtual double hits(const maths::Ray &ray) const {
+            if (HitRecord record; hits(ray, record)) {
+                return record.t;
+            }
+            return -1.0;
+        }
 
         virtual SurfaceData surfaceData(
             const maths::Vector &hitPoint) const = 0;
 
         /**
-         * @return a BoundingBox struct that defines the axis-aligned bounding
+         *
+         * @return a BoundingBox class that defines the axis-aligned bounding
          * box of the primitive. The bounding box is defined by its position (x,
          * y, z) and its dimensions (w, h, d). The position represents the
          * coordinates of the minimum corner of the bounding box in 3D space,
@@ -81,10 +92,17 @@ namespace raytracer::object::primitive {
          * box before performing more complex intersection calculations with the
          * primitive itself.
          */
-        virtual BoundingBox boundingBox() = 0;
+        virtual AABoundingBox boundingBox() = 0;
 
         virtual const std::string &name() const noexcept = 0;
         virtual maths::Vector center() const noexcept = 0;
-    };
 
+        // SECURITY GUARDS
+        virtual void setId(int id) {
+            (void)id;
+        }
+        virtual int getId() const {
+            return -1;
+        }
+    };
 }  // namespace raytracer::object::primitive
