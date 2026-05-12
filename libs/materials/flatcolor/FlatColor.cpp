@@ -11,14 +11,14 @@
 
 namespace raytracer::object::material {
 
-    FlatColor::FlatColor(const std::map<std::string, std::any>& args)
+    FlatColor::FlatColor(const std::map<std::string, std::any> &args)
         : ABasicMaterial(args),
           _color(util::Helpers::toColor(args, "color", "FlatColor")) {
     }
 
     primitive::MaterialProperties FlatColor::evaluate(
-        const primitive::SurfaceData& data,
-        const maths::Vector& hitPoint) const {
+        const primitive::SurfaceData &data,
+        const maths::Vector &hitPoint) const {
         return {.color = _color,
                 .emission = _emission,
                 .reflType = _refl,

@@ -14,12 +14,10 @@
 
 namespace raytracer::object::material {
 
-    ABasicMaterial::ABasicMaterial(const std::map<std::string, std::any>& args)
+    ABasicMaterial::ABasicMaterial(const std::map<std::string, std::any> &args)
         : AMaterial(),
           _emission(0, 0, 0),
-          _refl(util::ObjectMiddleware::validate<
-                raytracer::object::primitive::RefltT>(args, "reflType",
-                                                      "Material")),
+          _refl(util::Helpers::toEnumRefltT(args, "reflType", "Material")),
           _reflectivity(0.0),
           _transparency(0.0),
           _ior(1.0),

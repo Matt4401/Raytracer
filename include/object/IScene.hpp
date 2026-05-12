@@ -62,6 +62,8 @@ namespace raytracer::object::scene {
         virtual AmbientLight ambientLight() const = 0;
         virtual AmbientDiffuse ambientDiffuse() const = 0;
 
+        virtual bool haveCamera() = 0;
+
         virtual const std::vector<std::shared_ptr<primitive::IPrimitive>> &
         primitives() const = 0;
         virtual const std::vector<std::shared_ptr<light::ILight>> &lights()

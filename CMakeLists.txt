@@ -56,6 +56,8 @@ set(SRCS
         src/util/middleware/Helpers.cpp
         src/plugin/PluginManager.cpp
         src/plugin/ObjectFactory.cpp
+        src/parser/ConfigParser.cpp
+		src/parser/LibCfgUtils.cpp
         src/object/light/ALight.cpp
         src/object/scene/AScene.cpp
 )
@@ -66,17 +68,44 @@ set(HEADERS
         src/plugin/PluginManager.hpp
         src/plugin/ObjectFactory.hpp
         src/plugin/DlLoader.hpp
+        src/parser/ConfigParser.hpp
+		src/parser/LibCfgUtils.hpp
+        include/exception/Exception.hpp
+        include/exception/ParsingException.hpp
+        include/exception/CoreException.hpp
+        include/exception/PluginException.hpp
+        include/math/Color.hpp
+        include/math/Vector.hpp
+        include/math/Ray.hpp
+        include/object/AObject.hpp
+        include/object/ACamera.hpp
+        include/object/IObject.hpp
+        include/object/ICamera.hpp
+        include/object/ILight.hpp
+        include/object/IScene.hpp
+        include/object/primitive/IPrimitive.hpp
+        include/object/primitive/APrimitive.hpp
+        include/object/primitive/ReflTypes.hpp
 )
 
 add_library(raytracer_core STATIC ${SRCS})
 set_property(TARGET raytracer_core PROPERTY POSITION_INDEPENDENT_CODE ON)
+
 target_include_directories(raytracer_core PUBLIC
         ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_SOURCE_DIR}/src
 )
 
+
+# libconfig
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBCONFIG REQUIRED libconfig++)
+
+#bin
 add_executable(${NAME} src/main.cpp ${HEADERS})
 target_link_libraries(${NAME} PRIVATE raytracer_core)
+target_link_libraries(${NAME} PRIVATE ${LIBCONFIG_LIBRARIES})
+target_include_directories(${NAME} PRIVATE ${LIBCONFIG_INCLUDE_DIRS})
 
 add_custom_command(TARGET ${NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
