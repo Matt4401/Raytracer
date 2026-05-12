@@ -101,11 +101,17 @@ target_include_directories(raytracer_core PUBLIC
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBCONFIG REQUIRED libconfig++)
 
+target_include_directories(raytracer_core PUBLIC
+        ${LIBCONFIG_INCLUDE_DIRS}
+)
+
+target_link_libraries(raytracer_core PUBLIC
+        ${LIBCONFIG_LIBRARIES}
+)
+
 #bin
 add_executable(${NAME} src/main.cpp ${HEADERS})
 target_link_libraries(${NAME} PRIVATE raytracer_core)
-target_link_libraries(${NAME} PRIVATE ${LIBCONFIG_LIBRARIES})
-target_include_directories(${NAME} PRIVATE ${LIBCONFIG_INCLUDE_DIRS})
 
 add_custom_command(TARGET ${NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
