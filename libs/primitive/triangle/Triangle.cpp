@@ -81,7 +81,7 @@ namespace raytracer::object::primitive {
             return false;  // Ray intersection behind the origin
         }
         record.t = t;
-        record.objectId = getId();
+        record.objectId = id();
         return true;
     }
 

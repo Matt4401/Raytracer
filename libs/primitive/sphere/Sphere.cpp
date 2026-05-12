@@ -62,12 +62,12 @@ namespace raytracer::object::primitive {
 
         if (t0 > K_RAY_EPSILON) {
             record.t = t0;
-            record.objectId = getId();
+            record.objectId = id();
             return true;
         }
         if (t1 > K_RAY_EPSILON) {
             record.t = t1;
-            record.objectId = getId();
+            record.objectId = id();
             return true;
         }
         return false;

@@ -35,12 +35,10 @@ namespace raytracer::object::primitive {
         bool hits(const maths::Ray &ray, HitRecord &record) const override;
         AABoundingBox boundingBox() override;
         SurfaceData surfaceData(const maths::Vector &hitPoint) const override;
-        void setLimitBox(const maths::AABoundingBox& box) override;
+        bool isInfinite() const override;
 
       private:
         maths::Vector _normal;
-        maths::AABoundingBox _sceneLimit;
-        bool _hasLimit;
 
         static constexpr std::size_t EXPECTED_ARGS = 3;
         static constexpr double EPS = K_RAY_EPSILON;

@@ -48,15 +48,14 @@ namespace raytracer::object::primitive {
         const double t = (_center - ray.origin).dot(_normal) / denom;
         if (t >= EPS) {
             record.t = t;
-            record.objectId = getId();
+            record.objectId = id();
             return true;
         }
         return false;
     }
 
-    void Plane::setLimitBox(const maths::AABoundingBox &box) {
-        _sceneLimit = box;
-        _hasLimit = true;
+    bool Plane::isInfinite() const {
+        return true;
     }
 
     IPrimitive::AABoundingBox Plane::boundingBox() {
