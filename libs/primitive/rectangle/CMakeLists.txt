@@ -4,11 +4,12 @@ SET (CMAKE_CXX_STANDARD 20)
 include_directories(../../../include)
 
 SET (SRCS
-    #Future src
+    RectanglePlugin.cpp
+    Rectangle.cpp
 )
 
 SET (HEADERS
-    #Future headers
+    Rectangle.hpp
 )
 
 add_library(rectangle_plug SHARED ${SRCS} ${HEADERS})
