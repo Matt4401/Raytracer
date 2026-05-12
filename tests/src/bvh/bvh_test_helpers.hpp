@@ -28,7 +28,8 @@ namespace raytracer::tests::bvh {
               _box(box),
               _center(center),
               _hitT(hitT),
-              _id(id) {}
+              _id(id) {
+        }
 
         bool hits(const maths::Ray &,
                   object::primitive::HitRecord &record) const override {
@@ -82,14 +83,16 @@ namespace raytracer::tests::bvh {
     class ExposedASplitStrategy : public raytracer::bvh::ASplitStrategy {
       public:
         raytracer::bvh::SplitResult findSplit(
-            const std::vector<std::shared_ptr<raytracer::object::primitive::IPrimitive>> &,
+            const std::vector<
+                std::shared_ptr<raytracer::object::primitive::IPrimitive>> &,
             const maths::AABoundingBox &) override {
             return {.axis = raytracer::bvh::Axis::X,
                     .splitPos = 0.0,
                     .shouldSplit = false};
         }
 
-        static raytracer::bvh::Axis longestAxis(const maths::AABoundingBox &box) {
+        static raytracer::bvh::Axis longestAxis(
+            const maths::AABoundingBox &box) {
             return raytracer::bvh::ASplitStrategy::longestAxis(box);
         }
 

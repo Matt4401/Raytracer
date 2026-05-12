@@ -8,7 +8,10 @@
 #include "Mesh.hpp"
 
 #include <any>
+#include <memory>
+#include <vector>
 
+#include "bvh/BVHBuilder.hpp"
 #include "util/middleware/Helpers.hpp"
 #include "util/middleware/ObjectMiddleware.hpp"
 
@@ -34,7 +37,32 @@ namespace raytracer::object::primitive {
         _objLoader = std::make_unique<ObjLoader>(objPath, scale, _center);
         _surfaceHelper =
             std::make_unique<MeshSurfaceHelper>(_objLoader->vertices());
-        buildTrianglesFromFaces();
+
+        const auto &faces = _objLoader->faces();
+        const auto &vertices = _objLoader->vertices();
+        _faces.reserve(faces.size());
+        for (std::size_t i = 0; i < faces.size(); ++i) {
+            const auto &f = faces[i];
+            const maths::Vector v0 = vertices[f.fv1.v];
+            const maths::Vector v1 = vertices[f.fv2.v];
+            const maths::Vector v2 = vertices[f.fv3.v];
+            auto face = std::make_shared<Face>(
+                i, f, v0, v1, v2, _material,
+                _objLoader->getMaterialForFace(static_cast<int>(i)));
+            face->setId(static_cast<int>(i));
+            _faces.push_back(face);
+        }
+
+        if (!_faces.empty()) {
+            bvh::BVHBuilder<raytracer::bvh::ISplitStrategy> builder("sah");
+            std::vector<std::shared_ptr<IPrimitive>> objs;
+            objs.reserve(_faces.size());
+            for (const auto &face : _faces) {
+                objs.push_back(face);
+            }
+            _bvhRoot = builder.build(objs);
+        }
+
         _lastHitTriangleIndex = std::nullopt;
     }
 
@@ -46,35 +74,37 @@ namespace raytracer::object::primitive {
         if (!_lastHitTriangleIndex.has_value())
             return data;
 
-        int triangleIndex = static_cast<int>(_lastHitTriangleIndex.value());
-        maths::Vector normal = _surfaceHelper->computeNormal(
-            triangleIndex, hitPoint, _objLoader->normals());
-        maths::Vector uv = _surfaceHelper->computeUV(
-            triangleIndex, hitPoint, _objLoader->textureCoords());
-
-        data.normal = normal;
-        data.uv = uv;
-
-        data.extraParams["materialName"] =
-            std::any(_objLoader->getMaterialForFace(triangleIndex));
-
-        if (this->_material) {
-            data.material = this->_material->evaluate(data, hitPoint);
+        const std::size_t faceIndex = _lastHitTriangleIndex.value();
+        if (faceIndex < _faces.size()) {
+            return _faces[faceIndex]->surfaceData(hitPoint);
         }
 
         return data;
     }
 
     bool Mesh::hits(const maths::Ray &ray, HitRecord &record) const {
+        if (_bvhRoot) {
+            if (!_bvhRoot->hits(ray, record)) {
+                _lastHitTriangleIndex = std::nullopt;
+                return false;
+            }
+            if (record.objectId >= 0)
+                _lastHitTriangleIndex =
+                    static_cast<std::size_t>(record.objectId);
+            else
+                _lastHitTriangleIndex = std::nullopt;
+            return true;
+        }
+
         auto intersection = _surfaceHelper->findClosestTriangle(ray);
         if (!intersection) {
             _lastHitTriangleIndex = std::nullopt;
             return false;
         }
-
         _lastHitTriangleIndex =
             static_cast<std::size_t>(intersection->triangleIndex);
         record.t = intersection->distance;
+        record.objectId = static_cast<int>(intersection->triangleIndex);
         return true;
     }
 
@@ -108,28 +138,6 @@ namespace raytracer::object::primitive {
         _meshBoundingBox = {minX,        minY,        minZ,
                             maxX - minX, maxY - minY, maxZ - minZ};
         return _meshBoundingBox;
-    }
-
-    IPrimitive::AABoundingBox Mesh::triangleBoundingBox(int triangleIndex) const {
-        const auto &triangles = _surfaceHelper->triangles();
-        if (triangleIndex < 0 ||
-            triangleIndex >= static_cast<int>(triangles.size()))
-            return {0, 0, 0, 0, 0, 0};
-
-        const auto &vertices = _objLoader->vertices();
-        const auto &face = triangles[triangleIndex];
-        const maths::Vector &v0 = vertices[face.fv1.v];
-        const maths::Vector &v1 = vertices[face.fv2.v];
-        const maths::Vector &v2 = vertices[face.fv3.v];
-
-        const double minX = std::min({v0.x, v1.x, v2.x});
-        const double minY = std::min({v0.y, v1.y, v2.y});
-        const double minZ = std::min({v0.z, v1.z, v2.z});
-        const double maxX = std::max({v0.x, v1.x, v2.x});
-        const double maxY = std::max({v0.y, v1.y, v2.y});
-        const double maxZ = std::max({v0.z, v1.z, v2.z});
-
-        return {minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ};
     }
 
     void Mesh::buildTrianglesFromFaces() {

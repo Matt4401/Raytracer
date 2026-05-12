@@ -89,11 +89,11 @@ namespace raytracer::object::material {
         unsigned int y = static_cast<unsigned int>((1.0 - v) * (height - 1));
 
         sf::Color sfCol;
-    #if SFML_VERSION_MAJOR >= 3
+#if SFML_VERSION_MAJOR >= 3
         sfCol = img.getPixel(sf::Vector2u(x, y));
-    #else
+#else
         sfCol = img.getPixel(x, y);
-    #endif
+#endif
         return maths::Color(sfCol.r, sfCol.g, sfCol.b);
     }
 

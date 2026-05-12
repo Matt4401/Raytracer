@@ -7,9 +7,9 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
 #include <vector>
-#include <cstdint>
 
 #include "math/AABoundingBox.hpp"
 #include "object/primitive/IPrimitive.hpp"

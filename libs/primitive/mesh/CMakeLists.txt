@@ -4,12 +4,14 @@ SET (CMAKE_CXX_STANDARD 20)
 SET (SRCS
     MeshPlugin.cpp
     Mesh.cpp
+    Face.cpp
     ObjLoader.cpp
     MeshSurfaceHelper.cpp
 )
 
 SET (HEADERS
     Mesh.hpp
+    Face.hpp
     ObjLoader.hpp
     MeshSurfaceHelper.hpp
 )
