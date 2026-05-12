@@ -108,7 +108,19 @@ namespace raytracer::object::primitive {
             return -1;
         }
 
-        virtual void setLimitBox(const maths::AABoundingBox& box) {
+        /**
+         * @brief Sets a limit bounding box for the primitive, which can be used
+         * to optimize intersection tests by providing a spatial boundary within
+         * which the primitive exists. This function allows the primitive to be
+         * associated with a specific bounding box, which can help improve
+         * performance in ray tracing algorithms by quickly determining if a ray
+         * intersects with the bounding box before performing more complex
+         * intersection calculations with the primitive itself.
+         * @param box the axis-aligned bounding box that defines the spatial
+         * limits of the primitive. The box is expected to be a valid
+         * AABoundingBox object with defined position and dimensions.
+         */
+        virtual void setLimitBox(const maths::AABoundingBox &box) {
             (void)box;
         }
     };
