@@ -9,10 +9,10 @@
 #define ASCENE_HPP_
 
 #include <any>
-#include <cmath>
 #include <functional>
 #include <map>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "AObject.hpp"
@@ -91,6 +91,8 @@ namespace raytracer::object::scene {
                      addCamera(obj);
                  }},
             };
+
+        static constexpr std::string_view DEFAULT_SPLIT_STRATEGY = "sah";
     };
 }  // namespace raytracer::object::scene
 
