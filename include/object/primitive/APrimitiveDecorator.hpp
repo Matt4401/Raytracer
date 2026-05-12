@@ -26,6 +26,14 @@ namespace raytracer::object::primitive {
             return _wrapped->hits(ray, record);
         }
 
+        void setLimitBox(const AABoundingBox &box) override {
+            _wrapped->setLimitBox(box);
+        }
+
+        bool isInfinite() const override {
+            return _wrapped->isInfinite();
+        }
+
         AABoundingBox boundingBox() override {
             return _wrapped->boundingBox();
         }
@@ -38,8 +46,8 @@ namespace raytracer::object::primitive {
             _wrapped->setId(id);
         }
 
-        int getId() const override {
-            return _wrapped->getId();
+        int id() const override {
+            return _wrapped->id();
         }
 
       protected:

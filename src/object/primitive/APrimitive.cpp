@@ -8,6 +8,13 @@
 #include "object/primitive/APrimitive.hpp"
 
 namespace raytracer::object::primitive {
+    double APrimitive::hits(const maths::Ray &ray) const {
+        if (HitRecord record; hits(ray, record)) {
+            return record.t;
+        }
+        return -1.0;
+    }
+
     const std::string &APrimitive::name() const noexcept {
         return _name;
     }
@@ -20,7 +27,16 @@ namespace raytracer::object::primitive {
         _id = id;
     }
 
-    int APrimitive::getId() const {
+    int APrimitive::id() const {
         return _id;
+    }
+
+    void APrimitive::setLimitBox(const maths::AABoundingBox &box) {
+        _sceneLimit = box;
+        _hasLimit = true;
+    }
+
+    bool APrimitive::isInfinite() const {
+        return false;
     }
 }  // namespace raytracer::object::primitive
