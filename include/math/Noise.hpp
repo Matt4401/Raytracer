@@ -8,6 +8,7 @@
 #pragma once
 
 #include <cmath>
+#include <utility>
 
 namespace raytracer::maths {
     class Noise {
@@ -19,5 +20,6 @@ namespace raytracer::maths {
         static double lerp(double a, double b, double t);
         static double grad(int hash, double x, double y, double z);
         static double perlin(double x, double y, double z);
+        static std::pair<double, double> worley(double x, double y, double z);
     };
 }  // namespace raytracer::maths

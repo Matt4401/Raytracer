@@ -53,6 +53,8 @@ namespace raytracer::object::scene {
         const std::vector<std::shared_ptr<camera::ICamera>> &cameras()
             const override;
 
+        void buildBVH(std::string_view strategy) override;
+
       protected:
         static constexpr int K_MAX_RADIANCE_DEPTH = 10;
         static constexpr int K_DIFFUSE_RUSSIAN_ROULETTE_DEPTH = 5;
@@ -62,6 +64,7 @@ namespace raytracer::object::scene {
         static constexpr double K_PROB_NORMALIZATION_THRESHOLD = 1e-12;
 
         std::vector<std::shared_ptr<primitive::IPrimitive>> _primitives;
+        std::shared_ptr<primitive::IPrimitive> _bvhRoot;
         std::vector<std::shared_ptr<light::ILight>> _lights;
         std::vector<std::shared_ptr<camera::ICamera>> _cameras;
 

@@ -28,6 +28,7 @@ namespace raytracer {
                 return this->_objFactory.build(name, param);
             });
         this->_scenes = parser.parse(file);
+        this->_scenes.at(0)->buildBVH("sah");  // to change
     }
 
     void Core::run() {
