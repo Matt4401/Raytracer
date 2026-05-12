@@ -107,5 +107,9 @@ namespace raytracer::object::primitive {
         virtual int getId() const {
             return -1;
         }
+
+        virtual void setLimitBox(const maths::AABoundingBox& box) {
+            (void)box;
+        }
     };
 }  // namespace raytracer::object::primitive

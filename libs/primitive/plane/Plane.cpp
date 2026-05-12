@@ -54,9 +54,16 @@ namespace raytracer::object::primitive {
         return false;
     }
 
+    void Plane::setLimitBox(const maths::AABoundingBox &box) {
+        _sceneLimit = box;
+        _hasLimit = true;
+    }
+
     IPrimitive::AABoundingBox Plane::boundingBox() {
-        // TODO
-        return {0, 0, 0, 0, 0, 0};
+        if (!_hasLimit) {
+            return {-1e6, -1e6, -1e6, 2e6, 2e6, 2e6};
+        }
+        return _sceneLimit;
     }
 
     SurfaceData Plane::surfaceData(const maths::Vector &hitPoint) const {
