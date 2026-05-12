@@ -42,6 +42,13 @@ set(SRCS
         src/math/Vector.cpp
         src/math/Noise.cpp
         src/math/Rectangle.cpp
+        src/math/AABoundingBox.cpp
+        src/bvh/BVHNode.cpp
+        src/bvh/StrategyFactory.cpp
+        src/bvh/ASplitStrategy.cpp
+        src/bvh/bvhSplitStrategy/SAHStrategy.cpp
+        src/bvh/bvhSplitStrategy/MedianStrategy.cpp
+        src/bvh/bvhSplitStrategy/MidpointStrategy.cpp
         src/object/primitive/APrimitive.cpp
         src/object/material/ABasicMaterial.cpp
         src/object/material/APerlinBasedMaterial.cpp

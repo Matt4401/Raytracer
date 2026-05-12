@@ -11,12 +11,15 @@
 #include <string>
 #include <unordered_map>
 
+#include "math/AABoundingBox.hpp"
 #include "math/Color.hpp"
 #include "math/Ray.hpp"
 #include "math/Vector.hpp"
 #include "object/primitive/ReflTypes.hpp"
 
 namespace raytracer::object::primitive {
+    class IPrimitive;
+
     struct MaterialProperties {
         maths::Color color;
         maths::Vector emission;
@@ -36,16 +39,14 @@ namespace raytracer::object::primitive {
         MaterialProperties material;
     };
 
+    struct HitRecord {
+        double t = -1.0;
+        int objectId = -1;
+    };
+
     class IPrimitive {
       public:
-        struct BoundingBox {
-            double x;
-            double y;
-            double z;
-            double w;
-            double h;
-            double d;
-        };
+        using AABoundingBox = maths::AABoundingBox;
 
         virtual ~IPrimitive() = default;
         /**
@@ -58,11 +59,20 @@ namespace raytracer::object::primitive {
          * the ray intersects with the primitive, returning a double value that
          * represents the distance from the ray's origin to the point of
          * intersection.
+         * @param record
          * @return the distance from the ray's origin to the point of
          * intersection with the primitive, or a specific value if no
          * intersection occurs
          */
-        virtual double hits(const maths::Ray &ray) = 0;
+        virtual bool hits(const maths::Ray &ray, HitRecord &record) const = 0;
+
+        // ONLY USED FOR PRIMITIVES TESTS
+        virtual double hits(const maths::Ray &ray) const {
+            if (HitRecord record; hits(ray, record)) {
+                return record.t;
+            }
+            return -1.0;
+        }
 
         /**
          * @brief Get surface data at hit point (normal, uv, etc.) and evaluates
@@ -73,7 +83,7 @@ namespace raytracer::object::primitive {
 
         /**
          *
-         * @return a BoundingBox struct that defines the axis-aligned bounding
+         * @return a BoundingBox class that defines the axis-aligned bounding
          * box of the primitive. The bounding box is defined by its position (x,
          * y, z) and its dimensions (w, h, d). The position represents the
          * coordinates of the minimum corner of the bounding box in 3D space,
@@ -85,10 +95,17 @@ namespace raytracer::object::primitive {
          * box before performing more complex intersection calculations with the
          * primitive itself.
          */
-        virtual BoundingBox boundingBox() = 0;
+        virtual AABoundingBox boundingBox() = 0;
 
         virtual const std::string &name() const noexcept = 0;
         virtual maths::Vector center() const noexcept = 0;
-    };
 
+        // SECURITY GUARDS
+        virtual void setId(int id) {
+            (void)id;
+        }
+        virtual int getId() const {
+            return -1;
+        }
+    };
 }  // namespace raytracer::object::primitive
