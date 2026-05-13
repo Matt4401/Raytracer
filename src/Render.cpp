@@ -97,27 +97,24 @@ namespace raytracer {
         int imageWidth = 0;
         int imageHeight = 0;
         unsigned int workerCount = 0;
-        int rowsPerWorker = 0;
 
-        initRender(scene, samples, imageWidth, imageHeight, workerCount,
-                   rowsPerWorker);
+        initRender(scene, samples, imageWidth, imageHeight, workerCount);
 
         unsigned int activeWorkers = 0;
-        startWorkers(scene, workerCount, rowsPerWorker, activeWorkers);
+        startWorkers(scene, workerCount, activeWorkers);
 
         finishRender(activeWorkers, imageHeight, startTotal);
     }
 
     void Render::initRender(const object::scene::IScene &scene, int samples,
                             int &imageWidth, int &imageHeight,
-                            unsigned int &workerCount, int &rowsPerWorker) {
+                            unsigned int &workerCount) {
         _samples = samples;
         imageWidth = scene.cameras().at(0)->imageWidth();
         imageHeight = scene.cameras().at(0)->imageHeight();
         _pixels.assign(imageWidth * imageHeight, maths::Color());
 
         workerCount = std::max(1u, std::thread::hardware_concurrency());
-        rowsPerWorker = (imageHeight + workerCount - 1) / workerCount;
 
         this->_workers.clear();
         _workerDone = std::make_unique<std::atomic<int>[]>(workerCount);
@@ -131,9 +128,8 @@ namespace raytracer {
     }
 
     void Render::startWorkers(const object::scene::IScene &scene,
-                              unsigned int workerCount, int rowsPerWorker,
+                              unsigned int workerCount,
                               unsigned int &activeWorkers) {
-        (void)rowsPerWorker;
         const int imageHeight = scene.cameras().at(0)->imageHeight();
         for (unsigned int w = 0; w < workerCount; ++w) {
             _workerRows[w] = imageHeight;

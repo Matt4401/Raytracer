@@ -77,9 +77,9 @@ namespace raytracer {
 
         void initRender(const object::scene::IScene &scene, int samples,
                         int &imageWidth, int &imageHeight,
-                        unsigned int &workerCount, int &rowsPerWorker);
+                        unsigned int &workerCount);
         void startWorkers(const object::scene::IScene &scene,
-                          unsigned int workerCount, int rowsPerWorker,
+                          unsigned int workerCount,
                           unsigned int &activeWorkers);
         void finishRender(
             unsigned int activeWorkers, int imageHeight,
