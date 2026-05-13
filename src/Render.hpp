@@ -33,7 +33,7 @@ namespace raytracer {
         void render(const object::scene::IScene &scene, int pixel = 1,
                     int samples = 40);
 
-        const std::vector<maths::Color> &pixels();
+        const std::vector<maths::Color> &pixels() const;
 
       protected:
       private:

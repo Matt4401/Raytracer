@@ -151,7 +151,7 @@ namespace raytracer {
                   << (ms % 60000) / 1000 << "s\n";
     }
 
-    const std::vector<maths::Color> &Render::pixels() {
+    const std::vector<maths::Color> &Render::pixels() const {
         return this->_pixels;
     }
 

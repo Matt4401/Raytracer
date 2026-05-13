@@ -7,7 +7,10 @@
 
 #pragma once
 
+#include <vector>
+
 #include "object/IScene.hpp"
+
 namespace raytracer::exporter {
 
     class IExport {

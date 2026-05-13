@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <any>
 #include <cstddef>
+#include <functional>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -49,7 +50,8 @@ namespace raytracer {
     }
 
     void Core::run() {
-        this->_renderer.render(*(this->_scenes.at(0)), 1, 50);
+        this->_renderer.render(*(this->_scenes.at(0)), 1,
+                               this->_scenes.at(0)->samplesPerPixel());
         this->_export->writeFile(*(this->_scenes.at(0)),
                                  this->_renderer.pixels());
     }
@@ -103,6 +105,8 @@ namespace raytracer {
                 index++;
             }
         }
+        if (!gotFile)
+            throw exception::ParsingException(HELP_MESSAGE);
     }
 
     void Core::setExportViaFlag(size_t index,
