@@ -10,7 +10,6 @@
 #include <any>
 #include <utility>
 
-#include "AScene.hpp"
 #include "bvh/BVHBuilder.hpp"
 #include "exception/PluginException.hpp"
 #include "util/middleware/Helpers.hpp"
