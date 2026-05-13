@@ -106,7 +106,8 @@ namespace raytracer::object::primitive {
         double v = 0.0;
         if (!(iss >> u >> v)) {
             throw exception::PluginException{
-                "Failed to parse OBJ texcoord: expected two numeric components"};
+                "Failed to parse OBJ texcoord: expected two numeric "
+                "components"};
         }
         loader._buffers->texCoords.emplace_back(u, v, 0);
     }

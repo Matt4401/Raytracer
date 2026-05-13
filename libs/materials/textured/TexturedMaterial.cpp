@@ -131,7 +131,13 @@ namespace raytracer::object::material {
 
             maths::Color finalColor;
             if (mat.mapKd().empty()) {
-                finalColor = maths::Color(mat.kd().x, mat.kd().y, mat.kd().z);
+                finalColor = maths::Color(
+                    static_cast<unsigned char>(
+                        std::lround(std::clamp(mat.kd().x, 0.0, 1.0) * 255.0)),
+                    static_cast<unsigned char>(
+                        std::lround(std::clamp(mat.kd().y, 0.0, 1.0) * 255.0)),
+                    static_cast<unsigned char>(
+                        std::lround(std::clamp(mat.kd().z, 0.0, 1.0) * 255.0)));
             } else {
                 finalColor = sampleTexture(mat.mapKd(), data.uv);
             }
