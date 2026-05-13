@@ -13,6 +13,7 @@
 #include <functional>
 #include <memory>
 #include <thread>
+#include <utility>
 #include <vector>
 
 #include "math/Color.hpp"
@@ -22,9 +23,14 @@
 #include "object/IScene.hpp"
 
 namespace raytracer {
+
+    struct ImageSize {
+        int width = 0;
+        int heigth = 0;
+    };
     class Render {
-        using PrintProgressCallback = std::function<std::thread(
-            int activeWorkers, int imageHeight, Render &render)>;
+        using PrintProgressCallback =
+            std::function<std::thread(int activeWorkers, Render &render)>;
 
       public:
         Render() = default;
@@ -41,6 +47,7 @@ namespace raytracer {
         bool renderingIsFinished() const;
         int getNbWorkerDone(int activeWorkers) const;
         void setPrintProgressCallback(const PrintProgressCallback &callback);
+        ImageSize imageSize();
 
       protected:
       private:
@@ -77,17 +84,17 @@ namespace raytracer {
                                        int y) const;
 
         void initRender(const object::scene::IScene &scene, int samples,
-                        int &imageWidth, int &imageHeight,
                         unsigned int &workerCount);
         void startWorkers(const object::scene::IScene &scene,
                           unsigned int workerCount,
                           unsigned int &activeWorkers);
         void finishRender(
-            unsigned int activeWorkers, int imageHeight,
+            unsigned int activeWorkers,
             const std::chrono::high_resolution_clock::time_point &startTotal);
 
         std::vector<maths::Color> _pixels;
         PrintProgressCallback _printCallback = nullptr;
+        ImageSize _imageSize;
 
         std::vector<std::thread> _workers;
         std::unique_ptr<std::atomic<int>[]> _workerDone;

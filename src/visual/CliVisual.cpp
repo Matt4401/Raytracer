@@ -14,13 +14,13 @@
 
 namespace raytracer::visual {
 
-    std::thread CliVisual::printProgress(int activeWorkers, int imageHeight,
-                                         Render &render) {
-        return std::thread([&render, activeWorkers, imageHeight]() {
+    std::thread CliVisual::printProgress(int activeWorkers, Render &render) {
+        return std::thread([&render, activeWorkers]() {
             while (!render.renderingIsFinished()) {
                 int done = render.getNbWorkerDone(activeWorkers);
-                double pct =
-                    imageHeight == 0 ? 100.0 : (100.0 * done) / imageHeight;
+                double pct = render.imageSize().heigth == 0
+                                 ? 100.0
+                                 : (100.0 * done) / render.imageSize().heigth;
 
                 std::cerr << "\rRender " << (int)pct << "% ";
                 std::cerr << std::flush;

@@ -41,6 +41,7 @@ set(SRCS
         src/Render.cpp
         src/exporter/ExportPPM.cpp
 		src/visual/CliVisual.cpp
+		src/visual/SFMLVisual.cpp
         src/exception/Exception.cpp
         src/math/Color.cpp
         src/math/Vector.cpp
@@ -73,6 +74,7 @@ set(HEADERS
 		src/exporter/IExport.hpp
 		src/visual/CliVisual.hpp
 		src/visual/IVisual.hpp
+		src/visual/SFMLVisual.hpp
         src/plugin/PluginManager.hpp
         src/plugin/ObjectFactory.hpp
         src/plugin/DlLoader.hpp
@@ -133,6 +135,10 @@ target_include_directories(raytracer_core PUBLIC
 
 # Link libconfig to the core library (PUBLIC so it propagates to executable)
 target_link_libraries(raytracer_core PUBLIC config++)
+
+find_package(SFML 2 REQUIRED COMPONENTS graphics window system)
+target_link_libraries(raytracer_core PRIVATE sfml-graphics sfml-window
+                                          sfml-system)
 
 # bin
 add_executable(${NAME} src/main.cpp ${HEADERS})

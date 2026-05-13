@@ -26,6 +26,7 @@
 #include "plugin/PluginManager.hpp"
 #include "visual/CliVisual.hpp"
 #include "visual/IVisual.hpp"
+#include "visual/SFMLVisual.hpp"
 
 namespace raytracer {
 
@@ -39,11 +40,10 @@ namespace raytracer {
         if (this->_visual == nullptr)
             this->_visual = std::make_unique<visual::CliVisual>();
 
-        this->_renderer.setPrintProgressCallback(
-            [this](int activeWorkers, int imageHeight, const Render &render) {
-                return this->_visual->printProgress(activeWorkers, imageHeight,
-                                                    this->_renderer);
-            });
+        this->_renderer.setPrintProgressCallback([this](int activeWorkers,
+                                                        const Render &render) {
+            return this->_visual->printProgress(activeWorkers, this->_renderer);
+        });
         this->_plugManager.updatePluginList(pluginsPath);
         this->_plugManager.fillFactory(this->_objFactory);
 
@@ -146,6 +146,7 @@ namespace raytracer {
 
         std::map<std::string, std::unique_ptr<visual::IVisual>> exportMap;
         exportMap.insert({"cli", std::make_unique<visual::CliVisual>()});
+        exportMap.insert({"sfml", std::make_unique<visual::SFMLVisual>()});
 
         if (auto iter = exportMap.find(argv.at(index + 1));
             iter != exportMap.end()) {

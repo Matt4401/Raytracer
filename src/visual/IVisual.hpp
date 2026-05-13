@@ -15,7 +15,7 @@ namespace raytracer::visual {
       public:
         virtual ~IVisual() = default;
 
-        virtual std::thread printProgress(int activeWorkers, int imageHeight,
+        virtual std::thread printProgress(int activeWorkers,
                                           Render &render) = 0;
     };
 

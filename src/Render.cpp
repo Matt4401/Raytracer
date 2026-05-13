@@ -81,6 +81,10 @@ namespace raytracer {
         return done;
     }
 
+    ImageSize Render::imageSize() {
+        return this->_imageSize;
+    }
+
     void Render::setPrintProgressCallback(
         const PrintProgressCallback &callback) {
         this->_printCallback = callback;
@@ -89,25 +93,23 @@ namespace raytracer {
     void Render::render(const object::scene::IScene &scene, int pixel,
                         int samples) {
         auto startTotal = std::chrono::high_resolution_clock::now();
-        int imageWidth = 0;
-        int imageHeight = 0;
         unsigned int workerCount = 0;
 
-        initRender(scene, samples, imageWidth, imageHeight, workerCount);
+        initRender(scene, samples, workerCount);
 
         unsigned int activeWorkers = 0;
         startWorkers(scene, workerCount, activeWorkers);
 
-        finishRender(activeWorkers, imageHeight, startTotal);
+        finishRender(activeWorkers, startTotal);
     }
 
     void Render::initRender(const object::scene::IScene &scene, int samples,
-                            int &imageWidth, int &imageHeight,
                             unsigned int &workerCount) {
         _samples = samples;
-        imageWidth = scene.cameras().at(0)->imageWidth();
-        imageHeight = scene.cameras().at(0)->imageHeight();
-        _pixels.assign(imageWidth * imageHeight, maths::Color());
+        this->_imageSize.width = scene.cameras().at(0)->imageWidth();
+        this->_imageSize.heigth = scene.cameras().at(0)->imageHeight();
+        _pixels.assign(this->_imageSize.width * this->_imageSize.heigth,
+                       maths::Color());
 
         workerCount = std::max(1u, std::thread::hardware_concurrency());
 
@@ -136,10 +138,9 @@ namespace raytracer {
     }
 
     void Render::finishRender(
-        unsigned int activeWorkers, int imageHeight,
+        unsigned int activeWorkers,
         const std::chrono::high_resolution_clock::time_point &startTotal) {
-        auto progressThread =
-            this->_printCallback(activeWorkers, imageHeight, *this);
+        auto progressThread = this->_printCallback(activeWorkers, *this);
 
         for (auto &w : _workers) w.join();
         _renderingFinished.store(true);

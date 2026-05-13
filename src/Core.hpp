@@ -62,7 +62,8 @@ namespace raytracer {
         static constexpr std::string_view HELP_MESSAGE =
             "USAGE: ./raytracer <SCENE_FILE> \n"
             "\tSCENE_FILE: scene configuration\n"
-            "\t-e: export mode (ppm)\n";
+            "\t-e: export mode (ppm)\n"
+            "\t-v: visual mode (cli/sfml)\n";
 
         void cmdArgsHandling(const std::vector<std::string> &argv);
 

@@ -16,8 +16,7 @@ namespace raytracer::visual {
         CliVisual() = default;
         ~CliVisual() override = default;
 
-        std::thread printProgress(int activeWorkers, int imageHeight,
-                                  Render &render) override;
+        std::thread printProgress(int activeWorkers, Render &render) override;
     };
 
 }  // namespace raytracer::visual
