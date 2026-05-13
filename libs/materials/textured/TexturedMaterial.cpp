@@ -17,6 +17,30 @@
 #include "util/middleware/ObjectMiddleware.hpp"
 
 namespace raytracer::object::material {
+    static primitive::RefltT inferMtlReflectionType(
+        const MeshMaterial &mat, double reflectivity, double transparency,
+        double ior, double metalness) {
+        const double dissolve = std::clamp(mat.d(), 0.0, 1.0);
+        const double opacity = 1.0 - dissolve;
+
+        reflectivity = std::clamp(reflectivity, 0.0, 1.0);
+        transparency = std::clamp(transparency, 0.0, 1.0);
+        ior = std::max(ior, 0.0);
+        metalness = std::clamp(metalness, 0.0, 1.0);
+
+        if ((opacity >= 0.15 || transparency >= 0.15) && ior > 1.01 &&
+            mat.illum() >= 4.0) {
+            return primitive::RefltT::REFR;
+        }
+
+        const double specScore = std::max(reflectivity, metalness);
+        if (specScore >= 0.75 || mat.illum() >= 5.0) {
+            return primitive::RefltT::SPEC;
+        }
+
+        return primitive::RefltT::DIFF;
+    }
+
     TexturedMaterial::TexturedMaterial(
         const std::map<std::string, std::any>& args)
         : ABasicMaterial(args) {
@@ -121,7 +145,7 @@ namespace raytracer::object::material {
             !data.materialName.empty()) {
             const auto& mat = _materialLoader->get(data.materialName);
             const double reflectivity = std::clamp(mat.ns() / 1000.0, 0.0, 1.0);
-            const double transparency = std::clamp(mat.d(), 0.0, 1.0);
+            const double transparency = 1.0 - std::clamp(mat.d(), 0.0, 1.0);
             const double ior = mat.ni();
             const double metalness =
                 std::clamp((mat.ks().x + mat.ks().y + mat.ks().z) / 3.0, 0.0, 1.0);
@@ -142,8 +166,9 @@ namespace raytracer::object::material {
             return {
                 .color = finalColor,
                 .emission = mat.ke(),
-                .reflType = chooseReflTypeFromParams(
-                    reflectivity, transparency, ior, metalness),
+                .reflType = inferMtlReflectionType(mat, reflectivity,
+                                                   transparency, ior,
+                                                   metalness),
                 .reflectivity = reflectivity,
                 .transparency = transparency,
                 .ior = ior,

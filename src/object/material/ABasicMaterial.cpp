@@ -11,18 +11,27 @@
 
 #include "util/middleware/Helpers.hpp"
 #include "util/middleware/ObjectMiddleware.hpp"
+#include "exception/PluginException.hpp"
 
 namespace raytracer::object::material {
 
     ABasicMaterial::ABasicMaterial(const std::map<std::string, std::any> &args)
         : AMaterial(),
           _emission(0, 0, 0),
-          _refl(util::Helpers::toEnumRefltT(args, "reflType", "Material")),
+          _refl(primitive::RefltT::DIFF),
+          _reflFromCfg(false),
           _reflectivity(0.0),
           _transparency(0.0),
           _ior(1.0),
           _roughness(0.0),
           _metalness(0.0) {
+        try {
+            _refl = util::Helpers::toEnumRefltT(args, "reflType", "Material");
+            _reflFromCfg = true;
+        } catch (const raytracer::exception::PluginException &) {
+            _refl = primitive::RefltT::DIFF;
+            _reflFromCfg = false;
+        }
         _emission = util::Helpers::optionalVector(args, "emission", _emission,
                                                   "Material");
         _reflectivity = util::ObjectMiddleware::optional<double>(

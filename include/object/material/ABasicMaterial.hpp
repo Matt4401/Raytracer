@@ -24,6 +24,7 @@ namespace raytracer::object::material {
       protected:
         maths::Vector _emission;
         primitive::RefltT _refl;
+        bool _reflFromCfg = false;
         double _reflectivity;
         double _transparency;
         double _ior;
