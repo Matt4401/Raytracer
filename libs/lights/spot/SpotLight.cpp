@@ -35,11 +35,10 @@ namespace raytracer::object::light {
             return maths::Vector(0, 0, 0);
 
         maths::Ray shadowRay(x + nl * K_SHADOW_RAY_BIAS, ldir);
-        double sT;
-        int sId;
-        bool hit = scene.intersect(shadowRay, sT, sId);
+        primitive::HitRecord shadowRecord;
+        bool hit = scene.intersect(shadowRay, shadowRecord);
 
-        if (!hit || sT > dist - K_OCCLUSION_EPSILON) {
+        if (!hit || shadowRecord.t > dist - K_OCCLUSION_EPSILON) {
             double spotEffect =
                 std::pow(std::max(0.0, ldir.dot(_direction * -1.0)), _exponent);
             double att = spotEffect / (dist * dist);

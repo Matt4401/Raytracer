@@ -30,8 +30,7 @@ namespace raytracer::object::scene {
         explicit Scene(const std::map<std::string, std::any> &params);
         ~Scene() override = default;
 
-        bool intersect(const maths::Ray &ray, double &t,
-                       int &objectId) const override;
+        bool intersect(const maths::Ray &ray, primitive::HitRecord &record) const override;
         maths::Vector radiance(const maths::Ray &ray, int depth,
                                unsigned short *xi,
                                int emissive = 1) const override;
