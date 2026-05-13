@@ -47,6 +47,14 @@ namespace raytracer::object::scene {
             ambientDiffuse, "intensity", "Scene");
         util::Helpers::unsignedDouble(_ambientDiffuse.intensity, "intensity",
                                       "Scene");
+
+        _samplesPerPixel = util::ObjectMiddleware::optional<int>(
+            params, "samplesPerPixel", 100, "Scene");
+        util::Helpers::unsignedInt(_samplesPerPixel, "samplesPerPixel",
+                                   "Scene");
+
+        _bvhStrategy = util::ObjectMiddleware::optional<std::string>(
+            params, "bvhStrategy", "sah", "Scene");
     }
 
     void AScene::addPrimitive(const std::shared_ptr<IObject> &primitive) {
@@ -139,6 +147,14 @@ namespace raytracer::object::scene {
 
     bool AScene::haveCamera() {
         return this->_cameras.size() > 0;
+    }
+
+    int AScene::samplesPerPixel() const {
+        return _samplesPerPixel;
+    }
+
+    std::string_view AScene::bvhStrategy() const {
+        return _bvhStrategy;
     }
 
     void AScene::buildBVH(std::string_view strategy) {
