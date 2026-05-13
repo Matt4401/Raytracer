@@ -92,6 +92,7 @@ namespace raytracer::object::primitive {
             !verifyHitPoint(_center, _maxPoint, _normal, hitPoint))
             return false;
         record.t = t;
+        record.hitPoint = ray.origin + ray.direction * t;
         record.objectId = id();
         return true;
     }

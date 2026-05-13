@@ -80,8 +80,14 @@ namespace raytracer::object::primitive {
     }
 
     maths::Vector ObjLoader::parseVector(std::istringstream &iss) const {
-        double x, y, z;
-        iss >> x >> y >> z;
+        double x = 0.0;
+        double y = 0.0;
+        double z = 0.0;
+        if (!(iss >> x >> y >> z)) {
+            throw exception::PluginException{
+                "Failed to parse OBJ vector: expected three numeric "
+                "components"};
+        }
         return maths::Vector(x, y, z);
     }
 
@@ -96,8 +102,12 @@ namespace raytracer::object::primitive {
     }
 
     void ObjLoader::handleTexCoord(ObjLoader &loader, std::istringstream &iss) {
-        double u, v;
-        iss >> u >> v;
+        double u = 0.0;
+        double v = 0.0;
+        if (!(iss >> u >> v)) {
+            throw exception::PluginException{
+                "Failed to parse OBJ texcoord: expected two numeric components"};
+        }
         loader._buffers->texCoords.emplace_back(u, v, 0);
     }
 
