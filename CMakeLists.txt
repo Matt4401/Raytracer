@@ -19,10 +19,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 include_directories(include)
 
-# libconfig
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(LIBCONFIG REQUIRED libconfig++)
-
 # Enable testing
 enable_testing()
 set(RAYTRACER_BUILD_TESTS ON)
