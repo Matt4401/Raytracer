@@ -134,6 +134,27 @@ if (NOT SKIP_INTERNET)
 
     gtest_discover_tests(primitive_tests)
 
+    add_executable(math_tests
+            src/main.cpp
+            src/math/test_matrix4.cpp
+            ${CMAKE_SOURCE_DIR}/src/math/Matrix4.cpp
+            ${CMAKE_SOURCE_DIR}/src/math/Vector.cpp
+    )
+
+    target_link_libraries(math_tests PRIVATE
+            GTest::gtest
+            GTest::gmock
+            raytracer_core
+    )
+
+    target_include_directories(math_tests PRIVATE
+            ${CMAKE_SOURCE_DIR}
+            ${CMAKE_SOURCE_DIR}/include
+            ${CMAKE_SOURCE_DIR}/src
+    )
+
+    gtest_discover_tests(math_tests)
+
     add_executable(bvh_tests
             src/main.cpp
             src/bvh/bvh_test_helpers.hpp
