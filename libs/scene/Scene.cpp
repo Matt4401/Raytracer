@@ -9,7 +9,6 @@
 
 #include <algorithm>
 #include <bvh/BVHBuilder.hpp>
-#include <iterator>
 #include <limits>
 
 #include "object/IScene.hpp"
@@ -74,9 +73,10 @@ namespace raytracer::object::scene {
     maths::Vector Scene::radiance(const maths::Ray &ray, int depth,
                                   unsigned short *xi, int emissive) const {
         primitive::HitRecord hitRecord;
-        if (!_bvhRoot || !_bvhRoot->hits(ray, hitRecord))
+        if (!intersect(ray, hitRecord.t, hitRecord.objectId))
             return maths::Vector();
 
+        hitRecord.hitPoint = ray.origin + ray.direction * hitRecord.t;
         const std::shared_ptr<primitive::IPrimitive> &obj =
             _primitives.at(hitRecord.objectId);
         if (depth > K_MAX_RADIANCE_DEPTH)
