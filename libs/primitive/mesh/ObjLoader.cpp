@@ -132,7 +132,6 @@ namespace raytracer::object::primitive {
         if (tokens.size() < 3)
             return;
 
-        // fan triangulation: first vertex + (i, i+1)
         const ParsedFaceVertex fv0 = parseFaceVertex(tokens[0]);
         if (fv0.v < 0 ||
             fv0.v >= static_cast<int>(loader._buffers->vertices.size())) {

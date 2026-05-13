@@ -36,6 +36,7 @@ namespace raytracer::object::primitive {
             std::vector<maths::Vector> normals;
             std::vector<std::string> materialNames;
         };
+
         Face(std::size_t faceIndex, std::shared_ptr<const MeshBuffers> buffers,
              const IndexedTriangle &triangle,
              std::shared_ptr<raytracer::object::material::IMaterial> material =
