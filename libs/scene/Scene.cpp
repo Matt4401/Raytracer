@@ -127,17 +127,9 @@ namespace raytracer::object::scene {
         int emissive = ctx.emissive;
         const primitive::SurfaceData &surfData = ctx.surfData;
 
-        const double metalness =
-            std::clamp(surfData.material.metalness, 0.0, 1.0);
-        const double reflectivity =
-            std::clamp(surfData.material.reflectivity, 0.0, 1.0);
         const double roughness =
             std::clamp(surfData.material.roughness, 0.0, 1.0);
-        const double diffuseBase = 1.0 - metalness * 0.8;
-        const maths::Vector diffuseF = f * diffuseBase;
-
-        const double specularChance = reflectivity * metalness * 0.3;
-        const maths::Vector specularTint = f * metalness;
+        const maths::Vector diffuseF = f;
 
         maths::Vector direct(0, 0, 0);
         for (const auto &light : _lights) {
@@ -194,6 +186,7 @@ namespace raytracer::object::scene {
                                           const RadianceContext &ctx) const {
         const maths::Vector &x = ctx.x;
         const maths::Vector &n = ctx.n;
+        const maths::Vector &nl = ctx.nl;
         const maths::Vector &f = ctx.f;
         const primitive::SurfaceData &surfData = ctx.surfData;
         int depth = ctx.depth;
@@ -203,33 +196,21 @@ namespace raytracer::object::scene {
             std::clamp(surfData.material.reflectivity, 0.0, 1.0);
         const double roughness =
             std::clamp(surfData.material.roughness, 0.0, 1.0);
-        const double metalness =
-            std::clamp(surfData.material.metalness, 0.0, 1.0);
 
         maths::Vector reflectionDir =
             ray.direction - n * 2 * n.dot(ray.direction);
 
         if (roughness > 0.0) {
             reflectionDir = (reflectionDir * (1.0 - roughness) +
-                             randomCosineDir(n, xi) * roughness)
+                             randomCosineDir(nl, xi) * roughness)
                                 .normalized();
         }
 
-        const maths::Vector baseF0 =
-            maths::Vector(K_DIELECTRIC_F0, K_DIELECTRIC_F0, K_DIELECTRIC_F0) *
-                (1.0 - metalness) +
-            f * metalness;
-        const double cosTheta =
-            std::clamp(-(ray.direction.dot(ctx.nl)), 0.0, 1.0);
-        const double oneMinusCos5 = std::pow(1.0 - cosTheta, 5.0);
-        const maths::Vector fresnel =
-            baseF0 + (maths::Vector(1, 1, 1) - baseF0) * oneMinusCos5;
-
-        const maths::Vector specularWeight = fresnel * reflectivity;
+        const maths::Vector specularWeight = f * reflectivity;
 
         return surfData.material.emission * emissive +
                specularWeight *
-                   radiance(maths::Ray(x + n * K_RAY_EPSILON, reflectionDir),
+                   radiance(maths::Ray(x + nl * K_RAY_EPSILON, reflectionDir),
                             depth, xi, 1);
     }
 
