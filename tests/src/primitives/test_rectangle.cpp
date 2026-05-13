@@ -48,7 +48,7 @@ TEST(PRIMITIVE, rectangle_surface_data_uses_normal_and_uv) {
 
     const auto data =
         rectangle.surfaceData(raytracer::object::primitive::HitRecord{
-            0, -1, 0, raytracer::maths::Vector(0.2, 0.2, 0)});
+            0, -1, 0, raytracer::maths::Vector(1, 1, 1.5)});
 
     ASSERT_DOUBLE_EQ(data.normal.x, 0.0);
     ASSERT_DOUBLE_EQ(data.normal.y, 0.0);

@@ -53,7 +53,7 @@ TEST(PRIMITIVE, sphere_surface_data_uv_and_normal) {
 
     const auto data =
         sphere.surfaceData(raytracer::object::primitive::HitRecord{
-            0, -1, 0, raytracer::maths::Vector(0.2, 0.2, 0)});
+            0, -1, 0, raytracer::maths::Vector(1, 0, 0)});
 
     ASSERT_DOUBLE_EQ(data.normal.x, 1.0);
     ASSERT_DOUBLE_EQ(data.normal.y, 0.0);
