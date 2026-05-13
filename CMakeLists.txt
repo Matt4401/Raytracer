@@ -42,6 +42,7 @@ set(SRCS
         src/exception/Exception.cpp
         src/math/Color.cpp
         src/math/Vector.cpp
+        src/math/Matrix4.cpp
         src/math/Noise.cpp
         src/math/Rectangle.cpp
         src/math/AABoundingBox.cpp
@@ -78,6 +79,7 @@ set(HEADERS
         include/exception/PluginException.hpp
         include/math/Color.hpp
         include/math/Vector.hpp
+        include/math/Matrix4.hpp
         include/math/Ray.hpp
         include/object/AObject.hpp
         include/object/ACamera.hpp
