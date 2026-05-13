@@ -49,6 +49,7 @@ namespace raytracer::object::primitive {
             t >= EPS) {
             record.t = t;
             record.objectId = id();
+            record.hitPoint = ray.origin + ray.direction * t;
             return true;
         }
         return false;
@@ -65,7 +66,8 @@ namespace raytracer::object::primitive {
         return _sceneLimit;
     }
 
-    SurfaceData Plane::surfaceData(const maths::Vector &hitPoint) const {
+    SurfaceData Plane::surfaceData(const HitRecord &record) const {
+        const maths::Vector &hitPoint = record.hitPoint;
         const maths::Vector &normal = _normal;
         const maths::Vector helper = (std::abs(normal.y) < 0.999)
                                          ? maths::Vector(0, 1, 0)

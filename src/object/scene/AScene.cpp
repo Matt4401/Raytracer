@@ -12,31 +12,49 @@
 
 #include "bvh/BVHBuilder.hpp"
 #include "exception/PluginException.hpp"
-#include "object/primitive/APrimitive.hpp"
 #include "util/middleware/Helpers.hpp"
 #include "util/middleware/ObjectMiddleware.hpp"
 
 namespace raytracer::object::scene {
     AScene::AScene(const std::map<std::string, std::any> &params)
         : AObject(Type::SCENE) {
-        _ambientOcclusion.samples =
-            util::ObjectMiddleware::validate<int>(params, "aoSamples", "Scene");
-        _ambientOcclusion.radius = util::ObjectMiddleware::validate<double>(
-            params, "aoRadius", "Scene");
-        util::Helpers::unsignedDouble(_ambientOcclusion.radius, "aoRadius",
+        const auto &ambiantOcclusion = util::ObjectMiddleware::requireMap(
+            params, "ambiantOcclusion", "Scene");
+        const auto &ambientLight =
+            util::ObjectMiddleware::requireMap(params, "ambientLight", "Scene");
+        const auto &ambientDiffuse = util::ObjectMiddleware::requireMap(
+            params, "ambientDiffuse", "Scene");
+
+        this->_ambientOcclusion.samples = util::ObjectMiddleware::validate<int>(
+            ambiantOcclusion, "samples", "Scene");
+        this->_ambientOcclusion.radius =
+            util::ObjectMiddleware::validate<double>(ambiantOcclusion, "radius",
+                                                     "Scene");
+        util::Helpers::unsignedDouble(_ambientOcclusion.radius, "radius",
                                       "Scene");
-        _ambientLight.color =
-            util::Helpers::toColor(params, "ambientLightColor", "Scene");
-        _ambientLight.intensity = util::ObjectMiddleware::validate<double>(
-            params, "ambientLightIntensity", "Scene");
-        util::Helpers::unsignedDouble(_ambientLight.intensity,
-                                      "ambientLightIntensity", "Scene");
+
+        this->_ambientLight.color =
+            util::Helpers::toColor(ambientLight, "color", "Scene");
+        this->_ambientLight.intensity =
+            util::ObjectMiddleware::validate<double>(ambientLight, "intensity",
+                                                     "Scene");
+        util::Helpers::unsignedDouble(_ambientLight.intensity, "intensity",
+                                      "Scene");
+
         _ambientDiffuse.ambient =
-            util::Helpers::toColor(params, "ambientDiffuseColor", "Scene");
+            util::Helpers::toColor(ambientDiffuse, "color", "Scene");
         _ambientDiffuse.intensity = util::ObjectMiddleware::validate<double>(
-            params, "ambientDiffuseIntensity", "Scene");
-        util::Helpers::unsignedDouble(_ambientDiffuse.intensity,
-                                      "ambientDiffuseIntensity", "Scene");
+            ambientDiffuse, "intensity", "Scene");
+        util::Helpers::unsignedDouble(_ambientDiffuse.intensity, "intensity",
+                                      "Scene");
+
+        _samplesPerPixel = util::ObjectMiddleware::optional<int>(
+            params, "samplesPerPixel", 100, "Scene");
+        util::Helpers::unsignedInt(_samplesPerPixel, "samplesPerPixel",
+                                   "Scene");
+
+        _bvhStrategy = util::ObjectMiddleware::optional<std::string>(
+            params, "bvhStrategy", "sah", "Scene");
     }
 
     void AScene::addPrimitive(const std::shared_ptr<IObject> &primitive) {
@@ -125,6 +143,18 @@ namespace raytracer::object::scene {
     const std::vector<std::shared_ptr<camera::ICamera>> &AScene::cameras()
         const {
         return _cameras;
+    }
+
+    bool AScene::haveCamera() {
+        return this->_cameras.size() > 0;
+    }
+
+    int AScene::samplesPerPixel() const {
+        return _samplesPerPixel;
+    }
+
+    std::string_view AScene::bvhStrategy() const {
+        return _bvhStrategy;
     }
 
     void AScene::buildBVH(std::string_view strategy) {

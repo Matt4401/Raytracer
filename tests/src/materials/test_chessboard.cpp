@@ -34,16 +34,14 @@ TEST(ChessboardMaterial, BasicTiles) {
     plugManager.fillFactory(objFactory);
 
     std::map<std::string, std::any> chessArgs = {
-        {"color1", std::map<std::string, std::any>{{"r", (unsigned char)255},
-                                                   {"g", (unsigned char)255},
-                                                   {"b", (unsigned char)255}}},
-        {"color2", std::map<std::string, std::any>{{"r", (unsigned char)0},
-                                                   {"g", (unsigned char)0},
-                                                   {"b", (unsigned char)0}}},
+        {"color1",
+         std::map<std::string, std::any>{{"r", 255}, {"g", 255}, {"b", 255}}},
+        {"color2",
+         std::map<std::string, std::any>{{"r", 0}, {"g", 0}, {"b", 0}}},
         {"tileSize", 1.0},
         {"emission",
          std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
-        {"reflType", raytracer::object::primitive::RefltT::DIFF}};
+        {"reflType", std::string("DIFF")}};
 
     auto matObj = objFactory.build("chessboard", chessArgs);
     ASSERT_NE(matObj, nullptr);
@@ -68,12 +66,14 @@ TEST(ChessboardMaterial, BasicTiles) {
             planeObj);
     ASSERT_NE(basePrim, nullptr);
 
-    auto sd1 = basePrim->surfaceData(raytracer::maths::Vector(0.2, 0.0, 0.0));
+    auto sd1 = basePrim->surfaceData(raytracer::object::primitive::HitRecord{
+        0, -1, 0, raytracer::maths::Vector(0.2, 0.0, 0.0)});
     EXPECT_EQ(sd1.material.color.r, 0);
     EXPECT_EQ(sd1.material.color.g, 0);
     EXPECT_EQ(sd1.material.color.b, 0);
 
-    auto sd2 = basePrim->surfaceData(raytracer::maths::Vector(1.2, 0.0, 0.0));
+    auto sd2 = basePrim->surfaceData(raytracer::object::primitive::HitRecord{
+        0, -1, 0, raytracer::maths::Vector(1.2, 0.0, 0.0)});
     EXPECT_EQ(sd2.material.color.r, 255);
     EXPECT_EQ(sd2.material.color.g, 255);
     EXPECT_EQ(sd2.material.color.b, 255);
@@ -81,14 +81,12 @@ TEST(ChessboardMaterial, BasicTiles) {
 
 TEST(ChessboardMaterial, InvalidTileSizeThrows) {
     std::map<std::string, std::any> badArgs = {
-        {"color1", std::map<std::string, std::any>{{"r", (unsigned char)0},
-                                                   {"g", (unsigned char)0},
-                                                   {"b", (unsigned char)0}}},
-        {"color2", std::map<std::string, std::any>{{"r", (unsigned char)255},
-                                                   {"g", (unsigned char)255},
-                                                   {"b", (unsigned char)255}}},
+        {"color1",
+         std::map<std::string, std::any>{{"r", 0}, {"g", 0}, {"b", 0}}},
+        {"color2",
+         std::map<std::string, std::any>{{"r", 255}, {"g", 255}, {"b", 255}}},
         {"tileSize", 0.0},
-        {"reflType", raytracer::object::primitive::RefltT::DIFF}};
+        {"reflType", std::string("DIFF")}};
 
     EXPECT_THROW(
         {

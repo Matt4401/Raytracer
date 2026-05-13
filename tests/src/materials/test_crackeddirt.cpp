@@ -23,14 +23,12 @@
 
 static std::map<std::string, std::any> makeCrackedDirtArgs() {
     return std::map<std::string, std::any>{
-        {"color1", std::map<std::string, std::any>{{"r", (unsigned char)120},
-                                                   {"g", (unsigned char)80},
-                                                   {"b", (unsigned char)40}}},
-        {"color2", std::map<std::string, std::any>{{"r", (unsigned char)200},
-                                                   {"g", (unsigned char)180},
-                                                   {"b", (unsigned char)150}}},
+        {"color1",
+         std::map<std::string, std::any>{{"r", 120}, {"g", 80}, {"b", 40}}},
+        {"color2",
+         std::map<std::string, std::any>{{"r", 200}, {"g", 180}, {"b", 150}}},
         {"scale", 1.0},
-        {"reflType", raytracer::object::primitive::RefltT::DIFF}};
+        {"reflType", std::string("DIFF")}};
 }
 
 TEST(CrackedDirtMaterial, Builds) {
@@ -82,7 +80,8 @@ TEST(CrackedDirtMaterial, IntegratesWithPrimitive) {
             sphere);
     ASSERT_NE(basePrim, nullptr);
 
-    auto sd = basePrim->surfaceData(raytracer::maths::Vector(0, 10, 0));
+    auto sd = basePrim->surfaceData(raytracer::object::primitive::HitRecord{
+        0, -1, 0, raytracer::maths::Vector(0, 10, 0)});
     EXPECT_GE(sd.material.color.r, 0);
     EXPECT_LE(sd.material.color.r, 255);
     EXPECT_GE(sd.material.color.g, 0);
@@ -130,7 +129,8 @@ TEST(CrackedDirtMaterial, VariesAcrossPoints) {
 
     std::set<int> uniqueColors;
     for (const auto &pt : samples) {
-        auto sd = basePrim->surfaceData(pt);
+        auto sd = basePrim->surfaceData(
+            raytracer::object::primitive::HitRecord{0, -1, 0, pt});
         int packed = (static_cast<int>(sd.material.color.r) << 16) |
                      (static_cast<int>(sd.material.color.g) << 8) |
                      (static_cast<int>(sd.material.color.b));

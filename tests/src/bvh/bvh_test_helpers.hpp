@@ -47,7 +47,7 @@ namespace raytracer::tests::bvh {
         }
 
         object::primitive::SurfaceData surfaceData(
-            const maths::Vector &) const override {
+            const object::primitive::HitRecord &) const override {
             return {};
         }
 

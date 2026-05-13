@@ -1,0 +1,73 @@
+# Blender 5.2.0 Alpha MTL File: 'None'
+# www.blender.org
+
+newmtl Dieci_Rim
+Ns 793.557007
+Ka 0.777000 0.777000 0.777000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Kd assets/models/octane/textures/png_RocketLeague_W512_H512_F827611204_T_0X.png
+
+newmtl Dieci_Tread
+Ns 440.413361
+Ka 0.490909 0.490909 0.490909
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Kd assets/models/octane/textures/png_RocketLeague_W512_H512_F827611204_T_0X.png
+map_Bump -bm 0.200000 /d/Models/Dieci/WHEEL_Caliber_SF/Texture2D/NormalMap.png
+
+newmtl Headlights
+Ns 360.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl Octane_Body
+Ns 562.909546
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Kd assets/models/octane/textures/png_RocketLeague_W2048_H2048_F894720068_T_.png
+
+newmtl Octane_Chassis
+Ns 434.400787
+Ka 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Kd assets/models/octane/textures/Octane_Chasis_Map.png
+
+newmtl Paint
+Ns 322.830566
+Ka 0.479091 0.479091 0.479091
+Kd 0.008594 0.008594 0.008594
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl Window
+Ns 777.603271
+Ka 1.000000 1.000000 1.000000
+Kd 0.000000 0.000000 0.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2

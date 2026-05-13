@@ -23,22 +23,29 @@ using raytracer::maths::Vector;
 using raytracer::tests::bvh::makePrimitive;
 
 namespace {
-    using PrimitivePtr = std::shared_ptr<raytracer::object::primitive::IPrimitive>;
+    using PrimitivePtr =
+        std::shared_ptr<raytracer::object::primitive::IPrimitive>;
 
     std::vector<PrimitivePtr> buildLinearPrimitives() {
         std::vector<PrimitivePtr> primitives;
 
-        primitives.push_back(makePrimitive("p0", {0, 0, 0, 1, 1, 1}, Vector(0.5, 0.5, 0.5), 5.0));
-        primitives.push_back(makePrimitive("p1", {2, 0, 0, 1, 1, 1}, Vector(2.5, 0.5, 0.5), 4.0));
-        primitives.push_back(makePrimitive("p2", {4, 0, 0, 1, 1, 1}, Vector(4.5, 0.5, 0.5), 3.0));
-        primitives.push_back(makePrimitive("p3", {6, 0, 0, 1, 1, 1}, Vector(6.5, 0.5, 0.5), 2.0));
-        primitives.push_back(makePrimitive("p4", {8, 0, 0, 1, 1, 1}, Vector(8.5, 0.5, 0.5), 1.0));
+        primitives.push_back(makePrimitive("p0", {0, 0, 0, 1, 1, 1},
+                                           Vector(0.5, 0.5, 0.5), 5.0));
+        primitives.push_back(makePrimitive("p1", {2, 0, 0, 1, 1, 1},
+                                           Vector(2.5, 0.5, 0.5), 4.0));
+        primitives.push_back(makePrimitive("p2", {4, 0, 0, 1, 1, 1},
+                                           Vector(4.5, 0.5, 0.5), 3.0));
+        primitives.push_back(makePrimitive("p3", {6, 0, 0, 1, 1, 1},
+                                           Vector(6.5, 0.5, 0.5), 2.0));
+        primitives.push_back(makePrimitive("p4", {8, 0, 0, 1, 1, 1},
+                                           Vector(8.5, 0.5, 0.5), 1.0));
         return primitives;
     }
 }  // namespace
 
 TEST(BVH_BUILDER, empty_input_returns_missable_node) {
-    raytracer::bvh::BVHBuilder<raytracer::bvh::ISplitStrategy> builder("median");
+    raytracer::bvh::BVHBuilder<raytracer::bvh::ISplitStrategy> builder(
+        "median");
 
     const auto tree = builder.build({});
     ASSERT_NE(tree, nullptr);
@@ -48,7 +55,8 @@ TEST(BVH_BUILDER, empty_input_returns_missable_node) {
 }
 
 TEST(BVH_BUILDER, two_objects_stay_in_leaf_logic) {
-    raytracer::bvh::BVHBuilder<raytracer::bvh::ISplitStrategy> builder("midpoint");
+    raytracer::bvh::BVHBuilder<raytracer::bvh::ISplitStrategy> builder(
+        "midpoint");
     std::vector<PrimitivePtr> primitives = {
         makePrimitive("far", {0, 0, 0, 1, 1, 1}, Vector(0.5, 0.5, 0.5), 4.0),
         makePrimitive("near", {0, 0, 0, 1, 1, 1}, Vector(0.5, 0.5, 0.5), 1.0),
@@ -62,7 +70,8 @@ TEST(BVH_BUILDER, two_objects_stay_in_leaf_logic) {
 }
 
 TEST(BVH_BUILDER, recursive_build_returns_a_valid_hit) {
-    raytracer::bvh::BVHBuilder<raytracer::bvh::ISplitStrategy> builder("median");
+    raytracer::bvh::BVHBuilder<raytracer::bvh::ISplitStrategy> builder(
+        "median");
     const auto primitives = buildLinearPrimitives();
     const auto tree = builder.build(primitives);
 
@@ -73,7 +82,8 @@ TEST(BVH_BUILDER, recursive_build_returns_a_valid_hit) {
 }
 
 TEST(BVH_BUILDER, midpoint_strategy_handles_same_scene) {
-    raytracer::bvh::BVHBuilder<raytracer::bvh::ISplitStrategy> builder("midpoint");
+    raytracer::bvh::BVHBuilder<raytracer::bvh::ISplitStrategy> builder(
+        "midpoint");
     const auto primitives = buildLinearPrimitives();
     const auto tree = builder.build(primitives);
 

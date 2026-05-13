@@ -10,11 +10,15 @@
 
 #include "Core.hpp"
 
-int main() {
+int main(int argc, char **argv) {
     raytracer::Core core;
 
+    if (auto state = core.helpMessage(argc, argv); state.first) {
+        return state.second;
+    }
+
     try {
-        core.init();
+        core.init(argv[1]);
     } catch (const std::exception &err) {
         std::cerr << "Error: " << err.what() << "\n";
         return 84;

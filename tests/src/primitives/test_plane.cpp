@@ -43,7 +43,8 @@ TEST(PRIMITIVE, plane_surface_data_uv_and_normal) {
     Plane plane(Vector(0, 0, 0), Vector(0, 1, 0));
     Vector hitPoint(1, 0, 0);
 
-    auto data = plane.surfaceData(hitPoint);
+    auto data = plane.surfaceData(
+        raytracer::object::primitive::HitRecord{0, -1, 0, hitPoint});
 
     ASSERT_DOUBLE_EQ(data.normal.x, 0.0);
     ASSERT_DOUBLE_EQ(data.normal.y, 1.0);

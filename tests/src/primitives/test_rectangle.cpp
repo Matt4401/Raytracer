@@ -46,7 +46,9 @@ TEST(PRIMITIVE, rectangle_miss_outside_bounds) {
 TEST(PRIMITIVE, rectangle_surface_data_uses_normal_and_uv) {
     Rectangle rectangle(Vector(1, 0, 0), Vector(1, 2, 3), Vector(0, 0, 5));
 
-    const auto data = rectangle.surfaceData(Vector(1, 1, 1.5));
+    const auto data =
+        rectangle.surfaceData(raytracer::object::primitive::HitRecord{
+            0, -1, 0, raytracer::maths::Vector(1, 1, 1.5)});
 
     ASSERT_DOUBLE_EQ(data.normal.x, 0.0);
     ASSERT_DOUBLE_EQ(data.normal.y, 0.0);

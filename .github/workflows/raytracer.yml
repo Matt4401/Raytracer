@@ -22,6 +22,10 @@ jobs:
       - name: Create build directory
         run: mkdir -p build
 
+      - name: Install Libconfig++
+        run: apt-get update && apt-get install -y libconfig++-dev
+        timeout-minutes: 5
+
       - name: Configure CMake
         run: cd build && cmake ..
         timeout-minutes: 5
@@ -46,6 +50,10 @@ jobs:
 
       - name: Install GoogleTest
         run: apt-get update && apt-get install -y googletest libgtest-dev
+        timeout-minutes: 5
+
+      - name: Install Libconfig++
+        run: apt-get update && apt-get install -y libconfig++-dev
         timeout-minutes: 5
 
       - name: Configure CMake
