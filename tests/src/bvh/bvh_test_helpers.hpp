@@ -28,7 +28,8 @@ namespace raytracer::tests::bvh {
               _box(box),
               _center(center),
               _hitT(hitT),
-              _id(id) {}
+              _id(id) {
+        }
 
         bool hits(const maths::Ray &,
                   object::primitive::HitRecord &record) const override {
@@ -38,6 +39,11 @@ namespace raytracer::tests::bvh {
             record.t = _hitT;
             record.objectId = _id;
             return true;
+        }
+
+        double hits(const maths::Ray &ray) const override {
+            object::primitive::HitRecord record;
+            return hits(ray, record) ? record.t : -1.0;
         }
 
         object::primitive::SurfaceData surfaceData(
@@ -61,8 +67,16 @@ namespace raytracer::tests::bvh {
             _id = id;
         }
 
-        int getId() const override {
+        int id() const override {
             return _id;
+        }
+
+        void setLimitBox(const maths::AABoundingBox &box) override {
+            _box = box;
+        }
+
+        bool isInfinite() const override {
+            return false;
         }
 
       private:
@@ -82,14 +96,16 @@ namespace raytracer::tests::bvh {
     class ExposedASplitStrategy : public raytracer::bvh::ASplitStrategy {
       public:
         raytracer::bvh::SplitResult findSplit(
-            const std::vector<std::shared_ptr<raytracer::object::primitive::IPrimitive>> &,
+            const std::vector<
+                std::shared_ptr<raytracer::object::primitive::IPrimitive>> &,
             const maths::AABoundingBox &) override {
             return {.axis = raytracer::bvh::Axis::X,
                     .splitPos = 0.0,
                     .shouldSplit = false};
         }
 
-        static raytracer::bvh::Axis longestAxis(const maths::AABoundingBox &box) {
+        static raytracer::bvh::Axis longestAxis(
+            const maths::AABoundingBox &box) {
             return raytracer::bvh::ASplitStrategy::longestAxis(box);
         }
 

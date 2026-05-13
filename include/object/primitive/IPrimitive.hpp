@@ -66,13 +66,18 @@ namespace raytracer::object::primitive {
          */
         virtual bool hits(const maths::Ray &ray, HitRecord &record) const = 0;
 
-        // ONLY USED FOR PRIMITIVES TESTS
-        virtual double hits(const maths::Ray &ray) const {
-            if (HitRecord record; hits(ray, record)) {
-                return record.t;
-            }
-            return -1.0;
-        }
+        /**
+         * @brief A simplified version of the hits function that only returns
+         * the distance to the intersection point, without requiring a HitRecord
+         * to be passed in.
+         * @param ray the ray to test for intersection with the primitive. The
+         * ray is expected to be a valid Ray object with defined origin and
+         * direction components.
+         * @return the distance from the ray's origin to the point of
+         * intersection with the primitive, or a specific value if no
+         * intersection occurs.
+         */
+        virtual double hits(const maths::Ray &ray) const = 0;
 
         /**
          * @brief Get surface data at hit point (normal, uv, etc.) and evaluates
@@ -99,13 +104,30 @@ namespace raytracer::object::primitive {
 
         virtual const std::string &name() const noexcept = 0;
         virtual maths::Vector center() const noexcept = 0;
+        virtual void setId(int id) = 0;
+        virtual int id() const = 0;
 
-        // SECURITY GUARDS
-        virtual void setId(int id) {
-            (void)id;
-        }
-        virtual int getId() const {
-            return -1;
-        }
+        /**
+         * @brief Sets a limit bounding box for the primitive, which can be used
+         * to optimize intersection tests by providing a spatial boundary within
+         * which the primitive exists. This function allows the primitive to be
+         * associated with a specific bounding box, which can help improve
+         * performance in ray tracing algorithms by quickly determining if a ray
+         * intersects with the bounding box before performing more complex
+         * intersection calculations with the primitive itself.
+         * @param box the axis-aligned bounding box that defines the spatial
+         * limits of the primitive. The box is expected to be a valid
+         * AABoundingBox object with defined position and dimensions.
+         */
+        virtual void setLimitBox(const maths::AABoundingBox &box) = 0;
+
+        /**
+         * @brief Indicates whether the primitive is infinite, meaning it
+         * extends infinitely in one or more directions. This is typically used
+         * for primitives like planes that do not have a finite size.
+         * @return true if the primitive is infinite (like a plane), false
+         * otherwise.
+         */
+        virtual bool isInfinite() const = 0;
     };
 }  // namespace raytracer::object::primitive
