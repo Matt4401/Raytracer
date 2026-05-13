@@ -58,6 +58,15 @@ namespace raytracer::object::scene {
                 return true;
             }
             return false;
+        } else {
+            for (size_t i = 0; i < _primitives.size(); ++i) {
+                if (const double distance = _primitives.at(i)->hits(ray);
+                    distance >= 0.0 && distance < t) {
+                    t = distance;
+                    objectId = static_cast<int>(i);
+                }
+            }
+            return objectId != -1;
         }
         return false;
     }

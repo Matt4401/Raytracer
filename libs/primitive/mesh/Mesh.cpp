@@ -71,7 +71,7 @@ namespace raytracer::object::primitive {
 
         record.hitPoint = ray.origin + ray.direction * record.t;
         record.triangleIndex = record.objectId;
-        record.objectId = getId();
+        record.objectId = id();
         return true;
     }
 

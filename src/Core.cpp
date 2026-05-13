@@ -22,13 +22,11 @@ namespace raytracer {
         this->_plugManager.updatePluginList(PLUGINS_FOLDER_PATH);
         this->_plugManager.fillFactory(this->_objFactory);
 
-        parser.setBuildCallback(
-            [this](const std::string &name,
-                   const std::map<std::string, std::any> &param) {
-                return this->_objFactory.build(name, param);
-            });
+        parser.setBuildCallback([this](const std::string &name,
+                                       const std::map<std::string, std::any>
+                                           &param) -> std::shared_ptr<
+            object::IObject> { return this->_objFactory.build(name, param); });
         this->_scenes = parser.parse(file);
-        this->_scenes.at(0)->buildBVH("sah");  // to change
     }
 
     void Core::run() {
@@ -44,6 +42,7 @@ namespace raytracer {
         if (argc != 2) {
             std::cerr << message;
             return {true, 84};
+
         }
         std::string parameter = argv[1];
         if (parameter == "-h" || parameter == "--help") {

@@ -41,6 +41,11 @@ namespace raytracer::tests::bvh {
             return true;
         }
 
+        double hits(const maths::Ray &ray) const override {
+            object::primitive::HitRecord record;
+            return hits(ray, record) ? record.t : -1.0;
+        }
+
         object::primitive::SurfaceData surfaceData(
             const object::primitive::HitRecord &) const override {
             return {};
@@ -62,8 +67,16 @@ namespace raytracer::tests::bvh {
             _id = id;
         }
 
-        int getId() const override {
+        int id() const override {
             return _id;
+        }
+
+        void setLimitBox(const maths::AABoundingBox &box) override {
+            _box = box;
+        }
+
+        bool isInfinite() const override {
+            return false;
         }
 
       private:
