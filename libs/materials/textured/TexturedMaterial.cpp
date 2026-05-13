@@ -120,6 +120,11 @@ namespace raytracer::object::material {
         if (_materialLoader && !_materialLoader->materials().empty() &&
             !data.materialName.empty()) {
             const auto& mat = _materialLoader->get(data.materialName);
+            const double reflectivity = std::clamp(mat.ns() / 1000.0, 0.0, 1.0);
+            const double transparency = std::clamp(mat.d(), 0.0, 1.0);
+            const double ior = mat.ni();
+            const double metalness =
+                std::clamp((mat.ks().x + mat.ks().y + mat.ks().z) / 3.0, 0.0, 1.0);
 
             maths::Color finalColor;
             if (mat.mapKd().empty()) {
@@ -137,14 +142,14 @@ namespace raytracer::object::material {
             return {
                 .color = finalColor,
                 .emission = mat.ke(),
-                .reflType = primitive::RefltT::DIFF,
-                .reflectivity = mat.ns() / 1000.0,
-                .transparency = mat.d(),
-                .ior = mat.ni(),
+                .reflType = chooseReflTypeFromParams(
+                    reflectivity, transparency, ior, metalness),
+                .reflectivity = reflectivity,
+                .transparency = transparency,
+                .ior = ior,
                 .roughness =
                     std::clamp(1.0 - std::sqrt(mat.ns() / 1000.0), 0.0, 1.0),
-                .metalness = std::clamp(
-                    (mat.ks().x + mat.ks().y + mat.ks().z) / 3.0, 0.0, 1.0)};
+                .metalness = metalness};
         } else {
             maths::Color finalColor = sampleTexture(_texturePath, data.uv);
             return {.color = finalColor,
