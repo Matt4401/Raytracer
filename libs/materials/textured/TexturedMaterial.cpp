@@ -59,7 +59,7 @@ namespace raytracer::object::material {
                 preloadTexture(_texturePath);
             }
         } catch (const exception::PluginException& e2) {
-            throw e2;
+            throw exception::ParsingException(e2.what());
         }
     }
 
