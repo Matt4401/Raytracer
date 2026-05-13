@@ -41,6 +41,6 @@ namespace raytracer::object::material {
         maths::Color sampleTexture(const std::string& path,
                                    const maths::Vector& uv) const;
 
-        void preloadTexture(const std::string& path) const;
+        void preloadTexture(const std::string& path);
     };
 }  // namespace raytracer::object::material

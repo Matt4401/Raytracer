@@ -31,7 +31,7 @@ namespace raytracer::object::material {
         }
     }
 
-    void TexturedMaterial::preloadTexture(const std::string& path) const {
+    void TexturedMaterial::preloadTexture(const std::string& path) {
         if (!_loadedTextures.contains(path)) {
             sf::Image img;
             if (img.loadFromFile(path)) {
@@ -86,16 +86,8 @@ namespace raytracer::object::material {
     maths::Color TexturedMaterial::sampleTexture(
         const std::string& path, const maths::Vector& uv) const {
         auto it = _loadedTextures.find(path);
-        if (it == _loadedTextures.end()) {
-            try {
-                preloadTexture(path);
-            } catch (const std::exception&) {
-                return maths::Color(255, 0, 255);
-            }
-            it = _loadedTextures.find(path);
-            if (it == _loadedTextures.end())
-                return maths::Color(255, 0, 255);
-        }
+        if (it == _loadedTextures.end())
+            return maths::Color(255, 0, 255);
 
         const sf::Image& img = it->second;
         unsigned int width = img.getSize().x;
