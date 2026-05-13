@@ -56,8 +56,8 @@ namespace raytracer::object::scene {
             }
             return false;
         } else {
-            for (size_t i = 0; i < _primitives.size(); ++i) {
-                if (_primitives.at(i)->hits(ray, record)) {
+            for (const auto &primitive : _primitives) {
+                if (primitive->hits(ray, record)) {
                     return true;
                 }
             }
@@ -98,7 +98,7 @@ namespace raytracer::object::scene {
         RadianceContext ctx{x,     n,  nl,       f,        surfData,
                             depth, xi, emissive, hitRecord};
         if (surfData.material.reflType == object::primitive::RefltT::DIFF) {
-            return radianceDiffuse(ray, *obj, ctx);
+            return radianceDiffuse(ctx);
         }
         if (surfData.material.reflType == object::primitive::RefltT::SPEC) {
             return radianceSpecular(ray, *obj, ctx);
@@ -106,11 +106,8 @@ namespace raytracer::object::scene {
         return radianceRefractive(ray, *obj, ctx);
     }
 
-    maths::Vector Scene::radianceDiffuse(const maths::Ray &ray,
-                                         const primitive::IPrimitive &obj,
-                                         const RadianceContext &ctx) const {
+    maths::Vector Scene::radianceDiffuse(const RadianceContext &ctx) const {
         const maths::Vector &x = ctx.x;
-        const maths::Vector &n = ctx.n;
         const maths::Vector &nl = ctx.nl;
         const maths::Vector &f = ctx.f;
         int depth = ctx.depth;

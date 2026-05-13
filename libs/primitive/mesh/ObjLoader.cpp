@@ -36,7 +36,8 @@ namespace raytracer::object::primitive {
 
     ObjLoader::ObjLoader(
         const std::string &filePath,
-        std::shared_ptr<raytracer::object::material::IMaterial> defaultMaterial)
+        const std::shared_ptr<raytracer::object::material::IMaterial>
+            &defaultMaterial)
         : _defaultMaterial(defaultMaterial) {
         parseFile(filePath);
     }
@@ -44,7 +45,8 @@ namespace raytracer::object::primitive {
     ObjLoader::ObjLoader(
         const std::string &filePath, const maths::Vector &scale,
         const maths::Vector &center,
-        std::shared_ptr<raytracer::object::material::IMaterial> defaultMaterial)
+        const std::shared_ptr<raytracer::object::material::IMaterial>
+            &defaultMaterial)
         : _defaultMaterial(defaultMaterial) {
         _transformScale = scale;
         _transformCenter = center;
