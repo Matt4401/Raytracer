@@ -9,7 +9,6 @@
 
 #include <algorithm>
 #include <bvh/BVHBuilder.hpp>
-#include <iterator>
 #include <limits>
 
 #include "object/IScene.hpp"
@@ -45,28 +44,23 @@ namespace raytracer::object::scene {
             .normalized();
     }
 
-    bool Scene::intersect(const maths::Ray &ray, double &t,
-                          int &objectId) const {
+    bool Scene::intersect(const maths::Ray &ray, primitive::HitRecord &record) const {
         constexpr double INF = std::numeric_limits<double>::infinity();
-        t = INF;
-        objectId = -1;
+        record.t = INF;
+        record.objectId = -1;
 
         if (_bvhRoot) {
-            if (primitive::HitRecord rec; _bvhRoot->hits(ray, rec)) {
-                t = rec.t;
-                objectId = rec.objectId;
+            if ( _bvhRoot->hits(ray, record)) {
                 return true;
             }
             return false;
         } else {
             for (size_t i = 0; i < _primitives.size(); ++i) {
-                if (const double distance = _primitives.at(i)->hits(ray);
-                    distance >= 0.0 && distance < t) {
-                    t = distance;
-                    objectId = static_cast<int>(i);
+                if (_primitives.at(i)->hits(ray, record)) {
+                    return true;
                 }
             }
-            return objectId != -1;
+            return record.objectId != -1;
         }
         return false;
     }
@@ -74,9 +68,10 @@ namespace raytracer::object::scene {
     maths::Vector Scene::radiance(const maths::Ray &ray, int depth,
                                   unsigned short *xi, int emissive) const {
         primitive::HitRecord hitRecord;
-        if (!_bvhRoot || !_bvhRoot->hits(ray, hitRecord))
+        if (!intersect(ray, hitRecord))
             return maths::Vector();
 
+        hitRecord.hitPoint = ray.origin + ray.direction * hitRecord.t;
         const std::shared_ptr<primitive::IPrimitive> &obj =
             _primitives.at(hitRecord.objectId);
         if (depth > K_MAX_RADIANCE_DEPTH)
@@ -152,10 +147,9 @@ namespace raytracer::object::scene {
             for (int k = 0; k < _ambientOcclusion.samples; ++k) {
                 maths::Vector aoDir = randomCosineDir(nl, xi);
                 maths::Ray aoRay(x + nl * K_RAY_EPSILON, aoDir);
-                double aoT;
-                int aoId;
-                bool hit = intersect(aoRay, aoT, aoId);
-                if (!hit || aoT > _ambientOcclusion.radius)
+                primitive::HitRecord aoRecord;
+                bool hit = intersect(aoRay, aoRecord);
+                if (!hit || aoRecord.t > _ambientOcclusion.radius)
                     unoccluded += 1.0;
             }
             double aoFactor =

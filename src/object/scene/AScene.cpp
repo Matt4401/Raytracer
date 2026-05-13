@@ -54,7 +54,7 @@ namespace raytracer::object::scene {
                                    "Scene");
 
         _bvhStrategy = util::ObjectMiddleware::optional<std::string>(
-            params, "bvhStrategy", "sah", "Scene");
+            params, "bvhStrategy", "", "Scene");
     }
 
     void AScene::addPrimitive(const std::shared_ptr<IObject> &primitive) {

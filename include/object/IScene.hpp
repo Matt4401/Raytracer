@@ -45,8 +45,7 @@ namespace raytracer::object::scene {
         IScene() = default;
         virtual ~IScene() = default;
 
-        virtual bool intersect(const maths::Ray &ray, double &t,
-                               int &objectId) const = 0;
+        virtual bool intersect(const maths::Ray &ray, primitive::HitRecord &record) const = 0;
         virtual maths::Vector radiance(const maths::Ray &ray, int depth,
                                        unsigned short *xi,
                                        int emissive = 1) const = 0;
