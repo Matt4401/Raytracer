@@ -5,8 +5,7 @@
 ** Mesh
 */
 
-#ifndef MESH_HPP_
-#define MESH_HPP_
+#pragma once
 
 #include <any>
 #include <map>
@@ -35,4 +34,3 @@ namespace raytracer::object::primitive {
         mutable maths::AABoundingBox _meshBoundingBox;
     };
 }  // namespace raytracer::object::primitive
-#endif /* !MESH_HPP_ */
