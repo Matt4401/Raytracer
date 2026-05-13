@@ -36,7 +36,8 @@ namespace raytracer {
     }
 
     void Core::run() {
-        this->_renderer.render(*(this->_scenes.at(0)), 1, this->_scenes.at(0)->samplesPerPixel());
+        this->_renderer.render(*(this->_scenes.at(0)), 1,
+                               this->_scenes.at(0)->samplesPerPixel());
         this->_renderer.pixelToPPM(*(this->_scenes.at(0)));
     }
 

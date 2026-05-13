@@ -174,10 +174,8 @@ namespace raytracer::object::scene {
                 }
             }
         }
-        for (const auto &cam : _cameras)
-            globalBox.extend(cam->position());
-        for (const auto &light : _lights)
-            globalBox.extend(light->position());
+        for (const auto &cam : _cameras) globalBox.extend(cam->position());
+        for (const auto &light : _lights) globalBox.extend(light->position());
         globalBox.pad(50.0);
 
         for (const auto &prim : _primitives) {

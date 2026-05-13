@@ -44,13 +44,14 @@ namespace raytracer::object::scene {
             .normalized();
     }
 
-    bool Scene::intersect(const maths::Ray &ray, primitive::HitRecord &record) const {
+    bool Scene::intersect(const maths::Ray &ray,
+                          primitive::HitRecord &record) const {
         constexpr double INF = std::numeric_limits<double>::infinity();
         record.t = INF;
         record.objectId = -1;
 
         if (_bvhRoot) {
-            if ( _bvhRoot->hits(ray, record)) {
+            if (_bvhRoot->hits(ray, record)) {
                 return true;
             }
             return false;
