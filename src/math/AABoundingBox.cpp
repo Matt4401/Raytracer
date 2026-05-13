@@ -69,6 +69,8 @@ namespace raytracer::maths {
             !std::isfinite(w) || !std::isfinite(h) || !std::isfinite(d)) {
             return;
         }
+        if (amount < 0)
+            return;
         x -= amount;
         y -= amount;
         z -= amount;
