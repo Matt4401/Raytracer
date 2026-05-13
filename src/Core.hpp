@@ -8,9 +8,13 @@
 #pragma once
 
 #include <filesystem>
+#include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "Render.hpp"
+#include "export/IExport.hpp"
 #include "plugin/ObjectFactory.hpp"
 #include "plugin/PluginManager.hpp"
 
@@ -26,7 +30,7 @@ namespace raytracer {
          * Loads plugins from the plugins folder and registers them in the
          * factory.
          */
-        void init(const std::filesystem::path &file);
+        void init(const std::vector<std::string> &argv);
 
         /**
          * @brief Run the main loop
@@ -35,7 +39,8 @@ namespace raytracer {
          */
         void run();
 
-        static std::pair<bool, int> helpMessage(int argc, char **argv);
+        static std::pair<bool, int> helpMessage(
+            const std::vector<std::string> &argv);
 
       private:
         PluginManager _plugManager;
@@ -43,7 +48,19 @@ namespace raytracer {
         Render _renderer;
 
         std::vector<std::shared_ptr<object::scene::IScene>> _scenes;
+        std::unique_ptr<exporter::IExport> _export = nullptr;
+        std::filesystem::path _givenFile;
 
         static constexpr std::string_view PLUGINS_FOLDER_PATH = "./plugins/";
+        static constexpr std::string_view EXPORT_FLAG = "-e";
+        static constexpr std::string_view HELP_MESSAGE =
+            "USAGE: ./raytracer <SCENE_FILE> \n"
+            "\tSCENE_FILE: scene configuration\n"
+            "\t-e: export mode (ppm)\n";
+
+        void cmdArgsHandling(const std::vector<std::string> &argv);
+
+        void setExportViaFlag(size_t index,
+                              const std::vector<std::string> &argv);
     };
 }  // namespace raytracer
