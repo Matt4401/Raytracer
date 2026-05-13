@@ -29,10 +29,14 @@ namespace raytracer {
                 return this->_objFactory.build(name, param);
             });
         this->_scenes = parser.parse(file);
+        if (this->_scenes.empty()) {
+            throw exception::PluginException{"No scene found in configuration"};
+        }
+        this->_scenes.at(0)->buildBVH(this->_scenes.at(0)->bvhStrategy());
     }
 
     void Core::run() {
-        this->_renderer.render(*(this->_scenes.at(0)), 1, 50);
+        this->_renderer.render(*(this->_scenes.at(0)), 1, this->_scenes.at(0)->samplesPerPixel());
         this->_renderer.pixelToPPM(*(this->_scenes.at(0)));
     }
 

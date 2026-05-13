@@ -172,7 +172,7 @@ namespace raytracer::object::scene {
         maths::Vector diffuseContrib(0, 0, 0);
         diffuseContrib = _ambientDiffuse.ambient.toVector() * diffuseF;
 
-        // Diffuse indirect: roughness perturbs the cosine-weighted direction
+        // Diffuse indirect
         maths::Vector diffuseDir = randomCosineDir(nl, xi);
         if (roughness > 0.0) {
             diffuseDir = (diffuseDir * (1.0 - roughness) +
