@@ -26,23 +26,26 @@
 
 namespace raytracer {
 
-    void Core::init(const std::vector<std::string> &argv) {
+    void Core::init(const std::vector<std::string> &argv,
+                    const std::filesystem::path &pluginsPath) {
         parsing::ConfigParser parser;
 
         this->cmdArgsHandling(argv);
-        this->_plugManager.updatePluginList(PLUGINS_FOLDER_PATH);
+        if (this->_export == nullptr) {
+            this->_export = std::make_unique<exporter::ExportPPM>();
+        }
+
+        this->_plugManager.updatePluginList(pluginsPath);
         this->_plugManager.fillFactory(this->_objFactory);
 
         parser.setBuildCallback(
             [this](const std::string &name,
-                   const std::map<std::string, std::any> &param) {
+                   const std::map<std::string, std::any> &param)
+                -> std::shared_ptr<object::IObject> {
                 return this->_objFactory.build(name, param);
             });
         this->_scenes = parser.parse(this->_givenFile);
-        this->_scenes.at(0)->buildBVH("sah");  // to change
-        if (this->_export == nullptr) {
-            this->_export = std::make_unique<exporter::ExportPPM>();
-        }
+        this->_scenes.at(0)->buildBVH(this->_scenes.at(0)->bvhStrategy());
     }
 
     void Core::run() {

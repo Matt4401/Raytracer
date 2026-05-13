@@ -30,7 +30,9 @@ namespace raytracer {
          * Loads plugins from the plugins folder and registers them in the
          * factory.
          */
-        void init(const std::vector<std::string> &argv);
+        void init(
+            const std::vector<std::string> &argv,
+            const std::filesystem::path &pluginsPath = PLUGINS_FOLDER_PATH);
 
         /**
          * @brief Run the main loop

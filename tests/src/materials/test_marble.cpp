@@ -21,12 +21,10 @@
 
 static std::map<std::string, std::any> makeMarbleArgs() {
     return std::map<std::string, std::any>{
-        {"color1", std::map<std::string, std::any>{{"r", 240},
-                                                   {"g", 240},
-                                                   {"b", 240}}},
-        {"color2", std::map<std::string, std::any>{{"r", 40},
-                                                   {"g", 40},
-                                                   {"b", 45}}},
+        {"color1",
+         std::map<std::string, std::any>{{"r", 240}, {"g", 240}, {"b", 240}}},
+        {"color2",
+         std::map<std::string, std::any>{{"r", 40}, {"g", 40}, {"b", 45}}},
         {"scale", 0.4},
         {"octaves", 5},
         {"persistence", 0.6},
@@ -79,8 +77,8 @@ TEST(MarbleMaterial, VariesAcrossPoints) {
 
     std::set<int> uniqueColors;
     for (int i = 0; i < 10; ++i) {
-        auto sd =
-            sphere->surfaceData(raytracer::maths::Vector(i * 0.5, 10.0, 0));
+        auto sd = sphere->surfaceData(raytracer::object::primitive::HitRecord{
+            0, -1, 0, raytracer::maths::Vector(i * 0.5, 10.0, 0)});
         int packed = (sd.material.color.r << 16) | (sd.material.color.g << 8) |
                      sd.material.color.b;
         uniqueColors.insert(packed);

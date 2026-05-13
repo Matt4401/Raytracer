@@ -1,5 +1,6 @@
 set(FIXTURES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/fixtures")
 set(TEST_PLUGINS_DIR "${CMAKE_SOURCE_DIR}/tests/plugins/")
+set(TEST_CONFIG_FILE_DIR "${CMAKE_SOURCE_DIR}/tests/configs/")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
 add_subdirectory(libs)
@@ -34,6 +35,7 @@ if (NOT SKIP_INTERNET)
             src/main.cpp
             src/exception/exception.cpp
             src/core/test_plugin.cpp
+			src/core/test_arguments.cpp
             ${CMAKE_SOURCE_DIR}/src/exception/Exception.cpp
             ${CMAKE_SOURCE_DIR}/src/plugin/ObjectFactory.cpp
             ${CMAKE_SOURCE_DIR}/src/plugin/PluginManager.cpp
@@ -54,6 +56,7 @@ if (NOT SKIP_INTERNET)
             PRIVATE
             FIXTURES_PATH="${FIXTURES_DIR}"
             TEST_PLUGINS_PATH="${TEST_PLUGINS_DIR}"
+			TEST_CONFIG_FILE_PATH="${TEST_CONFIG_FILE_DIR}"
     )
 
     gtest_discover_tests(exception_tests)
@@ -104,6 +107,10 @@ if (NOT SKIP_INTERNET)
             src/main.cpp
             src/primitives/test_plane.cpp
             ${CMAKE_SOURCE_DIR}/libs/primitive/plane/Plane.cpp
+            src/primitives/test_sphere.cpp
+            ${CMAKE_SOURCE_DIR}/libs/primitive/sphere/Sphere.cpp
+            src/primitives/test_rectangle.cpp
+            ${CMAKE_SOURCE_DIR}/libs/primitive/rectangle/Rectangle.cpp
             src/primitives/test_triangle.cpp
             ${CMAKE_SOURCE_DIR}/src/plugin/ObjectFactory.cpp
             ${CMAKE_SOURCE_DIR}/src/plugin/PluginManager.cpp

@@ -47,11 +47,20 @@ namespace raytracer::object::scene {
             ambientDiffuse, "intensity", "Scene");
         util::Helpers::unsignedDouble(_ambientDiffuse.intensity, "intensity",
                                       "Scene");
+
+        _samplesPerPixel = util::ObjectMiddleware::optional<int>(
+            params, "samplesPerPixel", 100, "Scene");
+        util::Helpers::unsignedInt(_samplesPerPixel, "samplesPerPixel",
+                                   "Scene");
+
+        _bvhStrategy = util::ObjectMiddleware::optional<std::string>(
+            params, "bvhStrategy", "sah", "Scene");
     }
 
     void AScene::addPrimitive(const std::shared_ptr<IObject> &primitive) {
-        auto primPtr =
+        const auto primPtr =
             std::dynamic_pointer_cast<primitive::IPrimitive>(primitive);
+
         if (!primPtr) {
             throw exception::PluginException(
                 "Invalid primitive object added to scene");
@@ -60,7 +69,8 @@ namespace raytracer::object::scene {
     }
 
     void AScene::addLight(const std::shared_ptr<IObject> &light) {
-        auto lightPtr = std::dynamic_pointer_cast<light::ILight>(light);
+        const auto lightPtr = std::dynamic_pointer_cast<light::ILight>(light);
+
         if (!lightPtr) {
             throw exception::PluginException("Failed to cast light object");
         }
@@ -68,7 +78,8 @@ namespace raytracer::object::scene {
     }
 
     void AScene::addCamera(const std::shared_ptr<IObject> &camera) {
-        auto camPtr = std::dynamic_pointer_cast<camera::ICamera>(camera);
+        const auto camPtr = std::dynamic_pointer_cast<camera::ICamera>(camera);
+
         if (!camPtr) {
             throw exception::PluginException(
                 "Invalid camera object added to scene");
@@ -76,12 +87,12 @@ namespace raytracer::object::scene {
         _cameras.push_back(camPtr);
     }
 
-    void AScene::addObject(std::shared_ptr<IObject> object) {
+    void AScene::addObject(const std::shared_ptr<IObject> object) {
         if (!object) {
             throw exception::PluginException("Null object added to scene");
         }
-        auto it = _addObjectHandlers.find(object->type());
-        if (it != _addObjectHandlers.end()) {
+        if (const auto it = _addObjectHandlers.find(object->type());
+            it != _addObjectHandlers.end()) {
             try {
                 it->second(object);
             } catch (const std::bad_cast &) {
@@ -94,15 +105,17 @@ namespace raytracer::object::scene {
         }
     }
 
-    void AScene::setAmbientLight(const maths::Color &color, double intensity) {
+    void AScene::setAmbientLight(const maths::Color &color,
+                                 const double intensity) {
         _ambientLight = {color, intensity};
     }
 
-    void AScene::setDiffuseLight(const maths::Color &color, double intensity) {
+    void AScene::setDiffuseLight(const maths::Color &color,
+                                 const double intensity) {
         _ambientDiffuse = {color, intensity};
     }
 
-    void AScene::setAmbientOcclusion(int samples, double radius) {
+    void AScene::setAmbientOcclusion(const int samples, const double radius) {
         _ambientOcclusion = {samples, radius};
     }
 
@@ -136,14 +149,29 @@ namespace raytracer::object::scene {
         return this->_cameras.size() > 0;
     }
 
+    int AScene::samplesPerPixel() const {
+        return _samplesPerPixel;
+    }
+
+    std::string_view AScene::bvhStrategy() const {
+        return _bvhStrategy;
+    }
+
     void AScene::buildBVH(std::string_view strategy) {
         if (_primitives.empty())
             return;
-        if (strategy.empty()) {
-            strategy = "sah";
+
+        const maths::AABoundingBox globalBox = _primitives[0]->boundingBox();
+
+        for (const auto &prim : _primitives) {
+            prim->setLimitBox(globalBox);
         }
         for (std::size_t i = 0; i < _primitives.size(); ++i) {
             _primitives[i]->setId(static_cast<int>(i));
+        }
+        if (strategy.empty()) {
+            _bvhRoot = nullptr;
+            return;
         }
         auto builder =
             bvh::BVHBuilder<raytracer::bvh::ISplitStrategy>(strategy);

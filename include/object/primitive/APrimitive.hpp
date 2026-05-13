@@ -33,20 +33,24 @@ namespace raytracer::object::primitive {
         ~APrimitive() override = default;
 
         bool hits(const maths::Ray &ray, HitRecord &record) const override = 0;
+        double hits(const maths::Ray &ray) const override;
         AABoundingBox boundingBox() override = 0;
-        SurfaceData surfaceData(const maths::Vector &hitPoint) const override =
-            0;
+        SurfaceData surfaceData(const HitRecord &record) const override = 0;
 
         maths::Vector center() const noexcept override;
         const std::string &name() const noexcept override;
 
         void setId(int id) override;
-        int getId() const override;
+        int id() const override;
+        void setLimitBox(const maths::AABoundingBox &box) override;
+        bool isInfinite() const override;
 
       protected:
         std::shared_ptr<raytracer::object::material::IMaterial> _material;
         std::string _name;
         maths::Vector _center;
+        maths::AABoundingBox _sceneLimit;
+        bool _hasLimit = false;
         int _id = -1;
     };
 }  // namespace raytracer::object::primitive

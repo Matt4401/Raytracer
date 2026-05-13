@@ -12,6 +12,7 @@
 #include <functional>
 #include <map>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "AObject.hpp"
@@ -53,7 +54,9 @@ namespace raytracer::object::scene {
         const std::vector<std::shared_ptr<camera::ICamera>> &cameras()
             const override;
 
+        int samplesPerPixel() const override;
         void buildBVH(std::string_view strategy) override;
+        std::string_view bvhStrategy() const override;
 
       protected:
         static constexpr int K_MAX_RADIANCE_DEPTH = 10;
@@ -71,6 +74,9 @@ namespace raytracer::object::scene {
         AmbientOcclusion _ambientOcclusion;
         AmbientLight _ambientLight;
         AmbientDiffuse _ambientDiffuse;
+
+        int _samplesPerPixel = 100;
+        std::string _bvhStrategy = "sah";
 
       private:
         void addPrimitive(const std::shared_ptr<IObject> &primitive);

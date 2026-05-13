@@ -45,21 +45,29 @@ namespace raytracer::object::primitive {
         if (std::abs(denom) < EPS) {
             return false;
         }
-        const double t = (_center - ray.origin).dot(_normal) / denom;
-        if (t >= EPS) {
+        if (const double t = (_center - ray.origin).dot(_normal) / denom;
+            t >= EPS) {
             record.t = t;
-            record.objectId = getId();
+            record.objectId = id();
+            record.hitPoint = ray.origin + ray.direction * t;
             return true;
         }
         return false;
     }
 
-    IPrimitive::AABoundingBox Plane::boundingBox() {
-        // TODO
-        return {0, 0, 0, 0, 0, 0};
+    bool Plane::isInfinite() const {
+        return true;
     }
 
-    SurfaceData Plane::surfaceData(const maths::Vector &hitPoint) const {
+    IPrimitive::AABoundingBox Plane::boundingBox() {
+        if (!_hasLimit) {
+            return {-1e6, -1e6, -1e6, 2e6, 2e6, 2e6};
+        }
+        return _sceneLimit;
+    }
+
+    SurfaceData Plane::surfaceData(const HitRecord &record) const {
+        const maths::Vector &hitPoint = record.hitPoint;
         const maths::Vector &normal = _normal;
         const maths::Vector helper = (std::abs(normal.y) < 0.999)
                                          ? maths::Vector(0, 1, 0)

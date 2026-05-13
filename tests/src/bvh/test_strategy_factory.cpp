@@ -17,7 +17,8 @@ namespace {
     class CustomStrategy final : public raytracer::bvh::ISplitStrategy {
       public:
         raytracer::bvh::SplitResult findSplit(
-            const std::vector<std::shared_ptr<raytracer::object::primitive::IPrimitive>> &,
+            const std::vector<
+                std::shared_ptr<raytracer::object::primitive::IPrimitive>> &,
             const raytracer::maths::AABoundingBox &) override {
             return {.axis = raytracer::bvh::Axis::Z,
                     .splitPos = 42.0,
@@ -38,9 +39,11 @@ TEST(STRATEGY_FACTORY, creates_built_in_strategies) {
 
 TEST(STRATEGY_FACTORY, registers_and_creates_custom_strategy) {
     raytracer::bvh::StrategyFactory::registerStrategy(
-        "unit-test-strategy", []() { return std::make_unique<CustomStrategy>(); });
+        "unit-test-strategy",
+        []() { return std::make_unique<CustomStrategy>(); });
 
-    auto strategy = raytracer::bvh::StrategyFactory::create("unit-test-strategy");
+    auto strategy =
+        raytracer::bvh::StrategyFactory::create("unit-test-strategy");
 
     ASSERT_NE(strategy, nullptr);
     const auto result = strategy->findSplit({}, {0, 0, 0, 1, 1, 1});

@@ -84,12 +84,29 @@ namespace raytracer::bvh {
         return hits(ray, record) ? record.t : -1.0;
     }
 
+    void BVHNode::setId(int id) {
+        _id = id;
+    }
+
+    int BVHNode::id() const {
+        return _id;
+    }
+
+    void BVHNode::setLimitBox(const AABoundingBox &box) {
+        _bbox = box;
+        _center = computeCenter();
+    }
+
+    bool BVHNode::isInfinite() const {
+        return false;
+    }
+
     object::primitive::IPrimitive::AABoundingBox BVHNode::boundingBox() {
         return _bbox;
     }
 
     object::primitive::SurfaceData BVHNode::surfaceData(
-        const maths::Vector &hitPoint) const {
+        const object::primitive::HitRecord &record) const {
         throw exception::CoreException(
             "BVHNode::surfaceData should not be called on a BVHNode");
     }

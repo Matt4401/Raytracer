@@ -58,24 +58,32 @@ namespace raytracer::object::scene {
                 return true;
             }
             return false;
+        } else {
+            for (size_t i = 0; i < _primitives.size(); ++i) {
+                if (const double distance = _primitives.at(i)->hits(ray);
+                    distance >= 0.0 && distance < t) {
+                    t = distance;
+                    objectId = static_cast<int>(i);
+                }
+            }
+            return objectId != -1;
         }
         return false;
     }
 
     maths::Vector Scene::radiance(const maths::Ray &ray, int depth,
                                   unsigned short *xi, int emissive) const {
-        double t = -1.0;
-        int id = -1;
-        if (!intersect(ray, t, id))
+        primitive::HitRecord hitRecord;
+        if (!_bvhRoot || !_bvhRoot->hits(ray, hitRecord))
             return maths::Vector();
 
-        const std::shared_ptr<primitive::IPrimitive> &obj = _primitives.at(id);
+        const std::shared_ptr<primitive::IPrimitive> &obj =
+            _primitives.at(hitRecord.objectId);
         if (depth > K_MAX_RADIANCE_DEPTH)
             return maths::Vector();
 
-        maths::Vector rayOrigin(ray.origin.x, ray.origin.y, ray.origin.z);
-        maths::Vector x = rayOrigin + ray.direction * t;
-        primitive::SurfaceData surfData = obj->surfaceData(x);
+        primitive::SurfaceData surfData = obj->surfaceData(hitRecord);
+        maths::Vector x = hitRecord.hitPoint;
         maths::Vector n = surfData.normal;
         maths::Vector nl = n.dot(ray.direction) < 0 ? n : n * -1;
 
@@ -91,7 +99,8 @@ namespace raytracer::object::scene {
                 return surfData.material.emission * emissive;
         }
 
-        RadianceContext ctx{x, n, nl, f, depth, xi, emissive};
+        RadianceContext ctx{x,     n,  nl,       f,        surfData,
+                            depth, xi, emissive, hitRecord};
         if (surfData.material.reflType == object::primitive::RefltT::DIFF) {
             return radianceDiffuse(ray, *obj, ctx);
         }
@@ -105,13 +114,13 @@ namespace raytracer::object::scene {
                                          const primitive::IPrimitive &obj,
                                          const RadianceContext &ctx) const {
         const maths::Vector &x = ctx.x;
-        primitive::SurfaceData surfData = obj.surfaceData(x);
         const maths::Vector &n = ctx.n;
         const maths::Vector &nl = ctx.nl;
         const maths::Vector &f = ctx.f;
         int depth = ctx.depth;
         unsigned short *xi = ctx.xi;
         int emissive = ctx.emissive;
+        const primitive::SurfaceData &surfData = ctx.surfData;
 
         const double metalness =
             std::clamp(surfData.material.metalness, 0.0, 1.0);
@@ -163,7 +172,7 @@ namespace raytracer::object::scene {
         maths::Vector diffuseContrib(0, 0, 0);
         diffuseContrib = _ambientDiffuse.ambient.toVector() * diffuseF;
 
-        // Diffuse indirect: roughness perturbs the cosine-weighted direction
+        // Diffuse indirect
         maths::Vector diffuseDir = randomCosineDir(nl, xi);
         if (roughness > 0.0) {
             diffuseDir = (diffuseDir * (1.0 - roughness) +
@@ -182,11 +191,10 @@ namespace raytracer::object::scene {
         const maths::Vector &x = ctx.x;
         const maths::Vector &n = ctx.n;
         const maths::Vector &f = ctx.f;
+        const primitive::SurfaceData &surfData = ctx.surfData;
         int depth = ctx.depth;
         unsigned short *xi = ctx.xi;
         int emissive = ctx.emissive;
-        primitive::SurfaceData surfData = obj.surfaceData(x);
-
         const double reflectivity =
             std::clamp(surfData.material.reflectivity, 0.0, 1.0);
         const double roughness =
@@ -228,11 +236,10 @@ namespace raytracer::object::scene {
         const maths::Vector &n = ctx.n;
         const maths::Vector &nl = ctx.nl;
         const maths::Vector &f = ctx.f;
-        primitive::SurfaceData surfData = obj.surfaceData(x);
-
         int depth = ctx.depth;
         unsigned short *xi = ctx.xi;
         int emissive = ctx.emissive;
+        const primitive::SurfaceData &surfData = ctx.surfData;
 
         const double ior =
             surfData.material.ior > 0 ? surfData.material.ior : K_DEFAULT_IOR;
