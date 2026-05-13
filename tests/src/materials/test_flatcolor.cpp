@@ -34,12 +34,12 @@ TEST(MATERIAL, flatcolor_decorator) {
     plugManager.fillFactory(objFactory);
 
     std::map<std::string, std::any> flatColorArgs = {
-        {"color", std::map<std::string, std::any>{{"r", (unsigned char)255},
-                                                  {"g", (unsigned char)0},
-                                                  {"b", (unsigned char)0}}},
+        {"color",
+         std::map<std::string, std::any>{
+             {"r", (int)255}, {"g", (int)0}, {"b", (int)0}}},
         {"emission",
          std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
-        {"reflType", raytracer::object::primitive::RefltT::DIFF}};
+        {"reflType", std::string("DIFF")}};
     auto matObj = objFactory.build("flatcolor", flatColorArgs);
     ASSERT_NE(matObj, nullptr);
     auto matPtr =
@@ -79,12 +79,12 @@ TEST(MATERIAL, flatcolor_preserves_normal) {
     plugManager.fillFactory(objFactory);
 
     std::map<std::string, std::any> flatColorArgs = {
-        {"color", std::map<std::string, std::any>{{"r", (unsigned char)100},
-                                                  {"g", (unsigned char)150},
-                                                  {"b", (unsigned char)200}}},
+        {"color",
+         std::map<std::string, std::any>{
+             {"r", (int)100}, {"g", (int)150}, {"b", (int)200}}},
         {"emission",
          std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
-        {"reflType", raytracer::object::primitive::RefltT::DIFF}};
+        {"reflType", std::string("DIFF")}};
     auto matObj = objFactory.build("flatcolor", flatColorArgs);
     ASSERT_NE(matObj, nullptr);
     auto matPtr =

@@ -41,6 +41,8 @@ namespace raytracer::object::scene {
                              double intensity) override;
         void setAmbientOcclusion(int samples, double radius) override;
 
+        bool haveCamera() override;
+
         AmbientOcclusion ambientOcclusion() const override;
         AmbientLight ambientLight() const override;
         AmbientDiffuse ambientDiffuse() const override;

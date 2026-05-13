@@ -7,6 +7,7 @@
 
 #include <any>
 #include <map>
+#include <string>
 
 #include "./ValidObject.hpp"
 #include "object/IObject.hpp"

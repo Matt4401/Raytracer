@@ -7,6 +7,9 @@
 
 #pragma once
 
+#include <filesystem>
+#include <utility>
+
 #include "Render.hpp"
 #include "plugin/ObjectFactory.hpp"
 #include "plugin/PluginManager.hpp"
@@ -23,7 +26,7 @@ namespace raytracer {
          * Loads plugins from the plugins folder and registers them in the
          * factory.
          */
-        void init();
+        void init(const std::filesystem::path &file);
 
         /**
          * @brief Run the main loop
@@ -32,12 +35,14 @@ namespace raytracer {
          */
         void run();
 
+        static std::pair<bool, int> helpMessage(int argc, char **argv);
+
       private:
         PluginManager _plugManager;
         ObjectFactory _objFactory;
         Render _renderer;
 
-        std::shared_ptr<object::scene::IScene> _scene;
+        std::vector<std::shared_ptr<object::scene::IScene>> _scenes;
 
         static constexpr std::string_view PLUGINS_FOLDER_PATH = "./plugins/";
     };
