@@ -126,7 +126,7 @@ namespace raytracer::object::primitive {
         std::vector<std::string> tokens;
         std::string tok;
         while (iss >> tok) {
-            tokens.push_back(tok);
+            tokens.emplace_back(tok);
         }
 
         if (tokens.size() < 3)
