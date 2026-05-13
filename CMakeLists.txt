@@ -21,9 +21,9 @@ include_directories(include)
 
 # Enable testing
 enable_testing()
-set(BUILD_TESTS ON)
+set(RAYTRACER_BUILD_TESTS ON)
 
-if (BUILD_TESTS)
+if (RAYTRACER_BUILD_TESTS)
     add_subdirectory(tests)
 
     add_custom_target(check
@@ -33,6 +33,8 @@ if (BUILD_TESTS)
             VERBATIM
     )
 endif ()
+
+
 
 set(SRCS
         src/Core.cpp
@@ -88,6 +90,33 @@ set(HEADERS
         include/object/primitive/ReflTypes.hpp
 )
 
+# libconfig
+include(FetchContent)
+
+FetchContent_Declare(
+    libconfig
+    GIT_REPOSITORY https://github.com/hyperrealm/libconfig.git
+    GIT_TAG        v1.7.3
+)
+
+# Disable libconfig's own tests/examples
+set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(BUILD_TESTS    OFF CACHE BOOL "" FORCE)
+# Needed because libconfig 1.7.3 uses cmake_minimum_required < 3.5,
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5 CACHE STRING "" FORCE)
+
+FetchContent_MakeAvailable(libconfig)
+
+target_include_directories(config++ SYSTEM INTERFACE
+    $<BUILD_INTERFACE:${libconfig_SOURCE_DIR}/lib>
+)
+
+target_include_directories(config SYSTEM INTERFACE
+    $<BUILD_INTERFACE:${libconfig_SOURCE_DIR}/lib>
+)
+
+
+# core library
 add_library(raytracer_core STATIC ${SRCS})
 set_property(TARGET raytracer_core PROPERTY POSITION_INDEPENDENT_CODE ON)
 
@@ -96,21 +125,11 @@ target_include_directories(raytracer_core PUBLIC
         ${CMAKE_SOURCE_DIR}/src
 )
 
+# Link libconfig to the core library (PUBLIC so it propagates to executable)
+target_link_libraries(raytracer_core PUBLIC config++)
 
-# libconfig
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(LIBCONFIG REQUIRED libconfig++)
-
-#bin
+# bin
 add_executable(${NAME} src/main.cpp ${HEADERS})
 target_link_libraries(${NAME} PRIVATE raytracer_core)
-target_link_libraries(${NAME} PRIVATE ${LIBCONFIG_LIBRARIES})
-target_include_directories(${NAME} PRIVATE ${LIBCONFIG_INCLUDE_DIRS})
-
-add_custom_command(TARGET ${NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:${NAME}>
-        ${CMAKE_SOURCE_DIR}/${NAME}
-)
 
 add_subdirectory(libs)
