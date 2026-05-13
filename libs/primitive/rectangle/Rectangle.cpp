@@ -92,6 +92,7 @@ namespace raytracer::object::primitive {
             !verifyHitPoint(_center, _maxPoint, _normal, hitPoint))
             return false;
         record.t = t;
+        record.hitPoint = ray.origin + ray.direction * t;
         record.objectId = id();
         return true;
     }
@@ -125,14 +126,14 @@ namespace raytracer::object::primitive {
                                     .d = maxZ - minZ};
     }
 
-    SurfaceData Rectangle::surfaceData(const maths::Vector &hitPoint) const {
+    SurfaceData Rectangle::surfaceData(const HitRecord &record) const {
         const maths::Vector &normal = _normal;
         const maths::Vector helper = (std::abs(normal.y) < 0.999)
                                          ? maths::Vector(0, 1, 0)
                                          : maths::Vector(1, 0, 0);
         const maths::Vector uAxis = normal.cross(helper).normalized();
         const maths::Vector vAxis = normal.cross(uAxis).normalized();
-        const maths::Vector localHit = hitPoint - _center;
+        const maths::Vector localHit = record.hitPoint - _center;
         const double u = localHit.dot(uAxis);
         const double v = localHit.dot(vAxis);
 
@@ -140,7 +141,7 @@ namespace raytracer::object::primitive {
             .normal = normal, .uv = maths::Vector(u, v, 0), .material = {}};
 
         if (this->_material) {
-            data.material = this->_material->evaluate(data, hitPoint);
+            data.material = this->_material->evaluate(data, record.hitPoint);
         }
         return data;
     }

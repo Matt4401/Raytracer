@@ -32,7 +32,7 @@ namespace raytracer::object::primitive {
         const double &radius() const noexcept;
         bool hits(const maths::Ray &ray, HitRecord &record) const override;
         AABoundingBox boundingBox() override;
-        SurfaceData surfaceData(const maths::Vector &hitPoint) const override;
+        SurfaceData surfaceData(const HitRecord &record) const override;
 
       private:
         double _radius;

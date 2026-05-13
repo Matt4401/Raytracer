@@ -21,26 +21,31 @@ using raytracer::tests::bvh::ExposedASplitStrategy;
 using raytracer::tests::bvh::makePrimitive;
 
 namespace {
-    using PrimitivePtr = std::shared_ptr<raytracer::object::primitive::IPrimitive>;
+    using PrimitivePtr =
+        std::shared_ptr<raytracer::object::primitive::IPrimitive>;
 
     std::vector<PrimitivePtr> makeXAxisPrimitives(std::size_t count) {
         std::vector<PrimitivePtr> primitives;
 
         for (std::size_t i = 0; i < count; ++i) {
             const double x = static_cast<double>(i) * 2.0;
-            primitives.push_back(
-                makePrimitive("primitive" + std::to_string(i), {x, 0, 0, 1, 1, 1},
-                              Vector(x + 0.5, 0.5, 0.5), 1.0));
+            primitives.push_back(makePrimitive("primitive" + std::to_string(i),
+                                               {x, 0, 0, 1, 1, 1},
+                                               Vector(x + 0.5, 0.5, 0.5), 1.0));
         }
         return primitives;
     }
 }  // namespace
 
 TEST(BVH_STRATEGY_HELPERS, longest_axis_prefers_x_then_y_then_z) {
-    ASSERT_EQ(ExposedASplitStrategy::longestAxis({0, 0, 0, 4, 2, 1}), raytracer::bvh::Axis::X);
-    ASSERT_EQ(ExposedASplitStrategy::longestAxis({0, 0, 0, 1, 4, 2}), raytracer::bvh::Axis::Y);
-    ASSERT_EQ(ExposedASplitStrategy::longestAxis({0, 0, 0, 1, 2, 4}), raytracer::bvh::Axis::Z);
-    ASSERT_EQ(ExposedASplitStrategy::longestAxis({0, 0, 0, 3, 3, 3}), raytracer::bvh::Axis::X);
+    ASSERT_EQ(ExposedASplitStrategy::longestAxis({0, 0, 0, 4, 2, 1}),
+              raytracer::bvh::Axis::X);
+    ASSERT_EQ(ExposedASplitStrategy::longestAxis({0, 0, 0, 1, 4, 2}),
+              raytracer::bvh::Axis::Y);
+    ASSERT_EQ(ExposedASplitStrategy::longestAxis({0, 0, 0, 1, 2, 4}),
+              raytracer::bvh::Axis::Z);
+    ASSERT_EQ(ExposedASplitStrategy::longestAxis({0, 0, 0, 3, 3, 3}),
+              raytracer::bvh::Axis::X);
 }
 
 TEST(BVH_STRATEGY_HELPERS, split_threshold_requires_more_than_four_objects) {

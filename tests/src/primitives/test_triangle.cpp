@@ -118,7 +118,8 @@ TEST(PRIMITIVE_TRIANGLE, surface_normal_and_uv) {
                              raytracer::maths::Vector(0, 1, 0));
     ASSERT_NE(tri, nullptr);
 
-    const auto data = tri->surfaceData(raytracer::maths::Vector(0.2, 0.2, 0));
+    const auto data = tri->surfaceData(raytracer::object::primitive::HitRecord{
+        0, -1, 0, raytracer::maths::Vector(0.2, 0.2, 0)});
 
     ASSERT_NEAR(data.normal.x, 0.0, 1e-6);
     ASSERT_NEAR(data.normal.y, 0.0, 1e-6);

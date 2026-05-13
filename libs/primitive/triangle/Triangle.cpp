@@ -81,6 +81,7 @@ namespace raytracer::object::primitive {
             return false;  // Ray intersection behind the origin
         }
         record.t = t;
+        record.hitPoint = ray.origin + ray.direction * t;
         record.objectId = id();
         return true;
     }
@@ -104,7 +105,8 @@ namespace raytracer::object::primitive {
                                     .d = maxZ - minZ};
     }
 
-    SurfaceData Triangle::surfaceData(const maths::Vector &hitPoint) const {
+    SurfaceData Triangle::surfaceData(const HitRecord &record) const {
+        const maths::Vector &hitPoint = record.hitPoint;
         const auto edge1 = _v1 - _center;
         const auto edge2 = _v2 - _center;
         const auto normal = edge1.cross(edge2).normalized();
