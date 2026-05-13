@@ -11,7 +11,6 @@ SET (HEADERS
     TexturedMaterial.hpp
     MtlLoader.hpp
     MeshMaterial.hpp
-    MeshMaterial.hpp
 )
 
 add_library(texturedmat_plug SHARED ${SRCS} ${HEADERS})
