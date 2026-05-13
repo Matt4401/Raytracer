@@ -99,16 +99,16 @@ namespace raytracer::object::material {
 
       protected:
       private:
-        std::string _name;     // Material name
-        double _ns;            // Specular exponent
-        maths::Vector _ka;     // Ambient color
-        maths::Vector _ks;     // Specular color
-        maths::Vector _ke;     // Emissive color
-        maths::Vector _kd;     // Diffuse color
-        double _ni;            // Optical density (index of refraction)
-        double _d;             // Dissolve (transparency)
-        double _illum;         // Illumination model
-        std::string _mapKd;    // Diffuse texture path
-        std::string _mapBump;  // Bump/normal map path
+        std::string _name{};     // Material name
+        double _ns = 0.0;        // Specular exponent
+        maths::Vector _ka{};     // Ambient color
+        maths::Vector _ks{};     // Specular color
+        maths::Vector _ke{};     // Emissive color
+        maths::Vector _kd{};     // Diffuse color
+        double _ni = 0.0;        // Optical density (index of refraction)
+        double _d = 0.0;         // Dissolve (transparency)
+        double _illum = 0.0;     // Illumination model
+        std::string _mapKd{};    // Diffuse texture path
+        std::string _mapBump{};  // Bump/normal map path
     };
 }  // namespace raytracer::object::material
