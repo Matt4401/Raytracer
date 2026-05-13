@@ -8,6 +8,7 @@
 #include "ObjLoader.hpp"
 
 #include <fstream>
+#include <utility>
 
 #include "Face.hpp"
 
@@ -37,7 +38,7 @@ namespace raytracer::object::primitive {
     ObjLoader::ObjLoader(
         const std::string &filePath,
         std::shared_ptr<raytracer::object::material::IMaterial> defaultMaterial)
-        : _defaultMaterial(defaultMaterial) {
+        : _defaultMaterial(std::move(defaultMaterial)) {
         parseFile(filePath);
     }
 
@@ -45,7 +46,7 @@ namespace raytracer::object::primitive {
         const std::string &filePath, const maths::Vector &scale,
         const maths::Vector &center,
         std::shared_ptr<raytracer::object::material::IMaterial> defaultMaterial)
-        : _defaultMaterial(defaultMaterial) {
+        : _defaultMaterial(std::move(defaultMaterial)) {
         _transformScale = scale;
         _transformCenter = center;
         parseFile(filePath);
