@@ -33,9 +33,8 @@ namespace raytracer::object::light {
             return maths::Vector(0, 0, 0);
 
         maths::Ray shadowRay(x + nl * K_SHADOW_RAY_BIAS, _direction);
-        double sT;
-        int sId;
-        bool occluded = scene.intersect(shadowRay, sT, sId);
+        primitive::HitRecord shadowRecord;
+        bool occluded = scene.intersect(shadowRay, shadowRecord);
         if (!occluded) {
             return _color.toVector() * _intensity * f * cosTheta;
         }
