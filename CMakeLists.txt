@@ -21,9 +21,9 @@ include_directories(include)
 
 # Enable testing
 enable_testing()
-set(BUILD_TESTS ON)
+set(RAYTRACER_BUILD_TESTS ON)
 
-if (BUILD_TESTS)
+if (RAYTRACER_BUILD_TESTS)
     add_subdirectory(tests)
 
     add_custom_target(check
@@ -99,6 +99,12 @@ FetchContent_Declare(
     GIT_TAG        v1.7.3
 )
 
+# Disable libconfig's own tests/examples
+set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(BUILD_TESTS    OFF CACHE BOOL "" FORCE)
+# Needed because libconfig 1.7.3 uses cmake_minimum_required < 3.5,
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5 CACHE STRING "" FORCE)
+
 FetchContent_MakeAvailable(libconfig)
 
 target_include_directories(config++ SYSTEM INTERFACE
@@ -108,6 +114,7 @@ target_include_directories(config++ SYSTEM INTERFACE
 target_include_directories(config SYSTEM INTERFACE
     $<BUILD_INTERFACE:${libconfig_SOURCE_DIR}/lib>
 )
+
 
 # core library
 add_library(raytracer_core STATIC ${SRCS})
