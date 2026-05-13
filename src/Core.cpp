@@ -24,6 +24,8 @@
 #include "parser/ConfigParser.hpp"
 #include "plugin/ObjectFactory.hpp"
 #include "plugin/PluginManager.hpp"
+#include "visual/CliVisual.hpp"
+#include "visual/IVisual.hpp"
 
 namespace raytracer {
 
@@ -32,10 +34,16 @@ namespace raytracer {
         parsing::ConfigParser parser;
 
         this->cmdArgsHandling(argv);
-        if (this->_export == nullptr) {
+        if (this->_export == nullptr)
             this->_export = std::make_unique<exporter::ExportPPM>();
-        }
+        if (this->_visual == nullptr)
+            this->_visual = std::make_unique<visual::CliVisual>();
 
+        this->_renderer.setPrintProgressCallback(
+            [this](int activeWorkers, int imageHeight, const Render &render) {
+                return this->_visual->printProgress(activeWorkers, imageHeight,
+                                                    this->_renderer);
+            });
         this->_plugManager.updatePluginList(pluginsPath);
         this->_plugManager.fillFactory(this->_objFactory);
 
@@ -86,6 +94,12 @@ namespace raytracer {
                  this->setExportViaFlag(index, argv);
              }});
 
+        flagHandlers.insert(
+            {VISUAL_FLAG.data(),
+             [this](size_t index, const std::vector<std::string> &argv) {
+                 this->setVisualViaFlag(index, argv);
+             }});
+
         for (size_t index = 0; index < nbArgs; ++index) {
             const std::string &param = argv.at(index);
 
@@ -120,6 +134,22 @@ namespace raytracer {
         if (auto iter = exportMap.find(argv.at(index + 1));
             iter != exportMap.end()) {
             this->_export = std::move(iter->second);
+        } else {
+            throw exception::ParsingException(HELP_MESSAGE);
+        }
+    }
+
+    void Core::setVisualViaFlag(size_t index,
+                                const std::vector<std::string> &argv) {
+        if (this->_export != nullptr)
+            throw exception::ParsingException(HELP_MESSAGE);
+
+        std::map<std::string, std::unique_ptr<visual::IVisual>> exportMap;
+        exportMap.insert({"cli", std::make_unique<visual::CliVisual>()});
+
+        if (auto iter = exportMap.find(argv.at(index + 1));
+            iter != exportMap.end()) {
+            this->_visual = std::move(iter->second);
         } else {
             throw exception::ParsingException(HELP_MESSAGE);
         }

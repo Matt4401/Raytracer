@@ -18,6 +18,7 @@
 #include "exporter/IExport.hpp"
 #include "plugin/ObjectFactory.hpp"
 #include "plugin/PluginManager.hpp"
+#include "visual/IVisual.hpp"
 
 namespace raytracer {
     class Core {
@@ -52,10 +53,12 @@ namespace raytracer {
 
         std::vector<std::shared_ptr<object::scene::IScene>> _scenes;
         std::unique_ptr<exporter::IExport> _export = nullptr;
+        std::unique_ptr<visual::IVisual> _visual = nullptr;
         std::filesystem::path _givenFile;
 
         static constexpr std::string_view PLUGINS_FOLDER_PATH = "./plugins/";
         static constexpr std::string_view EXPORT_FLAG = "-e";
+        static constexpr std::string_view VISUAL_FLAG = "-v";
         static constexpr std::string_view HELP_MESSAGE =
             "USAGE: ./raytracer <SCENE_FILE> \n"
             "\tSCENE_FILE: scene configuration\n"
@@ -64,6 +67,8 @@ namespace raytracer {
         void cmdArgsHandling(const std::vector<std::string> &argv);
 
         void setExportViaFlag(size_t index,
+                              const std::vector<std::string> &argv);
+        void setVisualViaFlag(size_t index,
                               const std::vector<std::string> &argv);
     };
 }  // namespace raytracer

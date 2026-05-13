@@ -40,6 +40,7 @@ set(SRCS
         src/Core.cpp
         src/Render.cpp
         src/exporter/ExportPPM.cpp
+		src/visual/CliVisual.cpp
         src/exception/Exception.cpp
         src/math/Color.cpp
         src/math/Vector.cpp
@@ -70,6 +71,8 @@ set(HEADERS
         src/Render.hpp
 		src/exporter/ExportPPM.hpp
 		src/exporter/IExport.hpp
+		src/visual/CliVisual.hpp
+		src/visual/IVisual.hpp
         src/plugin/PluginManager.hpp
         src/plugin/ObjectFactory.hpp
         src/plugin/DlLoader.hpp

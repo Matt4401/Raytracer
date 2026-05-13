@@ -69,20 +69,21 @@ namespace raytracer {
                             std::clamp(pixel.z * 255.0, 0.0, 255.0));
     }
 
-    std::thread Render::printProgress(int activeWorkers, int imageHeight) {
-        return std::thread([this, activeWorkers, imageHeight]() {
-            while (!_renderingFinished.load()) {
-                int done = 0;
-                for (unsigned int w = 0; w < activeWorkers; ++w)
-                    done += _workerDone[w].load();
-                double pct =
-                    imageHeight == 0 ? 100.0 : (100.0 * done) / imageHeight;
-                std::cerr << "\rRender " << (int)pct << "% ";
-                std::cerr << std::flush;
-                std::this_thread::sleep_for(std::chrono::milliseconds(250));
-            }
-            std::cerr << "\rRender 100%\n";
-        });
+    bool Render::renderingIsFinished() const {
+        return _renderingFinished.load();
+    }
+
+    int Render::getNbWorkerDone(int activeWorkers) const {
+        int done = 0;
+
+        for (unsigned int w = 0; w < activeWorkers; ++w)
+            done += _workerDone[w].load();
+        return done;
+    }
+
+    void Render::setPrintProgressCallback(
+        const PrintProgressCallback &callback) {
+        this->_printCallback = callback;
     }
 
     void Render::render(const object::scene::IScene &scene, int pixel,
@@ -137,7 +138,8 @@ namespace raytracer {
     void Render::finishRender(
         unsigned int activeWorkers, int imageHeight,
         const std::chrono::high_resolution_clock::time_point &startTotal) {
-        auto progressThread = printProgress(activeWorkers, imageHeight);
+        auto progressThread =
+            this->_printCallback(activeWorkers, imageHeight, *this);
 
         for (auto &w : _workers) w.join();
         _renderingFinished.store(true);

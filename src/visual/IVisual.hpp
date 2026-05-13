@@ -1,0 +1,22 @@
+/*
+** EPITECH PROJECT, 2026
+** IVisual
+** File description:
+** IVisual header
+*/
+
+#pragma once
+
+#include <thread>
+
+#include "Render.hpp"
+namespace raytracer::visual {
+    class IVisual {
+      public:
+        virtual ~IVisual() = default;
+
+        virtual std::thread printProgress(int activeWorkers, int imageHeight,
+                                          Render &render) = 0;
+    };
+
+}  // namespace raytracer::visual

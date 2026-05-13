@@ -10,6 +10,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <functional>
 #include <memory>
 #include <thread>
 #include <vector>
@@ -22,6 +23,9 @@
 
 namespace raytracer {
     class Render {
+        using PrintProgressCallback = std::function<std::thread(
+            int activeWorkers, int imageHeight, Render &render)>;
+
       public:
         Render() = default;
         ~Render() = default;
@@ -34,10 +38,12 @@ namespace raytracer {
                     int samples = 40);
 
         const std::vector<maths::Color> &pixels() const;
+        bool renderingIsFinished() const;
+        int getNbWorkerDone(int activeWorkers) const;
+        void setPrintProgressCallback(const PrintProgressCallback &callback);
 
       protected:
       private:
-        std::thread printProgress(int activeWorkers, int imageHeight);
         void renderRows(const object::scene::IScene &scene,
                         unsigned int workerId, int imageHeight);
 
@@ -81,6 +87,7 @@ namespace raytracer {
             const std::chrono::high_resolution_clock::time_point &startTotal);
 
         std::vector<maths::Color> _pixels;
+        PrintProgressCallback _printCallback = nullptr;
 
         std::vector<std::thread> _workers;
         std::unique_ptr<std::atomic<int>[]> _workerDone;
