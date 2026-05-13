@@ -201,9 +201,15 @@ namespace raytracer::object::scene {
             ray.direction - n * 2 * n.dot(ray.direction);
 
         if (roughness > 0.0) {
-            reflectionDir = (reflectionDir * (1.0 - roughness) +
-                             randomCosineDir(nl, xi) * roughness)
-                                .normalized();
+            maths::Vector u, v;
+            buildONB(reflectionDir, u, v);
+            double r1 = 2 * M_PI * ::erand48(xi);
+            double r2 = ::erand48(xi) * roughness;
+            double r2s = std::sqrt(r2);
+            maths::Vector perturb = u * std::cos(r1) * r2s +
+                                    v * std::sin(r1) * r2s +
+                                    reflectionDir * std::sqrt(1.0 - r2);
+            reflectionDir = perturb.normalized();
         }
 
         const maths::Vector specularWeight = f * reflectivity;
