@@ -131,6 +131,9 @@ target_link_libraries(raytracer_core PUBLIC config++)
 
 # bin
 add_executable(${NAME} src/main.cpp ${HEADERS})
+set_target_properties(${NAME} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}
+)
 target_link_libraries(${NAME} PRIVATE raytracer_core)
 
 add_subdirectory(libs)
