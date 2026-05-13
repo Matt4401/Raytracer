@@ -18,8 +18,8 @@
 #include <utility>
 
 #include "exception/ParsingException.hpp"
-#include "export/ExportPPM.hpp"
-#include "export/IExport.hpp"
+#include "exporter/ExportPPM.hpp"
+#include "exporter/IExport.hpp"
 #include "parser/ConfigParser.hpp"
 #include "plugin/ObjectFactory.hpp"
 #include "plugin/PluginManager.hpp"
