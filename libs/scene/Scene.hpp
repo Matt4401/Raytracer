@@ -17,6 +17,7 @@ namespace raytracer::object::scene {
         maths::Vector n;
         maths::Vector nl;
         maths::Vector f;
+        primitive::SurfaceData surfData;
         int depth;
         unsigned short *xi;
         const int emissive;

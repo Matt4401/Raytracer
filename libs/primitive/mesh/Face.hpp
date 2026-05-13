@@ -7,38 +7,57 @@
 
 #pragma once
 
-#include <any>
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <vector>
 
-#include "ObjLoader.hpp"
 #include "object/primitive/APrimitive.hpp"
 
 namespace raytracer::object::primitive {
     class Face : public APrimitive {
       public:
-        Face(std::size_t faceIndex, const ObjLoader::Face &face,
-             const maths::Vector &v0, const maths::Vector &v1,
-             const maths::Vector &v2,
+        struct IndexedTriangle {
+            int v0 = -1;
+            int v1 = -1;
+            int v2 = -1;
+            int vt0 = -1;
+            int vt1 = -1;
+            int vt2 = -1;
+            int vn0 = -1;
+            int vn1 = -1;
+            int vn2 = -1;
+            int materialIndex = -1;
+        };
+
+        struct MeshBuffers {
+            std::vector<maths::Vector> vertices;
+            std::vector<maths::Vector> texCoords;
+            std::vector<maths::Vector> normals;
+            std::vector<std::string> materialNames;
+        };
+        Face(std::size_t faceIndex, std::shared_ptr<const MeshBuffers> buffers,
+             const IndexedTriangle &triangle,
              std::shared_ptr<raytracer::object::material::IMaterial> material =
-                 nullptr,
-             const std::string &materialName = "");
+                 nullptr);
         ~Face() override = default;
 
         bool hits(const maths::Ray &ray, HitRecord &record) const override;
         AABoundingBox boundingBox() override;
         SurfaceData surfaceData(const HitRecord &record) const override;
 
-        const ObjLoader::Face &geometry() const noexcept;
         std::size_t index() const noexcept;
 
       private:
-        ObjLoader::Face _face;
+        static maths::Vector triangleCenter(
+            const std::shared_ptr<const MeshBuffers> &buffers,
+            const IndexedTriangle &triangle);
+        maths::Vector vertexOrDefault(int index) const;
+        maths::Vector texCoordOrDefault(int index) const;
+        maths::Vector normalOrDefault(int index) const;
+
         std::size_t _index;
-        std::string _materialName;
-        maths::Vector _v0;
-        maths::Vector _v1;
-        maths::Vector _v2;
+        std::shared_ptr<const MeshBuffers> _buffers;
+        IndexedTriangle _triangle;
     };
 }  // namespace raytracer::object::primitive

@@ -7,68 +7,44 @@
 
 #pragma once
 
-#include <array>
 #include <functional>
-#include <map>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
+#include "Face.hpp"
 #include "exception/PluginException.hpp"
 #include "math/Vector.hpp"
 
+namespace raytracer::object::material {
+    class IMaterial;
+}
 namespace raytracer::object::primitive {
+    class IPrimitive;
     class ObjLoader {
       public:
-        struct FaceVertex {
+        explicit ObjLoader(
+            const std::string &filePath,
+            std::shared_ptr<raytracer::object::material::IMaterial>
+                defaultMaterial = nullptr);
+        explicit ObjLoader(
+            const std::string &filePath, const maths::Vector &scale,
+            const maths::Vector &center,
+            std::shared_ptr<raytracer::object::material::IMaterial>
+                defaultMaterial = nullptr);
+        ~ObjLoader() = default;
+
+        const std::vector<std::shared_ptr<IPrimitive>> &primitives() const {
+            return _primitives;
+        }
+
+        struct ParsedFaceVertex {
             int v = -1;
             int vt = -1;
             int vn = -1;
         };
-
-        struct Face {
-            FaceVertex fv1;
-            FaceVertex fv2;
-            FaceVertex fv3;
-        };
-
-        explicit ObjLoader(const std::string &filePath);
-        explicit ObjLoader(const std::string &filePath,
-                           const maths::Vector &scale,
-                           const maths::Vector &center);
-        ~ObjLoader() = default;
-
-        const std::vector<maths::Vector> &vertices() const {
-            return _vertices;
-        }
-        const std::vector<maths::Vector> &normals() const {
-            return _normals;
-        }
-        const std::vector<maths::Vector> &textureCoords() const {
-            return _textureCoords;
-        }
-        const std::vector<Face> &faces() const {
-            return _faces;
-        }
-        const std::string &currentMaterialName() const {
-            return _currentMaterialName;
-        }
-        const std::map<int, std::string> &faceToMaterial() const {
-            return _faceToMaterial;
-        }
-        const maths::Vector &scale() const {
-            return _scale;
-        }
-        const std::map<std::string, std::vector<int>> &groupsByMaterial()
-            const {
-            return _groupsByMaterial;
-        }
-
-        std::string getMaterialForFace(int faceIndex) const {
-            auto it = _faceToMaterial.find(faceIndex);
-            return (it != _faceToMaterial.end()) ? it->second : "";
-        }
 
       private:
         static const std::unordered_map<
@@ -78,24 +54,22 @@ namespace raytracer::object::primitive {
         void parseFile(const std::string &filePath);
         void processLine(const std::string &line);
         maths::Vector parseVector(std::istringstream &iss) const;
-        void applyTransformations();
-        void computeNormalsIfMissing();
 
+        static ParsedFaceVertex parseFaceVertex(const std::string &token);
         static void handleVertex(ObjLoader &loader, std::istringstream &iss);
         static void handleNormal(ObjLoader &loader, std::istringstream &iss);
         static void handleTexCoord(ObjLoader &loader, std::istringstream &iss);
         static void handleFace(ObjLoader &loader, std::istringstream &iss);
         static void handleUseMtl(ObjLoader &loader, std::istringstream &iss);
-        static FaceVertex parseFaceVertex(const std::string &token);
+        int materialIndexForCurrent();
 
-        std::vector<maths::Vector> _vertices;
-        std::vector<maths::Vector> _normals;
-        std::vector<maths::Vector> _textureCoords;
-        std::vector<Face> _faces;
-        std::map<int, std::string> _faceToMaterial;
-        std::map<std::string, std::vector<int>> _groupsByMaterial;
+        std::shared_ptr<Face::MeshBuffers> _buffers =
+            std::make_shared<Face::MeshBuffers>();
+        std::vector<std::shared_ptr<IPrimitive>> _primitives;
         std::string _currentMaterialName;
-        maths::Vector _scale;
+        std::unordered_map<std::string, int> _materialNameToIndex;
+        std::shared_ptr<raytracer::object::material::IMaterial>
+            _defaultMaterial;
         maths::Vector _transformScale{1, 1, 1};
         maths::Vector _transformCenter{0, 0, 0};
     };

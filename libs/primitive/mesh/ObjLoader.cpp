@@ -8,7 +8,8 @@
 #include "ObjLoader.hpp"
 
 #include <fstream>
-#include <iostream>
+
+#include "Face.hpp"
 
 namespace raytracer::object::primitive {
 
@@ -22,18 +23,32 @@ namespace raytracer::object::primitive {
             {"usemtl", &ObjLoader::handleUseMtl},
     };
 
-    ObjLoader::ObjLoader(const std::string &filePath) {
+    static maths::Vector transformPoint(const maths::Vector &point,
+                                        const maths::Vector &scale,
+                                        const maths::Vector &center) {
+        maths::Vector transformed(point);
+        transformed.x *= scale.x;
+        transformed.y *= scale.y;
+        transformed.z *= scale.z;
+        transformed += center;
+        return transformed;
+    }
+
+    ObjLoader::ObjLoader(
+        const std::string &filePath,
+        std::shared_ptr<raytracer::object::material::IMaterial> defaultMaterial)
+        : _defaultMaterial(defaultMaterial) {
         parseFile(filePath);
     }
 
-    ObjLoader::ObjLoader(const std::string &filePath,
-                         const maths::Vector &scale,
-                         const maths::Vector &center) {
+    ObjLoader::ObjLoader(
+        const std::string &filePath, const maths::Vector &scale,
+        const maths::Vector &center,
+        std::shared_ptr<raytracer::object::material::IMaterial> defaultMaterial)
+        : _defaultMaterial(defaultMaterial) {
         _transformScale = scale;
         _transformCenter = center;
         parseFile(filePath);
-        applyTransformations();
-        computeNormalsIfMissing();
     }
 
     void ObjLoader::parseFile(const std::string &filePath) {
@@ -71,37 +86,24 @@ namespace raytracer::object::primitive {
     }
 
     void ObjLoader::handleVertex(ObjLoader &loader, std::istringstream &iss) {
-        loader._vertices.emplace_back(loader.parseVector(iss));
+        loader._buffers->vertices.emplace_back(
+            transformPoint(loader.parseVector(iss), loader._transformScale,
+                           loader._transformCenter));
     }
 
     void ObjLoader::handleNormal(ObjLoader &loader, std::istringstream &iss) {
-        loader._normals.emplace_back(loader.parseVector(iss));
+        loader._buffers->normals.emplace_back(loader.parseVector(iss));
     }
 
     void ObjLoader::handleTexCoord(ObjLoader &loader, std::istringstream &iss) {
         double u, v;
         iss >> u >> v;
-        loader._textureCoords.emplace_back(u, v, 0);
+        loader._buffers->texCoords.emplace_back(u, v, 0);
     }
 
-    void ObjLoader::handleFace(ObjLoader &loader, std::istringstream &iss) {
-        std::string t1, t2, t3;
-        iss >> t1 >> t2 >> t3;
-
-        int faceIndex = static_cast<int>(loader._faces.size());
-        loader._faces.push_back(
-            {parseFaceVertex(t1), parseFaceVertex(t2), parseFaceVertex(t3)});
-        loader._faceToMaterial[faceIndex] = loader._currentMaterialName;
-        loader._groupsByMaterial[loader._currentMaterialName].push_back(
-            faceIndex);
-    }
-
-    void ObjLoader::handleUseMtl(ObjLoader &loader, std::istringstream &iss) {
-        iss >> loader._currentMaterialName;
-    }
-
-    ObjLoader::FaceVertex ObjLoader::parseFaceVertex(const std::string &token) {
-        FaceVertex fv;
+    ObjLoader::ParsedFaceVertex ObjLoader::parseFaceVertex(
+        const std::string &token) {
+        ParsedFaceVertex fv;
         std::istringstream ss(token);
         std::string part;
 
@@ -114,35 +116,73 @@ namespace raytracer::object::primitive {
         } else {
             return fv;
         }
+
         if (std::getline(ss, part, '/') && !part.empty())
             fv.vn = std::stoi(part) - 1;
         return fv;
     }
 
-    void ObjLoader::applyTransformations() {
-        for (auto &vertex : _vertices) {
-            vertex.x *= _transformScale.x;
-            vertex.y *= _transformScale.y;
-            vertex.z *= _transformScale.z;
-            vertex += _transformCenter;
+    void ObjLoader::handleFace(ObjLoader &loader, std::istringstream &iss) {
+        std::vector<std::string> tokens;
+        std::string tok;
+        while (iss >> tok) {
+            tokens.push_back(tok);
+        }
+
+        if (tokens.size() < 3)
+            return;
+
+        // fan triangulation: first vertex + (i, i+1)
+        const ParsedFaceVertex fv0 = parseFaceVertex(tokens[0]);
+        if (fv0.v < 0 ||
+            fv0.v >= static_cast<int>(loader._buffers->vertices.size())) {
+            return;
+        }
+        for (std::size_t i = 1; i + 1 < tokens.size(); ++i) {
+            const ParsedFaceVertex fv1 = parseFaceVertex(tokens[i]);
+            const ParsedFaceVertex fv2 = parseFaceVertex(tokens[i + 1]);
+            if (fv1.v < 0 || fv2.v < 0 ||
+                fv1.v >= static_cast<int>(loader._buffers->vertices.size()) ||
+                fv2.v >= static_cast<int>(loader._buffers->vertices.size())) {
+                continue;
+            }
+
+            Face::IndexedTriangle tri;
+            tri.v0 = fv0.v;
+            tri.v1 = fv1.v;
+            tri.v2 = fv2.v;
+            tri.vt0 = fv0.vt;
+            tri.vt1 = fv1.vt;
+            tri.vt2 = fv2.vt;
+            tri.vn0 = fv0.vn;
+            tri.vn1 = fv1.vn;
+            tri.vn2 = fv2.vn;
+            tri.materialIndex = loader.materialIndexForCurrent();
+
+            auto prim = std::make_shared<raytracer::object::primitive::Face>(
+                loader._primitives.size(), loader._buffers, tri,
+                loader._defaultMaterial);
+            prim->setId(static_cast<int>(loader._primitives.size()));
+            loader._primitives.push_back(prim);
         }
     }
 
-    void ObjLoader::computeNormalsIfMissing() {
-        if (!_normals.empty())
-            return;
+    void ObjLoader::handleUseMtl(ObjLoader &loader, std::istringstream &iss) {
+        iss >> loader._currentMaterialName;
+    }
 
-        _normals.resize(_vertices.size(), maths::Vector(0, 0, 0));
-        for (const auto &face : _faces) {
-            const maths::Vector &v0 = _vertices[face.fv1.v];
-            const maths::Vector &v1 = _vertices[face.fv2.v];
-            const maths::Vector &v2 = _vertices[face.fv3.v];
-            maths::Vector normal = (v1 - v0).cross(v2 - v0).normalized();
-            _normals[face.fv1.v] += normal;
-            _normals[face.fv2.v] += normal;
-            _normals[face.fv3.v] += normal;
+    int ObjLoader::materialIndexForCurrent() {
+        if (_currentMaterialName.empty()) {
+            return -1;
         }
-        for (auto &normal : _normals) normal.normalize();
+        const auto it = _materialNameToIndex.find(_currentMaterialName);
+        if (it != _materialNameToIndex.end()) {
+            return it->second;
+        }
+        const int nextIndex = static_cast<int>(_buffers->materialNames.size());
+        _buffers->materialNames.push_back(_currentMaterialName);
+        _materialNameToIndex.emplace(_currentMaterialName, nextIndex);
+        return nextIndex;
     }
 
 }  // namespace raytracer::object::primitive

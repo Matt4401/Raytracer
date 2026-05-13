@@ -84,12 +84,6 @@ namespace raytracer {
                 double pct =
                     imageHeight == 0 ? 100.0 : (100.0 * done) / imageHeight;
                 std::cerr << "\rRender " << (int)pct << "% ";
-                for (unsigned int w = 0; w < activeWorkers; ++w) {
-                    int rows = _workerRows[w] == 0 ? 1 : _workerRows[w];
-                    std::cerr << "| W" << w << ":"
-                              << (int)(100.0 * _workerDone[w].load() / rows)
-                              << "% ";
-                }
                 std::cerr << std::flush;
                 std::this_thread::sleep_for(std::chrono::milliseconds(250));
             }
@@ -129,6 +123,7 @@ namespace raytracer {
         _workerDone = std::make_unique<std::atomic<int>[]>(workerCount);
         _workerRows = std::vector<int>(workerCount);
         _renderingFinished = false;
+        _nextRow.store(0);
 
         std::atomic<int> *workerDone = _workerDone.get();
         for (unsigned int i = 0; i < workerCount; ++i) workerDone[i].store(0);
@@ -138,15 +133,12 @@ namespace raytracer {
     void Render::startWorkers(const object::scene::IScene &scene,
                               unsigned int workerCount, int rowsPerWorker,
                               unsigned int &activeWorkers) {
+        (void)rowsPerWorker;
+        const int imageHeight = scene.cameras().at(0)->imageHeight();
         for (unsigned int w = 0; w < workerCount; ++w) {
-            int yStart = w * rowsPerWorker;
-            int yEnd = std::min(scene.cameras().at(0)->imageHeight(),
-                                yStart + rowsPerWorker);
-            if (yStart >= scene.cameras().at(0)->imageHeight())
-                break;
-            _workerRows[w] = yEnd - yStart;
-            _workers.emplace_back([this, &scene, w, yStart, yEnd]() {
-                renderRows(scene, w, yStart, yEnd);
+            _workerRows[w] = imageHeight;
+            _workers.emplace_back([this, &scene, w, imageHeight]() {
+                renderRows(scene, w, imageHeight);
             });
             ++activeWorkers;
         }
@@ -185,9 +177,8 @@ namespace raytracer {
     }
 
     void Render::renderRows(const object::scene::IScene &scene,
-                            unsigned int workerId, int yStart, int yEnd) {
+                            unsigned int workerId, int imageHeight) {
         int imageWidth = scene.cameras().at(0)->imageWidth();
-        int imageHeight = scene.cameras().at(0)->imageHeight();
         const double invImageWidth = 1.0 / imageWidth;
         const double invImageHeight = 1.0 / imageHeight;
 
@@ -209,7 +200,11 @@ namespace raytracer {
         st.cy = cy;
         st.sampleWeight = sampleWeight;
 
-        for (int y = yStart; y < yEnd; ++y) {
+        while (true) {
+            const int y = _nextRow.fetch_add(1);
+            if (y >= imageHeight) {
+                break;
+            }
             unsigned short xi[3] = {
                 0, 0, static_cast<unsigned short>((y + 1) * (y + 1) * (y + 1))};
             st.xi = xi;

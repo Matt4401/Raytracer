@@ -11,12 +11,10 @@
 #include <any>
 #include <map>
 #include <memory>
-#include <optional>
 #include <string>
 #include <vector>
 
 #include "Face.hpp"
-#include "MeshSurfaceHelper.hpp"
 #include "ObjLoader.hpp"
 #include "object/primitive/APrimitive.hpp"
 
@@ -31,8 +29,6 @@ namespace raytracer::object::primitive {
 
       protected:
       private:
-        std::unique_ptr<MeshSurfaceHelper> _surfaceHelper;
-        std::unique_ptr<ObjLoader> _objLoader;
         std::shared_ptr<IPrimitive> _bvhRoot;
         std::vector<std::shared_ptr<IPrimitive>> _faces;
 

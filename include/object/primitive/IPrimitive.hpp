@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <any>
 #include <map>
 #include <optional>
 #include <string>
@@ -37,7 +36,7 @@ namespace raytracer::object::primitive {
     struct SurfaceData {
         maths::Vector normal;
         maths::Vector uv;
-        std::map<std::string, std::any> extraParams;
+        std::string materialName;
         MaterialProperties material;
     };
 

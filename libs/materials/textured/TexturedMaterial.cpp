@@ -20,20 +20,22 @@ namespace raytracer::object::material {
     TexturedMaterial::TexturedMaterial(
         const std::map<std::string, std::any>& args)
         : ABasicMaterial(args) {
-        bool configured = false;
-
         try {
             auto mtlPath = util::ObjectMiddleware::validate<std::string>(
                 args, "mtlPath", "TexturedMaterial");
             try {
                 _materialLoader = std::make_unique<MtlLoader>(mtlPath);
+                for (const auto& [name, mat] : _materialLoader->materials()) {
+                    if (!mat.mapKd().empty()) {
+                        preloadTexture(mat.mapKd());
+                    }
+                }
                 _scale = util::ObjectMiddleware::optional<double>(
                     args, "scale", 1.0, "TexturedMaterial");
                 util::Helpers::unsignedDouble(_scale, "scale",
                                               "TexturedMaterial");
                 if (_scale <= 0.0)
                     _scale = 1.0;
-                configured = true;
             } catch (const std::exception& e) {
                 throw exception::ParsingException(e.what());
             }
@@ -51,7 +53,6 @@ namespace raytracer::object::material {
                 if (!_texturePath.empty()) {
                     preloadTexture(_texturePath);
                 }
-                configured = true;
             } catch (const exception::PluginException& e2) {
                 throw e2;
             }
@@ -115,10 +116,9 @@ namespace raytracer::object::material {
     primitive::MaterialProperties TexturedMaterial::evaluate(
         const primitive::SurfaceData& data,
         const maths::Vector& hitPoint) const {
-        if (_materialLoader && !_materialLoader->materials().empty()) {
-            auto matName = util::ObjectMiddleware::validate<std::string>(
-                data.extraParams, "materialName", "TexturedMaterial");
-            const auto& mat = _materialLoader->get(matName);
+        if (_materialLoader && !_materialLoader->materials().empty() &&
+            !data.materialName.empty()) {
+            const auto& mat = _materialLoader->get(data.materialName);
 
             maths::Color finalColor;
             if (mat.mapKd().empty()) {

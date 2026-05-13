@@ -6,14 +6,12 @@ SET (SRCS
     Mesh.cpp
     Face.cpp
     ObjLoader.cpp
-    MeshSurfaceHelper.cpp
 )
 
 SET (HEADERS
     Mesh.hpp
     Face.hpp
     ObjLoader.hpp
-    MeshSurfaceHelper.hpp
 )
 
 add_library(mesh_plug SHARED ${SRCS} ${HEADERS})

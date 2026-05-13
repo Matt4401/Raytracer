@@ -44,7 +44,7 @@ namespace raytracer {
       private:
         std::thread printProgress(int activeWorkers, int imageHeight);
         void renderRows(const object::scene::IScene &scene,
-                        unsigned int workerId, int yStart, int yEnd);
+                        unsigned int workerId, int imageHeight);
 
         struct RenderState {
             const object::scene::IScene *scene = nullptr;
@@ -91,6 +91,7 @@ namespace raytracer {
         std::unique_ptr<std::atomic<int>[]> _workerDone;
         std::vector<int> _workerRows;
         std::atomic<bool> _renderingFinished;
+        std::atomic<int> _nextRow{0};
         int _samples = 40;
     };
 }  // namespace raytracer

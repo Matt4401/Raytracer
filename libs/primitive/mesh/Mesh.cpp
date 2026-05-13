@@ -32,37 +32,23 @@ namespace raytracer::object::primitive {
                 "Mesh scale components must be greater than zero"};
         }
 
-        _objLoader = std::make_unique<ObjLoader>(objPath, scale, _center);
-        _surfaceHelper = std::make_unique<MeshSurfaceHelper>(
-            _objLoader->vertices(), _objLoader->faces());
+        ObjLoader objLoader(objPath, scale, _center, _material);
+        _faces = objLoader.primitives();
 
-        if (_objLoader->vertices().empty() || _objLoader->faces().empty()) {
+        if (_faces.empty()) {
             throw exception::PluginException{
                 "Mesh must have at least one vertex and one face"};
         }
-        _faces.reserve(_objLoader->faces().size());
-        for (std::size_t i = 0; i < _objLoader->faces().size(); ++i) {
-            const auto &f = _objLoader->faces()[i];
-            const maths::Vector v0 = _objLoader->vertices()[f.fv1.v];
-            const maths::Vector v1 = _objLoader->vertices()[f.fv2.v];
-            const maths::Vector v2 = _objLoader->vertices()[f.fv3.v];
-            auto face = std::make_shared<Face>(
-                i, f, v0, v1, v2, _material,
-                _objLoader->getMaterialForFace(static_cast<int>(i)));
-            face->setId(static_cast<int>(i));
-            _faces.push_back(face);
-        }
 
-        if (!_faces.empty()) {
-            bvh::BVHBuilder<raytracer::bvh::ISplitStrategy> builder("sah");
-            _bvhRoot = builder.build(_faces);
-        }
+        raytracer::bvh::BVHBuilder<raytracer::bvh::ISplitStrategy> builder(
+            "sah");
+        _bvhRoot = builder.build(_faces);
     }
 
     SurfaceData Mesh::surfaceData(const HitRecord &record) const {
         SurfaceData data{.normal = maths::Vector(0, 1, 0),
                          .uv = maths::Vector(0, 0, 0),
-                         .extraParams = {},
+                         .materialName = std::string(),
                          .material = {}};
 
         const int triangleIndex = record.triangleIndex;
@@ -76,48 +62,39 @@ namespace raytracer::object::primitive {
     }
 
     bool Mesh::hits(const maths::Ray &ray, HitRecord &record) const {
-        if (_bvhRoot) {
-            if (!_bvhRoot->hits(ray, record)) {
-                return false;
-            }
-            record.hitPoint = ray.origin + ray.direction * record.t;
-            record.triangleIndex = record.objectId;
-            record.objectId = getId();
-            return true;
-        }
-
-        auto intersection = _surfaceHelper->findClosestTriangle(ray);
-        if (!intersection) {
+        if (!_bvhRoot) {
             return false;
         }
-        record.t = intersection->distance;
-        record.triangleIndex = intersection->triangleIndex;
-        record.hitPoint = intersection->hitPoint;
+        if (!_bvhRoot->hits(ray, record)) {
+            return false;
+        }
+
+        record.hitPoint = ray.origin + ray.direction * record.t;
+        record.triangleIndex = record.objectId;
         record.objectId = getId();
         return true;
     }
 
     IPrimitive::AABoundingBox Mesh::boundingBox() {
-        const auto &vertices = _objLoader->vertices();
-        if (vertices.empty())
+        if (_faces.empty())
             return {0, 0, 0, 0, 0, 0};
 
-        double minX = vertices[0].x, minY = vertices[0].y, minZ = vertices[0].z;
-        double maxX = vertices[0].x, maxY = vertices[0].y, maxZ = vertices[0].z;
+        auto bounds = _faces.front()->boundingBox();
+        double minX = bounds.x;
+        double minY = bounds.y;
+        double minZ = bounds.z;
+        double maxX = bounds.x + bounds.w;
+        double maxY = bounds.y + bounds.h;
+        double maxZ = bounds.z + bounds.d;
 
-        for (const auto &v : vertices) {
-            if (v.x < minX)
-                minX = v.x;
-            if (v.y < minY)
-                minY = v.y;
-            if (v.z < minZ)
-                minZ = v.z;
-            if (v.x > maxX)
-                maxX = v.x;
-            if (v.y > maxY)
-                maxY = v.y;
-            if (v.z > maxZ)
-                maxZ = v.z;
+        for (const auto &face : _faces) {
+            bounds = face->boundingBox();
+            minX = std::min(minX, bounds.x);
+            minY = std::min(minY, bounds.y);
+            minZ = std::min(minZ, bounds.z);
+            maxX = std::max(maxX, bounds.x + bounds.w);
+            maxY = std::max(maxY, bounds.y + bounds.h);
+            maxZ = std::max(maxZ, bounds.z + bounds.d);
         }
 
         _meshBoundingBox = {minX,        minY,        minZ,
