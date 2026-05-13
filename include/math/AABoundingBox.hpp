@@ -12,6 +12,7 @@
 #include <limits>
 
 #include "math/Ray.hpp"
+#include "math/Vector.hpp"
 
 namespace raytracer::maths {
     class AABoundingBox {
@@ -32,6 +33,14 @@ namespace raytracer::maths {
         /// position and dimensions.
         /// @return void
         void extend(const AABoundingBox &other);
+
+        /// @brief Extend the current bounding box to include a point.
+        /// @param point The position to include in the current bounding box.
+        void extend(const Vector &point);
+
+        /// @brief Expand the box uniformly in all directions.
+        /// @param amount The padding size to add on each side of the box.
+        void pad(double amount);
 
         /// @brief Calculate the surface area of the bounding box. The surface
         /// area is calculated using the formula: surface area = 2 * (w * h + w
