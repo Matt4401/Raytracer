@@ -23,39 +23,11 @@ namespace raytracer::object::material {
         try {
             auto mtlPath = util::ObjectMiddleware::validate<std::string>(
                 args, "mtlPath", "TexturedMaterial");
-            try {
-                _materialLoader = std::make_unique<MtlLoader>(mtlPath);
-                for (const auto& [name, mat] : _materialLoader->materials()) {
-                    if (!mat.mapKd().empty()) {
-                        preloadTexture(mat.mapKd());
-                    }
-                }
-                _scale = util::ObjectMiddleware::optional<double>(
-                    args, "scale", 1.0, "TexturedMaterial");
-                util::Helpers::unsignedDouble(_scale, "scale",
-                                              "TexturedMaterial");
-                if (_scale <= 0.0)
-                    _scale = 1.0;
-            } catch (const std::exception& e) {
-                throw exception::ParsingException(e.what());
-            }
+            handleMTL(mtlPath, args);
         } catch (const exception::PluginException& z) {
-            try {
-                _texturePath = util::ObjectMiddleware::validate<std::string>(
-                    args, "texturePath", "TexturedMaterial");
-                _scale = util::ObjectMiddleware::optional<double>(
-                    args, "scale", 1.0, "TexturedMaterial");
-                util::Helpers::unsignedDouble(_scale, "scale",
-                                              "TexturedMaterial");
-                if (_scale <= 0.0)
-                    _scale = 1.0;
-
-                if (!_texturePath.empty()) {
-                    preloadTexture(_texturePath);
-                }
-            } catch (const exception::PluginException& e2) {
-                throw e2;
-            }
+            _texturePath = util::ObjectMiddleware::validate<std::string>(
+                args, "texturePath", "TexturedMaterial");
+            handleTexture(args);
         }
     }
 
@@ -71,6 +43,43 @@ namespace raytracer::object::material {
                 throw exception::PluginException("Failed to load texture: " +
                                                  path);
             }
+        }
+    }
+
+    void TexturedMaterial::handleTexture(
+        const std::map<std::string, std::any>& args) {
+        try {
+            _scale = util::ObjectMiddleware::optional<double>(
+                args, "scale", 1.0, "TexturedMaterial");
+            util::Helpers::unsignedDouble(_scale, "scale", "TexturedMaterial");
+            if (_scale <= 0.0)
+                _scale = 1.0;
+
+            if (!_texturePath.empty()) {
+                preloadTexture(_texturePath);
+            }
+        } catch (const exception::PluginException& e2) {
+            throw e2;
+        }
+    }
+
+    void TexturedMaterial::handleMTL(
+        const std::string& mtlPath,
+        const std::map<std::string, std::any>& args) {
+        try {
+            _materialLoader = std::make_unique<MtlLoader>(mtlPath);
+            for (const auto& [name, mat] : _materialLoader->materials()) {
+                if (!mat.mapKd().empty()) {
+                    preloadTexture(mat.mapKd());
+                }
+            }
+            _scale = util::ObjectMiddleware::optional<double>(
+                args, "scale", 1.0, "TexturedMaterial");
+            util::Helpers::unsignedDouble(_scale, "scale", "TexturedMaterial");
+            if (_scale <= 0.0)
+                _scale = 1.0;
+        } catch (const std::exception& e) {
+            throw exception::ParsingException(e.what());
         }
     }
 

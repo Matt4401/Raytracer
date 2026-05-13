@@ -35,6 +35,9 @@ namespace raytracer::object::material {
         std::unique_ptr<MtlLoader> _materialLoader;
         mutable std::unordered_map<std::string, sf::Image> _loadedTextures;
 
+        void handleMTL(const std::string& path,
+                       const std::map<std::string, std::any>& args);
+        void handleTexture(const std::map<std::string, std::any>& args);
         maths::Color sampleTexture(const std::string& path,
                                    const maths::Vector& uv) const;
 
