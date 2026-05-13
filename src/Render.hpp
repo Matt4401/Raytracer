@@ -32,13 +32,8 @@ namespace raytracer {
         /// @param samples Number of samples per pixel.
         void render(const object::scene::IScene &scene, int pixel = 1,
                     int samples = 40);
-        /// @brief Save the rendered image to a file in PPM format.
-        void pixelToPPM(const object::scene::IScene &scene) const;
-        /// @brief Save the rendered image to a file in PPM format.
-        /// @param pixels The 2D vector of Color objects representing the
-        /// rendered image.
-        void pixelToPPM(const object::scene::IScene &scene,
-                        const std::vector<maths::Color> &pixels) const;
+
+        const std::vector<maths::Color> &pixels();
 
       protected:
       private:

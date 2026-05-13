@@ -10,6 +10,8 @@
 #include <iostream>
 #include <string>
 
+#include "export/ExportPPM.hpp"
+#include "export/IExport.hpp"
 #include "parser/ConfigParser.hpp"
 #include "plugin/ObjectFactory.hpp"
 #include "plugin/PluginManager.hpp"
@@ -32,8 +34,10 @@ namespace raytracer {
     }
 
     void Core::run() {
+        exporter::IExport &&exportMode = exporter::ExportPPM();
+
         this->_renderer.render(*(this->_scenes.at(0)), 1, 50);
-        this->_renderer.pixelToPPM(*(this->_scenes.at(0)));
+        exportMode.writeFile(*(this->_scenes.at(0)), this->_renderer.pixels());
     }
 
     std::pair<bool, int> Core::helpMessage(int argc, char **argv) {
