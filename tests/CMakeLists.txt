@@ -57,6 +57,7 @@ if (NOT SKIP_INTERNET)
             FIXTURES_PATH="${FIXTURES_DIR}"
             TEST_PLUGINS_PATH="${TEST_PLUGINS_DIR}"
 			TEST_CONFIG_FILE_PATH="${TEST_CONFIG_FILE_DIR}"
+			PLUGINS_PATH="${CMAKE_SOURCE_DIR}/plugins/"
     )
 
     gtest_discover_tests(exception_tests)
