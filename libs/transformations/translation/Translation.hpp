@@ -8,24 +8,13 @@
 #pragma once
 
 #include <any>
-
-#include "math/Matrix4.hpp"
-#include "object/AObject.hpp"
-#include "object/primitive/APrimitiveDecorator.hpp"
+#include <map>
+#include "object/transformations/ATransformDecorator.hpp"
 
 namespace raytracer::object::primitive {
-    class Translation : public APrimitiveDecorator, public object::AObject {
+    class Translation : public ATransformDecorator {
       public:
         explicit Translation(const std::map<std::string, std::any> &params);
-
-        const std::string &name() const noexcept override;
-        maths::Vector center() const noexcept override;
-        bool hits(const maths::Ray &ray, HitRecord &record) const override;
-        AABoundingBox boundingBox() override;
-        SurfaceData surfaceData(const HitRecord &record) const override;
-
-      private:
-        maths::Matrix4 _matrix;
-        maths::Matrix4 _inverse;
+        ~Translation() override = default;
     };
 }  // namespace raytracer::object::primitive
