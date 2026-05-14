@@ -140,6 +140,7 @@ if (NOT SKIP_INTERNET)
 
     add_executable(bvh_tests
             src/main.cpp
+            src/bvh/test_aabounding_box.cpp
             src/bvh/bvh_test_helpers.hpp
             src/bvh/test_bvh_node.cpp
             src/bvh/test_bvh_builder.cpp
