@@ -141,7 +141,8 @@ namespace raytracer::maths {
                          _values[3][2] * point.z + _values[3][3];
 
         if (w == 0.0) {
-            throw std::runtime_error("Cannot transform point with w equal to 0");
+            throw std::runtime_error(
+                "Cannot transform point with w equal to 0");
         }
         if (w != 1.0) {
             return Vector(x / w, y / w, z / w);

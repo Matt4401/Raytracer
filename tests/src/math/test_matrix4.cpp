@@ -5,9 +5,9 @@
 ** Matrix4 tests
 */
 
-#include <cmath>
-
 #include <gtest/gtest.h>
+
+#include <cmath>
 
 #include "math/Matrix4.hpp"
 
@@ -55,10 +55,10 @@ TEST(Matrix4, TranslationMovesPointsButNotVectors) {
 
 TEST(Matrix4, InverseCancelsCompositeTransform) {
     const auto transform = raytracer::maths::Matrix4::translation(
-                                 raytracer::maths::Vector(4.0, -2.0, 1.0)) *
-                             raytracer::maths::Matrix4::rotationZ(M_PI / 2.0) *
-                             raytracer::maths::Matrix4::scale(
-                                 raytracer::maths::Vector(2.0, 3.0, 4.0));
+                               raytracer::maths::Vector(4.0, -2.0, 1.0)) *
+                           raytracer::maths::Matrix4::rotationZ(M_PI / 2.0) *
+                           raytracer::maths::Matrix4::scale(
+                               raytracer::maths::Vector(2.0, 3.0, 4.0));
     const auto inverse = transform.inverse();
     const auto product = transform * inverse;
 
