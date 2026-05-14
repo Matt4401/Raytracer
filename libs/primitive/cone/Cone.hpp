@@ -22,14 +22,14 @@ namespace raytracer::object::primitive {
         using object::primitive::IPrimitive::hits;
 
         explicit Cone(const std::map<std::string, std::any> &args);
-        explicit Cone(const maths::Vector &center, double k);
+        explicit Cone(const maths::Vector &center, double openingFactor);
         explicit Cone(
             std::shared_ptr<raytracer::object::material::IMaterial> material,
-            const maths::Vector &center, double k);
+            const maths::Vector &center, double openingFactor);
 
         ~Cone() override = default;
 
-        const double &k() const noexcept;
+        const double &openingFactor() const noexcept;
         bool hits(const maths::Ray &ray, HitRecord &record) const override;
         AABoundingBox boundingBox() override;
         SurfaceData surfaceData(const HitRecord &record) const override;
@@ -42,7 +42,7 @@ namespace raytracer::object::primitive {
                                         HitRecord &record) const;
 
       private:
-        double _k;
+        double _openingFactor;
         static constexpr std::size_t EXPECTED_ARGS = 3;
     };
 }  // namespace raytracer::object::primitive

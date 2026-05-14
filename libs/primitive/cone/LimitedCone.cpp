@@ -27,9 +27,12 @@ namespace raytracer::object::primitive {
         util::Helpers::unsignedDouble(_height, "height", "LimitedCone");
     }
 
-    LimitedCone::LimitedCone(const maths::Vector &center, const double k,
-                             const double height, const bool closed)
-        : Cone(nullptr, center, k), _height(height), _closed(closed) {
+    LimitedCone::LimitedCone(const maths::Vector &center,
+                             const double openingFactor, const double height,
+                             const bool closed)
+        : Cone(nullptr, center, openingFactor),
+          _height(height),
+          _closed(closed) {
         util::Helpers::unsignedDouble(_height, "height", "LimitedCone");
     }
 
@@ -83,7 +86,7 @@ namespace raytracer::object::primitive {
 
         const maths::Vector p = ray.origin + ray.direction * t;
         const double localY = p.y - _center.y;
-        const double capRadiusSq = k() * localY * localY;
+        const double capRadiusSq = openingFactor() * localY * localY;
         const double dx = p.x - _center.x;
 
         if (const double dz = p.z - _center.z;

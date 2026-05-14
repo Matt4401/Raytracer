@@ -21,6 +21,9 @@
 namespace raytracer::object::primitive {
     class APrimitive : public IPrimitive, public AObject {
       public:
+        static constexpr AABoundingBox INFINITE_BOUNDING_BOX{
+            -1e6, -1e6, -1e6, 2e6, 2e6, 2e6};
+
         explicit APrimitive(
             const std::string_view name, const maths::Vector &center,
             std::shared_ptr<raytracer::object::material::IMaterial> material =

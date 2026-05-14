@@ -9,7 +9,6 @@
 
 #include <any>
 #include <map>
-#include <memory>
 
 #include "Cone.hpp"
 #include "math/Ray.hpp"
@@ -21,7 +20,7 @@ namespace raytracer::object::primitive {
         using object::primitive::IPrimitive::hits;
 
         explicit LimitedCone(const std::map<std::string, std::any> &args);
-        explicit LimitedCone(const maths::Vector &center, double k,
+        explicit LimitedCone(const maths::Vector &center, double openingFactor,
                              double height, bool closed = false);
         ~LimitedCone() override = default;
 

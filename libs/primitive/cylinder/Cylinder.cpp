@@ -86,7 +86,7 @@ namespace raytracer::object::primitive {
 
     IPrimitive::AABoundingBox Cylinder::boundingBox() {
         if (!_hasLimit) {
-            return {-1e6, -1e6, _center.z - _radius, 2e6, 2e6, 2 * _radius};
+            return INFINITE_BOUNDING_BOX;
         }
         return _sceneLimit;
     }
