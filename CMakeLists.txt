@@ -39,6 +39,7 @@ endif ()
 set(SRCS
         src/Core.cpp
         src/Render.cpp
+        src/exporter/ExportPPM.cpp
         src/exception/Exception.cpp
         src/math/Color.cpp
         src/math/Vector.cpp
@@ -69,6 +70,8 @@ set(SRCS
 set(HEADERS
         src/Core.hpp
         src/Render.hpp
+		src/exporter/ExportPPM.hpp
+		src/exporter/IExport.hpp
         src/plugin/PluginManager.hpp
         src/plugin/ObjectFactory.hpp
         src/plugin/DlLoader.hpp

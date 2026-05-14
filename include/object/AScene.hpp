@@ -102,6 +102,8 @@ namespace raytracer::object::scene {
                      addCamera(obj);
                  }},
             };
+
+        static constexpr double GLOBAL_BOX_PADDING = 50.00;
     };
 }  // namespace raytracer::object::scene
 
