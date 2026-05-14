@@ -24,7 +24,6 @@ extern "C" const char *name(void) {
 extern "C" raytracer::object::BuilderFunc builder(void) {
     return [](const std::map<std::string, std::any> &params)
                -> raytracer::object::IObject * {
-        // height == limit cylinder
         if (params.contains("height")) {
             return new raytracer::object::primitive::LimitedCylinder(params);
         }
