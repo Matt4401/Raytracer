@@ -71,6 +71,8 @@ namespace raytracer::parsing {
         static constexpr std::string_view K_PARAMETERS_KEYWORD = "parameters";
         static constexpr std::string_view K_NAME_KEYWORD = "name";
         static constexpr std::string_view K_MATERIAL_KEYWORD = "material";
+        static constexpr std::string_view K_TRANSFORMATIONS_KEYWORD =
+            "transformations";
         static constexpr std::string_view K_SCENES_KEYWORD = "scenes";
         static constexpr std::string_view K_EXTRA_KEYWORD = "objects_clusters";
 
@@ -130,6 +132,10 @@ namespace raytracer::parsing {
          */
         void computeMaterial(ObjectInfo &info,
                              const libconfig::Setting &objectData);
+
+        std::shared_ptr<object::IObject> computeTransforms(
+            const std::shared_ptr<object::IObject> &baseObject,
+            const libconfig::Setting &objectData);
 
         void parseObjects(libconfig::Setting &root,
                           const std::filesystem::path &path);

@@ -89,6 +89,10 @@ namespace raytracer::object::scene {
                  [this](const std::shared_ptr<IObject> &obj) {
                      addPrimitive(obj);
                  }},
+                {object::IObject::Type::TRANSFORM,
+                 [this](const std::shared_ptr<IObject> &obj) {
+                     addPrimitive(obj);
+                 }},
                 {object::IObject::Type::LIGHT,
                  [this](const std::shared_ptr<IObject> &obj) {
                      addLight(obj);

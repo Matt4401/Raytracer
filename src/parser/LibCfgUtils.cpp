@@ -40,7 +40,7 @@ namespace raytracer::parsing {
 
         for (const auto &value : array) {
             try {
-                data.emplace_back(LibCfgUtils::extractValue(value));
+                data.emplace_back(LibCfgUtils::resolveValue(value));
             } catch (const std::exception &err) {
                 std::cerr << "Warning: Failed to extract the value of "
                           << value.getName() << "in " << array.getName()
