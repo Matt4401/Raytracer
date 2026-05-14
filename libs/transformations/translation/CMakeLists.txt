@@ -10,15 +10,15 @@ SET (HEADERS
     Translation.hpp
 )
 
-add_library(translations_plug SHARED ${SRCS} ${HEADERS})
-target_link_libraries(translations_plug PRIVATE raytracer_core)
+add_library(translation_plug SHARED ${SRCS} ${HEADERS})
+target_link_libraries(translation_plug PRIVATE raytracer_core)
 
-target_include_directories(translations_plug PRIVATE
+target_include_directories(translation_plug PRIVATE
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/src
 )
 
-set_target_properties(translations_plug PROPERTIES
+set_target_properties(translation_plug PROPERTIES
     PREFIX ""
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/plugins/
 )
