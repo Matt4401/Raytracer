@@ -5,3 +5,4 @@ project(libs)
 
 add_subdirectory(translation)
 add_subdirectory(scale)
+add_subdirectory(rotation)
