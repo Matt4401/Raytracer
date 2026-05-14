@@ -27,13 +27,13 @@ namespace raytracer::object::primitive {
       public:
         explicit ObjLoader(
             const std::string &filePath,
-            const std::shared_ptr<raytracer::object::material::IMaterial>
-                &defaultMaterial = nullptr);
+            std::shared_ptr<raytracer::object::material::IMaterial>
+                defaultMaterial);
         explicit ObjLoader(
             const std::string &filePath, const maths::Vector &scale,
             const maths::Vector &center,
-            const std::shared_ptr<raytracer::object::material::IMaterial>
-                &defaultMaterial = nullptr);
+            std::shared_ptr<raytracer::object::material::IMaterial>
+                defaultMaterial);
         ~ObjLoader() = default;
 
         const std::vector<std::shared_ptr<IPrimitive>> &primitives() const {
