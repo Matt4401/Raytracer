@@ -19,7 +19,7 @@ namespace raytracer::visual {
     class SFMLVisual : public IVisual {
       public:
         SFMLVisual();
-        ~SFMLVisual() override = default;
+        ~SFMLVisual() override;
 
         std::thread printProgress(int activeWorkers, Render &render) override;
 
