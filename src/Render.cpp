@@ -17,12 +17,6 @@
 
 namespace raytracer {
 
-    static void writeColor(const maths::Color color) {
-        std::cout << static_cast<int>(color.r) << " "
-                  << static_cast<int>(color.g) << " "
-                  << static_cast<int>(color.b) << "\n";
-    }
-
     void Render::computeStratifiedSample(unsigned short *xi, double &dx,
                                          double &dy) {
         double r1 = 2 * ::erand48(xi);
@@ -157,19 +151,8 @@ namespace raytracer {
                   << (ms % 60000) / 1000 << "s\n";
     }
 
-    void Render::pixelToPPM(const object::scene::IScene &scene) const {
-        int imageWidth = scene.cameras().at(0)->imageWidth();
-        int imageHeight = scene.cameras().at(0)->imageHeight();
-        std::cout << "P3\n" << imageWidth << " " << imageHeight << "\n255\n";
-        for (const auto &col : _pixels) writeColor(col);
-    }
-
-    void Render::pixelToPPM(const object::scene::IScene &scene,
-                            const std::vector<maths::Color> &pixels) const {
-        int imageWidth = scene.cameras().at(0)->imageWidth();
-        int imageHeight = scene.cameras().at(0)->imageHeight();
-        std::cout << "P3\n" << imageWidth << " " << imageHeight << "\n255\n";
-        for (const auto &col : pixels) writeColor(col);
+    const std::vector<maths::Color> &Render::pixels() const {
+        return this->_pixels;
     }
 
     void Render::renderRows(const object::scene::IScene &scene,

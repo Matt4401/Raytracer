@@ -34,6 +34,51 @@ namespace raytracer::maths {
         d = maxZ - minZ;
     }
 
+    void AABoundingBox::extend(const Vector &point) {
+        if (!std::isfinite(point.x) || !std::isfinite(point.y) ||
+            !std::isfinite(point.z)) {
+            return;
+        }
+        if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z) ||
+            !std::isfinite(w) || !std::isfinite(h) || !std::isfinite(d)) {
+            x = point.x;
+            y = point.y;
+            z = point.z;
+            w = 0.0;
+            h = 0.0;
+            d = 0.0;
+            return;
+        }
+
+        const double minX = std::min(x, point.x);
+        const double minY = std::min(y, point.y);
+        const double minZ = std::min(z, point.z);
+        const double maxX = std::max(x + w, point.x);
+        const double maxY = std::max(y + h, point.y);
+        const double maxZ = std::max(z + d, point.z);
+        x = minX;
+        y = minY;
+        z = minZ;
+        w = maxX - minX;
+        h = maxY - minY;
+        d = maxZ - minZ;
+    }
+
+    void AABoundingBox::pad(const double amount) {
+        if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z) ||
+            !std::isfinite(w) || !std::isfinite(h) || !std::isfinite(d)) {
+            return;
+        }
+        if (amount < 0)
+            return;
+        x -= amount;
+        y -= amount;
+        z -= amount;
+        w += amount * 2.0;
+        h += amount * 2.0;
+        d += amount * 2.0;
+    }
+
     double AABoundingBox::surfaceData() const {
         if (w < 0 || h < 0 || d < 0)
             return 0;

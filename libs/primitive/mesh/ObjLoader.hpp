@@ -28,12 +28,12 @@ namespace raytracer::object::primitive {
         explicit ObjLoader(
             const std::string &filePath,
             std::shared_ptr<raytracer::object::material::IMaterial>
-                defaultMaterial = nullptr);
+                defaultMaterial);
         explicit ObjLoader(
             const std::string &filePath, const maths::Vector &scale,
             const maths::Vector &center,
             std::shared_ptr<raytracer::object::material::IMaterial>
-                defaultMaterial = nullptr);
+                defaultMaterial);
         ~ObjLoader() = default;
 
         const std::vector<std::shared_ptr<IPrimitive>> &primitives() const {
@@ -53,7 +53,7 @@ namespace raytracer::object::primitive {
 
         void parseFile(const std::string &filePath);
         void processLine(const std::string &line);
-        maths::Vector parseVector(std::istringstream &iss) const;
+        static maths::Vector parseVector(std::istringstream &iss);
 
         static ParsedFaceVertex parseFaceVertex(const std::string &token);
         static void handleVertex(ObjLoader &loader, std::istringstream &iss);
