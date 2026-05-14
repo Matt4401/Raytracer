@@ -10,6 +10,7 @@
 #include <string>
 
 #include "Cone.hpp"
+#include "LimitedCone.hpp"
 #include "object/IObject.hpp"
 
 extern "C" raytracer::object::AObject::Type type(void) {
