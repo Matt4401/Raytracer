@@ -51,7 +51,7 @@ namespace raytracer::maths {
          * @return A shear matrix.
          */
         static Matrix4 shear(double xy, double xz, double yx, double yz,
-                               double zx, double zy);
+                             double zx, double zy);
         /**
          * @brief Creates a rotation matrix around the X-axis.
          * @param angle The rotation angle in radians.
@@ -80,36 +80,43 @@ namespace raytracer::maths {
          */
         double at(std::size_t row, std::size_t column) const;
         /**
-         * @brief Sets the element at the specified row and column to the given value.
+         * @brief Sets the element at the specified row and column to the given
+         * value.
          * @param row The row index (0-based).
          * @param column The column index (0-based).
          * @param value The value to set at the specified row and column.
-          * @throws std::out_of_range if the row or column index is out of bounds
+         * @throws std::out_of_range if the row or column index is out of bounds
          */
         void set(std::size_t row, std::size_t column, double value);
 
         /**
-         * @brief Multiplies this matrix by another matrix and returns the result.
+         * @brief Multiplies this matrix by another matrix and returns the
+         * result.
          * @param other The matrix to multiply with this matrix.
-         * @return Matrix4 The result of multiplying this matrix by the other matrix.
+         * @return Matrix4 The result of multiplying this matrix by the other
+         * matrix.
          */
         Matrix4 operator*(const Matrix4 &other) const;
         Matrix4 &operator*=(const Matrix4 &other);
 
         /**
-         * @brief Transforms a point using this matrix. The point is treated as a homogeneous coordinate with w = 1.
+         * @brief Transforms a point using this matrix. The point is treated as
+         * a homogeneous coordinate with w = 1.
          * @param point The point to transform.
          * @return Vector The transformed point.
          */
         Vector transformPoint(const Vector &point) const;
         /**
-         * @brief Transforms a vector using this matrix. The vector is treated as a homogeneous coordinate with w = 0.
+         * @brief Transforms a vector using this matrix. The vector is treated
+         * as a homogeneous coordinate with w = 0.
          * @param vector The vector to transform.
          * @return Vector The transformed vector.
          */
         Vector transformVector(const Vector &vector) const;
         /**
-         * @brief Transforms a normal vector using this matrix. The normal is transformed using the inverse transpose of the matrix to ensure correct transformation under non-uniform scaling.
+         * @brief Transforms a normal vector using this matrix. The normal is
+         * transformed using the inverse transpose of the matrix to ensure
+         * correct transformation under non-uniform scaling.
          * @param normal The normal vector to transform.
          * @return Vector The transformed normal vector.
          */
