@@ -65,13 +65,6 @@ namespace raytracer::object::scene {
                 return true;
             }
             return false;
-        } else {
-            return std::ranges::any_of(_primitives,
-                                       [&](const auto &primitive) {
-                                           return primitive->hits(ray, record);
-                                       })
-                       ? true
-                       : record.objectId != -1;
         }
 
         bool hitAnything = false;
@@ -136,27 +129,30 @@ namespace raytracer::object::scene {
         unsigned short *xi = ctx.xi;
         int emissive = ctx.emissive;
         const primitive::SurfaceData &surfData = ctx.surfData;
+        const maths::Vector emitted = surfData.material.emission * emissive;
+        const maths::Vector ambientLightColor = _ambientLight.color.toVector();
+        const maths::Vector ambientDiffuseColor =
+            _ambientDiffuse.ambient.toVector();
+        const double ambientLightScale = _ambientLight.intensity / M_PI;
+        const double ambientDiffuseScale = _ambientDiffuse.intensity / M_PI;
 
         double p = f.x > f.y && f.x > f.z ? f.x : f.y > f.z ? f.y : f.z;
         if (!shouldContinueRussianRoulette(depth, p, xi))
-            return surfData.material.emission * emissive;
+            return emitted;
 
         const double roughness =
             std::clamp(surfData.material.roughness, 0.0, 1.0);
         const maths::Vector diffuseF = f;
 
-        maths::Vector direct = std::accumulate(
-            this->_lights.begin(), this->_lights.end(), maths::Vector(0, 0, 0),
-            [&](maths::Vector acc,
-                const std::shared_ptr<light::ILight> &light) {
-                return acc + light->computeNEE(*this, x, nl, diffuseF);
-            });
+        maths::Vector direct(0, 0, 0);
+        for (const auto &light : _lights) {
+            direct += light->computeNEE(*this, x, nl, diffuseF);
+        }
 
         // Ambient light
         maths::Vector ambientContrib(0, 0, 0);
         if (emissive) {
-            ambientContrib = _ambientLight.color.toVector() *
-                             (_ambientLight.intensity / M_PI) * f;
+            ambientContrib = ambientLightColor * ambientLightScale * f;
         }
 
         // Ambient Occlusion
@@ -174,18 +170,16 @@ namespace raytracer::object::scene {
             double aoFactor =
                 unoccluded / static_cast<double>(_ambientOcclusion.samples);
             maths::Vector aoBase =
-                _ambientLight.color.toVector().magnitude() > 0
-                    ? _ambientLight.color.toVector() *
-                          (_ambientLight.intensity / M_PI)
-                    : maths::Vector(1, 1, 1) * (_ambientLight.intensity / M_PI);
+                ambientLightColor.magnitude() > 0
+                    ? ambientLightColor * ambientLightScale
+                    : maths::Vector(1, 1, 1) * ambientLightScale;
             aoContrib = aoBase * diffuseF * aoFactor;
             ambientContrib += aoContrib;
         }
 
         // Ambient diffuse contribution
         maths::Vector diffuseContrib(0, 0, 0);
-        diffuseContrib = _ambientDiffuse.ambient.toVector() *
-                 (_ambientDiffuse.intensity / M_PI) * diffuseF;
+        diffuseContrib = ambientDiffuseColor * ambientDiffuseScale * diffuseF;
 
         // Diffuse indirect
         maths::Vector diffuseDir = randomCosineDir(nl, xi);
@@ -195,8 +189,7 @@ namespace raytracer::object::scene {
                              .normalized();
         }
 
-        return surfData.material.emission * emissive + direct + ambientContrib +
-               diffuseContrib +
+        return emitted + direct + ambientContrib + diffuseContrib +
                diffuseF * radiance(maths::Ray(x, diffuseDir), depth, xi, 0);
     }
 
