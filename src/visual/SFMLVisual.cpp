@@ -27,23 +27,9 @@ namespace raytracer::visual {
         this->_window.setActive(false);
     }
 
-    SFMLVisual::~SFMLVisual() {
-        sf::Event event;
-        bool done = false;
-
-        while (!done) {
-            while (this->_window.pollEvent(event)) {
-                if (event.type == sf::Event::Closed) {
-                    done = true;
-                }
-            }
-        }
-    }
-
     std::thread SFMLVisual::printProgress(int activeWorkers, Render &render) {
         return std::thread([this, &render, activeWorkers]() {
             this->_window.setActive(true);
-            sf::Event event;
             ImageSize size = render.imageSize();
 
             this->_image.create(size.width, size.heigth, sf::Color::Black);
@@ -62,24 +48,21 @@ namespace raytracer::visual {
 
                     last = now;
                 }
-                while (this->_window.pollEvent(event)) {
-                    if (event.type == sf::Event::Resized) {
-                        this->_window.setView(sf::View(sf::FloatRect(
-                            0, 0, event.size.width, event.size.height)));
-                    }
-                }
+                this->eventHandling(render);
             }
+            this->_window.close();
             this->_window.setActive(false);
-        }
-
-        );
+        });
     }
 
-    void SFMLVisual::dispayPixels(const std::vector<maths::Color> &pixels,
+    void SFMLVisual::dispayPixels(std::vector<maths::Color> &pixels,
                                   ImageSize size) {
         for (int y = 0; y < size.heigth; y++) {
             for (int x = 0; x < size.width; x++) {
-                maths::Color color = pixels.at(y * size.width + x);
+                maths::Color &color = pixels.at(y * size.width + x);
+                if ((color.r == 0 && color.g == 0 && color.b == 0)) {
+                    continue;
+                }
                 this->_image.setPixel(x, y,
                                       sf::Color(color.r, color.g, color.b));
             }
@@ -98,5 +81,19 @@ namespace raytracer::visual {
         sprite.setPosition(0, 0);
 
         this->_window.draw(sprite);
+    }
+
+    void SFMLVisual::eventHandling(Render &render) {
+        sf::Event event;
+
+        while (this->_window.pollEvent(event)) {
+            if (event.type == sf::Event::Resized) {
+                this->_window.setView(sf::View(
+                    sf::FloatRect(0, 0, event.size.width, event.size.height)));
+            }
+            if (event.type == sf::Event::Closed) {
+                render.stopRendering();
+            }
+        }
     }
 }  // namespace raytracer::visual

@@ -13,7 +13,6 @@
 #include <functional>
 #include <memory>
 #include <thread>
-#include <utility>
 #include <vector>
 
 #include "math/Color.hpp"
@@ -43,9 +42,11 @@ namespace raytracer {
         void render(const object::scene::IScene &scene, int pixel = 1,
                     int samples = 40);
 
-        const std::vector<maths::Color> &pixels() const;
+        std::vector<maths::Color> &pixels();
         bool renderingIsFinished() const;
-        int getNbWorkerDone(int activeWorkers) const;
+        bool renderedStopped() const;
+        void stopRendering();
+        int getPercentRendered(int activeWorkers) const;
         void setPrintProgressCallback(const PrintProgressCallback &callback);
         ImageSize imageSize();
 
@@ -100,6 +101,7 @@ namespace raytracer {
         std::unique_ptr<std::atomic<int>[]> _workerDone;
         std::vector<int> _workerRows;
         std::atomic<bool> _renderingFinished;
+        std::atomic<bool> _stopRendering = false;
         std::atomic<int> _nextRow{0};
         int _samples = 40;
     };

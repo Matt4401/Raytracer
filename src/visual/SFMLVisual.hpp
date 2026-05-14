@@ -19,7 +19,7 @@ namespace raytracer::visual {
     class SFMLVisual : public IVisual {
       public:
         SFMLVisual();
-        ~SFMLVisual() override;
+        ~SFMLVisual() override = default;
 
         std::thread printProgress(int activeWorkers, Render &render) override;
 
@@ -29,7 +29,7 @@ namespace raytracer::visual {
         sf::Image _image;
         sf::Texture _texture;
 
-        void dispayPixels(const std::vector<maths::Color> &pixels,
-                          ImageSize size);
+        void dispayPixels(std::vector<maths::Color> &pixels, ImageSize size);
+        void eventHandling(Render &render);
     };
 }  // namespace raytracer::visual

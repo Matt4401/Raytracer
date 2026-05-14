@@ -17,12 +17,8 @@ namespace raytracer::visual {
     std::thread CliVisual::printProgress(int activeWorkers, Render &render) {
         return std::thread([&render, activeWorkers]() {
             while (!render.renderingIsFinished()) {
-                int done = render.getNbWorkerDone(activeWorkers);
-                double pct = render.imageSize().heigth == 0
-                                 ? 100.0
-                                 : (100.0 * done) / render.imageSize().heigth;
-
-                std::cerr << "\rRender " << (int)pct << "% ";
+                std::cerr << "\rRender "
+                          << render.getPercentRendered(activeWorkers) << "% ";
                 std::cerr << std::flush;
                 std::this_thread::sleep_for(std::chrono::milliseconds(250));
             }

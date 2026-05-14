@@ -73,12 +73,19 @@ namespace raytracer {
         return _renderingFinished.load();
     }
 
-    int Render::getNbWorkerDone(int activeWorkers) const {
+    bool Render::renderedStopped() const {
+        return this->_stopRendering.load();
+    }
+
+    int Render::getPercentRendered(int activeWorkers) const {
         int done = 0;
 
         for (unsigned int w = 0; w < activeWorkers; ++w)
             done += _workerDone[w].load();
-        return done;
+
+        return (int)this->_imageSize.heigth == 0
+                   ? 100.0
+                   : (100.0 * done) / this->_imageSize.heigth;
     }
 
     ImageSize Render::imageSize() {
@@ -88,6 +95,10 @@ namespace raytracer {
     void Render::setPrintProgressCallback(
         const PrintProgressCallback &callback) {
         this->_printCallback = callback;
+    }
+
+    void Render::stopRendering() {
+        this->_stopRendering.store(true);
     }
 
     void Render::render(const object::scene::IScene &scene, int pixel,
@@ -150,11 +161,13 @@ namespace raytracer {
         auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                       endRender - startTotal)
                       .count();
-        std::cerr << "Render time: " << ms / 60000 << "min "
-                  << (ms % 60000) / 1000 << "s\n";
+        if (!this->_stopRendering.load()) {
+            std::cerr << "Render time: " << ms / 60000 << "min "
+                      << (ms % 60000) / 1000 << "s\n";
+        }
     }
 
-    const std::vector<maths::Color> &Render::pixels() const {
+    std::vector<maths::Color> &Render::pixels() {
         return this->_pixels;
     }
 
@@ -182,7 +195,7 @@ namespace raytracer {
         st.cy = cy;
         st.sampleWeight = sampleWeight;
 
-        while (true) {
+        while (!(this->_stopRendering.load())) {
             const int y = _nextRow.fetch_add(1);
             if (y >= imageHeight) {
                 break;
@@ -191,6 +204,9 @@ namespace raytracer {
                 0, 0, static_cast<unsigned short>((y + 1) * (y + 1) * (y + 1))};
             st.xi = xi;
             for (int x = 0; x < imageWidth; ++x) {
+                if (this->_stopRendering.load()) {
+                    break;
+                }
                 const int idx = (imageHeight - y - 1) * imageWidth + x;
                 _pixels[idx] = computePixelColor(st, x, y);
             }

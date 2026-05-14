@@ -60,8 +60,10 @@ namespace raytracer {
     void Core::run() {
         this->_renderer.render(*(this->_scenes.at(0)), 1,
                                this->_scenes.at(0)->samplesPerPixel());
-        this->_export->writeFile(*(this->_scenes.at(0)),
-                                 this->_renderer.pixels());
+        if (!this->_renderer.renderedStopped()) {
+            this->_export->writeFile(*(this->_scenes.at(0)),
+                                     this->_renderer.pixels());
+        }
     }
 
     std::pair<bool, int> Core::helpMessage(
