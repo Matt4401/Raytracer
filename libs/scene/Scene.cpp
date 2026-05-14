@@ -57,12 +57,12 @@ namespace raytracer::object::scene {
             }
             return false;
         } else {
-            return std::ranges::any_of(_primitives,
-                                       [&](const auto &primitive) {
-                                           return primitive->hits(ray, record);
-                                       })
-                       ? true
-                       : record.objectId != -1;
+            for (const auto &primitive : _primitives) {
+                if (primitive->hits(ray, record)) {
+                    return true;
+                }
+            }
+            return record.objectId != -1;
         }
         return false;
     }
@@ -125,9 +125,9 @@ namespace raytracer::object::scene {
 
         const maths::Vector specularTint = f * metalness;
 
-        maths::Vector direct = std::accumulate(
+        const maths::Vector direct = std::accumulate(
             this->_lights.begin(), this->_lights.end(), maths::Vector(0, 0, 0),
-            [&](maths::Vector acc,
+            [&](const maths::Vector &acc,
                 const std::shared_ptr<light::ILight> &light) {
                 return acc + light->computeNEE(*this, x, nl, diffuseF);
             });
