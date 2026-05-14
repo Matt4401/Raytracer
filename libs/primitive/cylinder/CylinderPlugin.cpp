@@ -10,6 +10,7 @@
 #include <string>
 
 #include "Cylinder.hpp"
+#include "LimitedCylinder.hpp"
 #include "object/IObject.hpp"
 
 extern "C" raytracer::object::AObject::Type type(void) {
