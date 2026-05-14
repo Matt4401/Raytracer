@@ -7,18 +7,21 @@
 
 #include <exception>
 #include <iostream>
+#include <string>
+#include <vector>
 
 #include "Core.hpp"
 
 int main(int argc, char **argv) {
     raytracer::Core core;
+    std::vector<std::string> arguments(argv + 1, argv + argc);
 
-    if (auto state = core.helpMessage(argc, argv); state.first) {
+    if (auto state = core.helpMessage(arguments); state.first) {
         return state.second;
     }
 
     try {
-        core.init(argv[1]);
+        core.init(arguments);
     } catch (const std::exception &err) {
         std::cerr << "Error: " << err.what() << "\n";
         return 84;

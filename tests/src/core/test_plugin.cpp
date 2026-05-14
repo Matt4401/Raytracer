@@ -7,8 +7,6 @@
 
 #include <gtest/gtest.h>
 
-#include <string_view>
-
 #include "../../libs/valid_plugin/ValidObject.hpp"
 #include "object/IObject.hpp"
 #include "plugin/ObjectFactory.hpp"
@@ -18,13 +16,11 @@
 #define TEST_PLUGINS_PATH "./tests/plugins/"
 #endif
 
-static constexpr std::string_view PLUGINS_PATH = TEST_PLUGINS_PATH;
-
 TEST(CORE_PLUGIN, valid_plugins) {
     raytracer::PluginManager plugManager;
     raytracer::ObjectFactory objFactory;
 
-    plugManager.updatePluginList(PLUGINS_PATH);
+    plugManager.updatePluginList(TEST_PLUGINS_PATH);
     plugManager.fillFactory(objFactory);
 
     std::shared_ptr<raytracer::object::IObject> object =
@@ -48,7 +44,7 @@ TEST(CORE_PLUGIN, error_missing_entry) {
     raytracer::PluginManager plugManager;
     raytracer::ObjectFactory objFactory;
 
-    plugManager.updatePluginList(PLUGINS_PATH);
+    plugManager.updatePluginList(TEST_PLUGINS_PATH);
     plugManager.fillFactory(objFactory);
 
     std::shared_ptr<raytracer::object::IObject> object =
@@ -61,7 +57,7 @@ TEST(CORE_PLUGIN, mixed_valid_and_invalid_plugins) {
     raytracer::PluginManager plugManager;
     raytracer::ObjectFactory objFactory;
 
-    plugManager.updatePluginList(PLUGINS_PATH);
+    plugManager.updatePluginList(TEST_PLUGINS_PATH);
     plugManager.fillFactory(objFactory);
 
     std::shared_ptr<raytracer::object::IObject> validObject =
@@ -77,9 +73,9 @@ TEST(CORE_PLUGIN, update_plugin_list_idempotent_reload) {
     raytracer::PluginManager plugManager;
     raytracer::ObjectFactory objFactory;
 
-    plugManager.updatePluginList(PLUGINS_PATH);
+    plugManager.updatePluginList(TEST_PLUGINS_PATH);
     plugManager.fillFactory(objFactory);
-    plugManager.updatePluginList(PLUGINS_PATH);
+    plugManager.updatePluginList(TEST_PLUGINS_PATH);
     plugManager.fillFactory(objFactory);
 
     std::shared_ptr<raytracer::object::IObject> object =
