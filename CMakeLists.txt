@@ -53,6 +53,7 @@ set(SRCS
         src/bvh/bvhSplitStrategy/MedianStrategy.cpp
         src/bvh/bvhSplitStrategy/MidpointStrategy.cpp
         src/object/primitive/APrimitive.cpp
+        src/object/transformations/ATransformDecorator.cpp
         src/object/material/ABasicMaterial.cpp
         src/object/material/APerlinBasedMaterial.cpp
         src/object/material/AWorleyBasedMaterial.cpp
