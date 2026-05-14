@@ -53,7 +53,7 @@ namespace raytracer::object::primitive {
 
         void parseFile(const std::string &filePath);
         void processLine(const std::string &line);
-        maths::Vector parseVector(std::istringstream &iss) const;
+        static maths::Vector parseVector(std::istringstream &iss);
 
         static ParsedFaceVertex parseFaceVertex(const std::string &token);
         static void handleVertex(ObjLoader &loader, std::istringstream &iss);
