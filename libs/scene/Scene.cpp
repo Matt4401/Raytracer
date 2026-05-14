@@ -155,7 +155,8 @@ namespace raytracer::object::scene {
         // Ambient light
         maths::Vector ambientContrib(0, 0, 0);
         if (emissive) {
-            ambientContrib = _ambientLight.color.toVector() * f;
+            ambientContrib = _ambientLight.color.toVector() *
+                             (_ambientLight.intensity / M_PI) * f;
         }
 
         // Ambient Occlusion
@@ -174,15 +175,17 @@ namespace raytracer::object::scene {
                 unoccluded / static_cast<double>(_ambientOcclusion.samples);
             maths::Vector aoBase =
                 _ambientLight.color.toVector().magnitude() > 0
-                    ? _ambientLight.color.toVector()
-                    : maths::Vector(1, 1, 1);
+                    ? _ambientLight.color.toVector() *
+                          (_ambientLight.intensity / M_PI)
+                    : maths::Vector(1, 1, 1) * (_ambientLight.intensity / M_PI);
             aoContrib = aoBase * diffuseF * aoFactor;
             ambientContrib += aoContrib;
         }
 
         // Ambient diffuse contribution
         maths::Vector diffuseContrib(0, 0, 0);
-        diffuseContrib = _ambientDiffuse.ambient.toVector() * diffuseF;
+        diffuseContrib = _ambientDiffuse.ambient.toVector() *
+                 (_ambientDiffuse.intensity / M_PI) * diffuseF;
 
         // Diffuse indirect
         maths::Vector diffuseDir = randomCosineDir(nl, xi);
