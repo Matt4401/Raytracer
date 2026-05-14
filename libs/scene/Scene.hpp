@@ -30,7 +30,8 @@ namespace raytracer::object::scene {
         explicit Scene(const std::map<std::string, std::any> &params);
         ~Scene() override = default;
 
-        bool intersect(const maths::Ray &ray, primitive::HitRecord &record) const override;
+        bool intersect(const maths::Ray &ray,
+                       primitive::HitRecord &record) const override;
         maths::Vector radiance(const maths::Ray &ray, int depth,
                                unsigned short *xi,
                                int emissive = 1) const override;
@@ -64,19 +65,17 @@ namespace raytracer::object::scene {
                                       unsigned short *xi) const;
         /// @brief Russian Roulette termination test based on weight and depth.
         /// @param depth current ray depth
-        /// @param weight the weight factor (color luminance, reflectivity, or transmission weight)
+        /// @param weight the weight factor (color luminance, reflectivity, or
+        /// transmission weight)
         /// @param xi random seed state
-        /// @return true if the ray should continue tracing, false if terminated by RR
+        /// @return true if the ray should continue tracing, false if terminated
+        /// by RR
         bool shouldContinueRussianRoulette(int depth, double weight,
                                            unsigned short *xi) const;
-        maths::Vector radianceDiffuse(const maths::Ray &ray,
-                                      const primitive::IPrimitive &obj,
-                                      const RadianceContext &ctx) const;
+        maths::Vector radianceDiffuse(const RadianceContext &ctx) const;
         maths::Vector radianceSpecular(const maths::Ray &ray,
-                                       const primitive::IPrimitive &obj,
                                        const RadianceContext &ctx) const;
         maths::Vector radianceRefractive(const maths::Ray &ray,
-                                         const primitive::IPrimitive &obj,
                                          const RadianceContext &ctx) const;
     };
 }  // namespace raytracer::object::scene

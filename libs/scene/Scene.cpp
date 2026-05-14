@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <bvh/BVHBuilder.hpp>
 #include <limits>
+#include <numeric>
 
 #include "object/IScene.hpp"
 #include "object/primitive/IPrimitive.hpp"
@@ -53,13 +54,24 @@ namespace raytracer::object::scene {
         return ::erand48(xi) < weight;
     }
 
-    bool Scene::intersect(const maths::Ray &ray, primitive::HitRecord &record) const {
+    bool Scene::intersect(const maths::Ray &ray,
+                          primitive::HitRecord &record) const {
         constexpr double INF = std::numeric_limits<double>::infinity();
         record.t = INF;
         record.objectId = -1;
 
         if (_bvhRoot) {
-            return _bvhRoot->hits(ray, record);
+            if (_bvhRoot->hits(ray, record)) {
+                return true;
+            }
+            return false;
+        } else {
+            return std::ranges::any_of(_primitives,
+                                       [&](const auto &primitive) {
+                                           return primitive->hits(ray, record);
+                                       })
+                       ? true
+                       : record.objectId != -1;
         }
 
         bool hitAnything = false;
@@ -108,19 +120,16 @@ namespace raytracer::object::scene {
         RadianceContext ctx{x,     n,  nl,       f,        surfData,
                             depth, xi, emissive, hitRecord};
         if (surfData.material.reflType == object::primitive::RefltT::DIFF) {
-            return radianceDiffuse(ray, *obj, ctx);
+            return radianceDiffuse(ctx);
         }
         if (surfData.material.reflType == object::primitive::RefltT::SPEC) {
-            return radianceSpecular(ray, *obj, ctx);
+            return radianceSpecular(ray, ctx);
         }
-        return radianceRefractive(ray, *obj, ctx);
+        return radianceRefractive(ray, ctx);
     }
 
-    maths::Vector Scene::radianceDiffuse(const maths::Ray &ray,
-                                         const primitive::IPrimitive &obj,
-                                         const RadianceContext &ctx) const {
+    maths::Vector Scene::radianceDiffuse(const RadianceContext &ctx) const {
         const maths::Vector &x = ctx.x;
-        const maths::Vector &n = ctx.n;
         const maths::Vector &nl = ctx.nl;
         const maths::Vector &f = ctx.f;
         int depth = ctx.depth;
@@ -136,10 +145,12 @@ namespace raytracer::object::scene {
             std::clamp(surfData.material.roughness, 0.0, 1.0);
         const maths::Vector diffuseF = f;
 
-        maths::Vector direct(0, 0, 0);
-        for (const auto &light : _lights) {
-            direct += light->computeNEE(*this, x, nl, diffuseF);
-        }
+        maths::Vector direct = std::accumulate(
+            this->_lights.begin(), this->_lights.end(), maths::Vector(0, 0, 0),
+            [&](maths::Vector acc,
+                const std::shared_ptr<light::ILight> &light) {
+                return acc + light->computeNEE(*this, x, nl, diffuseF);
+            });
 
         // Ambient light
         maths::Vector ambientContrib(0, 0, 0);
@@ -187,7 +198,6 @@ namespace raytracer::object::scene {
     }
 
     maths::Vector Scene::radianceSpecular(const maths::Ray &ray,
-                                          const primitive::IPrimitive &obj,
                                           const RadianceContext &ctx) const {
         const maths::Vector &x = ctx.x;
         const maths::Vector &n = ctx.n;
@@ -230,7 +240,6 @@ namespace raytracer::object::scene {
     }
 
     maths::Vector Scene::radianceRefractive(const maths::Ray &ray,
-                                            const primitive::IPrimitive &obj,
                                             const RadianceContext &ctx) const {
         const maths::Vector &x = ctx.x;
         const maths::Vector &n = ctx.n;

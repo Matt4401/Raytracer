@@ -7,19 +7,36 @@
 
 #include "Core.hpp"
 
+#include <algorithm>
+#include <any>
+#include <cstddef>
+#include <functional>
 #include <iostream>
+#include <map>
+#include <memory>
 #include <string>
+#include <string_view>
+#include <utility>
 
+#include "exception/ParsingException.hpp"
+#include "exporter/ExportPPM.hpp"
+#include "exporter/IExport.hpp"
 #include "parser/ConfigParser.hpp"
 #include "plugin/ObjectFactory.hpp"
 #include "plugin/PluginManager.hpp"
 
 namespace raytracer {
 
-    void Core::init(const std::filesystem::path &file) {
+    void Core::init(const std::vector<std::string> &argv,
+                    const std::filesystem::path &pluginsPath) {
         parsing::ConfigParser parser;
 
-        this->_plugManager.updatePluginList(PLUGINS_FOLDER_PATH);
+        this->cmdArgsHandling(argv);
+        if (this->_export == nullptr) {
+            this->_export = std::make_unique<exporter::ExportPPM>();
+        }
+
+        this->_plugManager.updatePluginList(pluginsPath);
         this->_plugManager.fillFactory(this->_objFactory);
 
         parser.setBuildCallback(
@@ -28,33 +45,84 @@ namespace raytracer {
                 -> std::shared_ptr<object::IObject> {
                 return this->_objFactory.build(name, param);
             });
-        this->_scenes = parser.parse(file);
-        if (this->_scenes.empty()) {
-            throw exception::PluginException{"No scene found in configuration"};
-        }
+        this->_scenes = parser.parse(this->_givenFile);
         this->_scenes.at(0)->buildBVH(this->_scenes.at(0)->bvhStrategy());
     }
 
     void Core::run() {
-        this->_renderer.render(*(this->_scenes.at(0)), 1, this->_scenes.at(0)->samplesPerPixel());
-        this->_renderer.pixelToPPM(*(this->_scenes.at(0)));
+        this->_renderer.render(*(this->_scenes.at(0)), 1,
+                               this->_scenes.at(0)->samplesPerPixel());
+        this->_export->writeFile(*(this->_scenes.at(0)),
+                                 this->_renderer.pixels());
     }
 
-    std::pair<bool, int> Core::helpMessage(int argc, char **argv) {
-        std::string message =
-            "USAGE: ./raytracer <SCENE_FILE> \n"
-            "\tSCENE_FILE: scene configuration\n";
-
-        if (argc != 2) {
-            std::cerr << message;
+    std::pair<bool, int> Core::helpMessage(
+        const std::vector<std::string> &argv) {
+        if (argv.empty()) {
+            std::cerr << HELP_MESSAGE;
             return {true, 84};
         }
-        std::string parameter = argv[1];
-        if (parameter == "-h" || parameter == "--help") {
-            std::cout << message;
+        if (std::any_of(argv.begin(), argv.end(),
+                        [](const std::string &parameter) {
+                            return parameter == "-h" || parameter == "--help";
+                        })) {
+            std::cout << HELP_MESSAGE;
             return {true, 0};
         }
         return {false, 0};
+    }
+
+    void Core::cmdArgsHandling(const std::vector<std::string> &argv) {
+        size_t nbArgs = argv.size();
+        bool gotFile = false;
+
+        using FlagHandler =
+            std::function<void(size_t, const std::vector<std::string> &)>;
+        std::map<std::string, FlagHandler> flagHandlers;
+
+        flagHandlers.insert(
+            {EXPORT_FLAG.data(),
+             [this](size_t index, const std::vector<std::string> &argv) {
+                 this->setExportViaFlag(index, argv);
+             }});
+
+        for (size_t index = 0; index < nbArgs; ++index) {
+            const std::string &param = argv.at(index);
+
+            if (!param.starts_with("-")) {
+                if (gotFile)
+                    throw exception::ParsingException(HELP_MESSAGE);
+                this->_givenFile = param;
+                gotFile = true;
+                continue;
+            }
+
+            auto handler = flagHandlers.find(param);
+            if (index + 1 >= nbArgs || handler == flagHandlers.end()) {
+                throw exception::ParsingException(HELP_MESSAGE);
+            } else {
+                handler->second(index, argv);
+                index++;
+            }
+        }
+        if (!gotFile)
+            throw exception::ParsingException(HELP_MESSAGE);
+    }
+
+    void Core::setExportViaFlag(size_t index,
+                                const std::vector<std::string> &argv) {
+        if (this->_export != nullptr)
+            throw exception::ParsingException(HELP_MESSAGE);
+
+        std::map<std::string, std::unique_ptr<exporter::IExport>> exportMap;
+        exportMap.insert({"ppm", std::make_unique<exporter::ExportPPM>()});
+
+        if (auto iter = exportMap.find(argv.at(index + 1));
+            iter != exportMap.end()) {
+            this->_export = std::move(iter->second);
+        } else {
+            throw exception::ParsingException(HELP_MESSAGE);
+        }
     }
 
 }  // namespace raytracer
