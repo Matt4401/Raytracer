@@ -275,17 +275,19 @@ namespace raytracer::object::scene {
         transmittance *= transparency;
 
         double sum = reflectance + transmittance;
+        double reflWeight = 0.0;
+        double transWeight = 0.0;
         if (sum > K_PROB_NORMALIZATION_THRESHOLD) {
-            reflectance /= sum;
-            transmittance /= sum;
+            reflWeight = reflectance / sum;
+            transWeight = transmittance / sum;
         } else {
-            reflectance = 0.5;
-            transmittance = 0.5;
+            reflWeight = 0.5;
+            transWeight = 0.5;
         }
 
-        double choiceProb = 0.25 + 0.5 * reflectance;
-        double reflectProb = reflectance / choiceProb,
-               transProb = transmittance / (1 - choiceProb);
+        double choiceProb = 0.25 + 0.5 * reflWeight;
+        double reflectProb = reflWeight / choiceProb;
+        double transProb = transWeight / (1 - choiceProb);
 
         if (depth > K_REFRACTIVE_RUSSIAN_ROULETTE_DEPTH) {
             if (::erand48(xi) < choiceProb)

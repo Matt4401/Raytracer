@@ -5,13 +5,19 @@
 ## render_all
 ##
 
-#!/bin/bash
-
+#!/usr/bin/env bash
+set -euo pipefail
 
 output_dir="./screenshots"
+mkdir -p "$output_dir"
 
+# Render each top-level scene (.cfg) in ./scenes
 find ./scenes -maxdepth 1 -type f -name '*.cfg' -print0 |
 while IFS= read -r -d '' file; do
-    echo "Rendering $file..."
-    ./raytracer "$file" > "$output_dir/$(basename "$file" .cfg).ppm"
+    base=$(basename "$file")
+    out="$output_dir/scene_${base}.ppm"
+    echo "Rendering $file -> $out"
+    ./raytracer "$file" > "$out"
 done
+
+echo "All renders done. Outputs in $output_dir"
