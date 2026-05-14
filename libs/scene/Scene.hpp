@@ -62,6 +62,13 @@ namespace raytracer::object::scene {
         /// a cosine-weighted distribution.
         maths::Vector randomCosineDir(const maths::Vector &nl,
                                       unsigned short *xi) const;
+        /// @brief Russian Roulette termination test based on weight and depth.
+        /// @param depth current ray depth
+        /// @param weight the weight factor (color luminance, reflectivity, or transmission weight)
+        /// @param xi random seed state
+        /// @return true if the ray should continue tracing, false if terminated by RR
+        bool shouldContinueRussianRoulette(int depth, double weight,
+                                           unsigned short *xi) const;
         maths::Vector radianceDiffuse(const maths::Ray &ray,
                                       const primitive::IPrimitive &obj,
                                       const RadianceContext &ctx) const;

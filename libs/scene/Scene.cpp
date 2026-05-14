@@ -44,6 +44,15 @@ namespace raytracer::object::scene {
             .normalized();
     }
 
+    bool Scene::shouldContinueRussianRoulette(int depth, double weight,
+                                              unsigned short *xi) const {
+        if (depth <= K_DIFFUSE_RUSSIAN_ROULETTE_DEPTH)
+            return true;
+        if (weight <= 0.0)
+            return false;
+        return ::erand48(xi) < weight;
+    }
+
     bool Scene::intersect(const maths::Ray &ray, primitive::HitRecord &record) const {
         constexpr double INF = std::numeric_limits<double>::infinity();
         record.t = INF;
@@ -94,15 +103,7 @@ namespace raytracer::object::scene {
 
         maths::Vector f = surfData.material.color.toVector();
 
-        double p = f.x > f.y && f.x > f.z ? f.x : f.y > f.z ? f.y : f.z;
-        if (++depth > K_DIFFUSE_RUSSIAN_ROULETTE_DEPTH) {
-            if (p <= 0.0)
-                return surfData.material.emission * emissive;
-            if (::erand48(xi) < p)
-                f = f * (1.0 / p);
-            else
-                return surfData.material.emission * emissive;
-        }
+        ++depth;
 
         RadianceContext ctx{x,     n,  nl,       f,        surfData,
                             depth, xi, emissive, hitRecord};
@@ -126,6 +127,10 @@ namespace raytracer::object::scene {
         unsigned short *xi = ctx.xi;
         int emissive = ctx.emissive;
         const primitive::SurfaceData &surfData = ctx.surfData;
+
+        double p = f.x > f.y && f.x > f.z ? f.x : f.y > f.z ? f.y : f.z;
+        if (!shouldContinueRussianRoulette(depth, p, xi))
+            return surfData.material.emission * emissive;
 
         const double roughness =
             std::clamp(surfData.material.roughness, 0.0, 1.0);
@@ -194,6 +199,10 @@ namespace raytracer::object::scene {
         int emissive = ctx.emissive;
         const double reflectivity =
             std::clamp(surfData.material.reflectivity, 0.0, 1.0);
+
+        if (!shouldContinueRussianRoulette(depth, reflectivity, xi))
+            return surfData.material.emission * emissive;
+
         const double roughness =
             std::clamp(surfData.material.roughness, 0.0, 1.0);
 
@@ -273,6 +282,11 @@ namespace raytracer::object::scene {
         double transmittance = 1 - reflectance;
 
         transmittance *= transparency;
+
+        double totalWeight = reflectance + transmittance;
+
+        if (!shouldContinueRussianRoulette(depth, totalWeight, xi))
+            return surfData.material.emission * emissive;
 
         double sum = reflectance + transmittance;
         double reflWeight = 0.0;
