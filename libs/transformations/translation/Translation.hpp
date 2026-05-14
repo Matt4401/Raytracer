@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** Raytracer
 ** File description:
-** Translation primitive decorator
+** Translation
 */
 
 #pragma once
