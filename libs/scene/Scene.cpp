@@ -57,12 +57,12 @@ namespace raytracer::object::scene {
             }
             return false;
         } else {
-            return std::ranges::any_of(_primitives,
-                                       [&](const auto &primitive) {
-                                           return primitive->hits(ray, record);
-                                       })
-                       ? true
-                       : record.objectId != -1;
+            for (const auto &primitive : _primitives) {
+                if (primitive->hits(ray, record)) {
+                    return true;
+                }
+            }
+            return record.objectId != -1;
         }
         return false;
     }
@@ -99,7 +99,7 @@ namespace raytracer::object::scene {
         RadianceContext ctx{x,     n,  nl,       f,        surfData,
                             depth, xi, emissive, hitRecord};
         if (surfData.material.reflType == object::primitive::RefltT::DIFF) {
-            return radianceDiffuse(ray, *obj, ctx);
+            return radianceDiffuse(ctx);
         }
         if (surfData.material.reflType == object::primitive::RefltT::SPEC) {
             return radianceSpecular(ray, *obj, ctx);
@@ -107,9 +107,7 @@ namespace raytracer::object::scene {
         return radianceRefractive(ray, *obj, ctx);
     }
 
-    maths::Vector Scene::radianceDiffuse(const maths::Ray &ray,
-                                         const primitive::IPrimitive &obj,
-                                         const RadianceContext &ctx) const {
+    maths::Vector Scene::radianceDiffuse(const RadianceContext &ctx) const {
         const maths::Vector &x = ctx.x;
         const maths::Vector &nl = ctx.nl;
         const maths::Vector &f = ctx.f;
@@ -127,9 +125,9 @@ namespace raytracer::object::scene {
 
         const maths::Vector specularTint = f * metalness;
 
-        maths::Vector direct = std::accumulate(
+        const maths::Vector direct = std::accumulate(
             this->_lights.begin(), this->_lights.end(), maths::Vector(0, 0, 0),
-            [&](maths::Vector acc,
+            [&](const maths::Vector &acc,
                 const std::shared_ptr<light::ILight> &light) {
                 return acc + light->computeNEE(*this, x, nl, diffuseF);
             });

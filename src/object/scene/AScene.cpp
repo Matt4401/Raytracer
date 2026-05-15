@@ -165,7 +165,22 @@ namespace raytracer::object::scene {
         if (_primitives.empty())
             return;
 
-        const maths::AABoundingBox globalBox = _primitives[0]->boundingBox();
+        maths::AABoundingBox globalBox = _primitives[0]->boundingBox();
+        bool first = true;
+
+        for (const auto &prim : _primitives) {
+            if (!prim->isInfinite()) {
+                if (first) {
+                    globalBox = prim->boundingBox();
+                    first = false;
+                } else {
+                    globalBox.extend(prim->boundingBox());
+                }
+            }
+        }
+        for (const auto &cam : _cameras) globalBox.extend(cam->position());
+        for (const auto &light : _lights) globalBox.extend(light->position());
+        globalBox.pad(GLOBAL_BOX_PADDING);
 
         for (const auto &prim : _primitives) {
             prim->setLimitBox(globalBox);

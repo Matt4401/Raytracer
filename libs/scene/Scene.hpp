@@ -63,9 +63,7 @@ namespace raytracer::object::scene {
         /// a cosine-weighted distribution.
         maths::Vector randomCosineDir(const maths::Vector &nl,
                                       unsigned short *xi) const;
-        maths::Vector radianceDiffuse(const maths::Ray &ray,
-                                      const primitive::IPrimitive &obj,
-                                      const RadianceContext &ctx) const;
+        maths::Vector radianceDiffuse(const RadianceContext &ctx) const;
         maths::Vector radianceSpecular(const maths::Ray &ray,
                                        const primitive::IPrimitive &obj,
                                        const RadianceContext &ctx) const;

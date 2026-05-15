@@ -110,6 +110,12 @@ if (NOT SKIP_INTERNET)
             ${CMAKE_SOURCE_DIR}/libs/primitive/plane/Plane.cpp
             src/primitives/test_sphere.cpp
             ${CMAKE_SOURCE_DIR}/libs/primitive/sphere/Sphere.cpp
+            src/primitives/test_cylinder.cpp
+            ${CMAKE_SOURCE_DIR}/libs/primitive/cylinder/Cylinder.cpp
+            ${CMAKE_SOURCE_DIR}/libs/primitive/cylinder/LimitedCylinder.cpp
+            src/primitives/test_cone.cpp
+            ${CMAKE_SOURCE_DIR}/libs/primitive/cone/Cone.cpp
+            ${CMAKE_SOURCE_DIR}/libs/primitive/cone/LimitedCone.cpp
             src/primitives/test_rectangle.cpp
             ${CMAKE_SOURCE_DIR}/libs/primitive/rectangle/Rectangle.cpp
             src/primitives/test_triangle.cpp
@@ -140,6 +146,7 @@ if (NOT SKIP_INTERNET)
 
     add_executable(bvh_tests
             src/main.cpp
+            src/bvh/test_aabounding_box.cpp
             src/bvh/bvh_test_helpers.hpp
             src/bvh/test_bvh_node.cpp
             src/bvh/test_bvh_builder.cpp
