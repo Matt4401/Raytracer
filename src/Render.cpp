@@ -55,7 +55,8 @@ namespace raytracer {
 
         for (int sy = 0; sy < 2; ++sy) {
             for (int sx = 0; sx < 2; ++sx) {
-                pixel = pixel + sampleSubpixel(st, x, y, sx, sy) * st.sampleWeight;
+                pixel =
+                    pixel + sampleSubpixel(st, x, y, sx, sy) * st.sampleWeight;
             }
         }
 
@@ -163,8 +164,8 @@ namespace raytracer {
 
         const maths::Vector cx((imageWidth * Render::KCX_FACTOR) / imageHeight,
                                0, 0);
-        const maths::Vector cy = cx.cross(camera->rotation()).normalized() *
-                                 Render::KCX_FACTOR;
+        const maths::Vector cy =
+            cx.cross(camera->rotation()).normalized() * Render::KCX_FACTOR;
 
         Render::RenderState st;
         st.scene = &scene;

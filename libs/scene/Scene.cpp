@@ -66,14 +66,28 @@ namespace raytracer::object::scene {
             }
             return false;
         } else {
+            bool hitAnything = false;
+            primitive::HitRecord closestRecord;
+            double closestT = INF;
+
             for (const auto &primitive : _primitives) {
-                if (primitive->hits(ray, record)) {
-                    return true;
+                if (!primitive)
+                    continue;
+                primitive::HitRecord tempRecord;
+                if (primitive->hits(ray, tempRecord) &&
+                    tempRecord.t < closestT) {
+                    closestT = tempRecord.t;
+                    closestRecord = tempRecord;
+                    hitAnything = true;
                 }
             }
-            return record.objectId != -1;
+
+            if (hitAnything) {
+                record = closestRecord;
+                return true;
+            }
+            return false;
         }
-        return false;
     }
 
     maths::Vector Scene::radiance(const maths::Ray &ray, int depth,
