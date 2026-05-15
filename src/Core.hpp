@@ -67,13 +67,10 @@ namespace raytracer {
             "\t-v: visual mode (cli/sfml)\n";
 
         void runScene();
+        template <typename Base>
+        using Factory = std::function<std::unique_ptr<Base>()>;
 
         void cmdArgsHandling(const std::vector<std::string> &argv);
-        bool _preview = true;
-
-        void setExportViaFlag(size_t index,
-                              const std::vector<std::string> &argv);
-        void setVisualViaFlag(size_t index,
-                              const std::vector<std::string> &argv);
+        void handleFlag(const std::string &flag, const std::string &value);
     };
 }  // namespace raytracer

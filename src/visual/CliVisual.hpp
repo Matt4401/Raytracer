@@ -20,6 +20,7 @@ namespace raytracer::visual {
 
         bool allowPreview() override;
         bool fullRender() override;
+        bool installFile(Render &render) override;
     };
 
 }  // namespace raytracer::visual

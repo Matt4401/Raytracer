@@ -18,7 +18,6 @@
 #include <SFML/Window/VideoMode.hpp>
 #include <algorithm>
 #include <chrono>
-#include <iostream>
 #include <string>
 #include <thread>
 #include <vector>
@@ -48,6 +47,34 @@ namespace raytracer::visual {
         return this->_fullRender;
     }
 
+    bool SFMLVisual::installFile(Render &render) {
+        this->_window.setActive(true);
+        std::chrono::time_point last = std::chrono::steady_clock::now();
+
+        while (this->_window.isOpen() && !this->_save) {
+            std::chrono::time_point now = std::chrono::steady_clock::now();
+            double elapsed = std::chrono::duration<double>(now - last).count();
+            ImageSize imageSize = render.imageSize();
+
+            if (elapsed >= 1.0) {
+                this->_window.clear();
+                this->updateWindow(render, imageSize);
+
+                this->displayText(this->_windowSize.x * 0.5f,
+                                  this->_windowSize.y * 0.9f,
+                                  "Click on \"S\" to save this file");
+                this->_window.display();
+                last = now;
+            }
+
+            this->eventHandling(render);
+        }
+
+        this->_window.setActive(false);
+
+        return this->_save;
+    }
+
     std::thread SFMLVisual::printProgress(int activeWorkers, Render &render) {
         return std::thread([this, &render, activeWorkers]() {
             (void)activeWorkers;
@@ -66,7 +93,9 @@ namespace raytracer::visual {
                     std::chrono::duration<double>(now - last).count();
 
                 if (elapsed >= 1.0) {
+                    this->_window.clear();
                     this->updateWindow(render, imageSize);
+                    this->_window.display();
                     last = now;
                 }
                 this->eventHandling(render);
@@ -79,22 +108,26 @@ namespace raytracer::visual {
         });
     }
 
-    void SFMLVisual::updateWindow(Render &render, ImageSize &imageSize) {
-        this->_window.clear();
+    void SFMLVisual::updateWindowSize() {
         sf::Vector2u windowSize = this->_window.getSize();
-        sf::Vector2f castedWindowSize(static_cast<float>(windowSize.x),
-                                      static_cast<float>(windowSize.y));
-
-        this->dispayPixels(render.pixels(), imageSize, castedWindowSize);
-        this->displayCurrentMode(castedWindowSize);
-        this->_window.display();
+        this->_windowSize = sf::Vector2f(static_cast<float>(windowSize.x),
+                                         static_cast<float>(windowSize.y));
     }
 
-    void SFMLVisual::displayCurrentMode(sf::Vector2f &windowSize) {
-        sf::Text mode(this->_fullRender ? "Full Render Mode" : "preview Mode",
-                      this->_font);
+    void SFMLVisual::updateWindow(Render &render, ImageSize &imageSize) {
+        this->updateWindowSize();
 
-        mode.setPosition(windowSize.x * 0.5f, windowSize.y * 0.1f);
+        this->dispayPixels(render.pixels(), imageSize);
+        this->displayText(
+            this->_windowSize.x * 0.5f, this->_windowSize.y * 0.1f,
+            this->_fullRender ? "Full Render Mode" : "preview Mode");
+    }
+
+    void SFMLVisual::displayText(float posX, float posY,
+                                 const std::string &str) {
+        sf::Text mode(str, this->_font);
+
+        mode.setPosition(posX, posY);
         mode.setFillColor(sf::Color::White);
         mode.setCharacterSize(40);
 
@@ -105,7 +138,7 @@ namespace raytracer::visual {
     }
 
     void SFMLVisual::dispayPixels(std::vector<maths::Color> &pixels,
-                                  ImageSize &size, sf::Vector2f &windowSize) {
+                                  ImageSize &size) {
         for (int y = 0; y < size.heigth; y++) {
             for (int x = 0; x < size.width; x++) {
                 maths::Color &color = pixels.at(y * size.width + x);
@@ -121,13 +154,14 @@ namespace raytracer::visual {
 
         texture.loadFromImage(this->_image);
         sprite.setTexture(texture);
-        this->computeImage(size, windowSize, sprite);
+        this->computeImage(size, sprite);
 
         this->_window.draw(sprite);
     }
 
-    void SFMLVisual::computeImage(ImageSize &size, sf::Vector2f &windowSize,
-                                  sf::Sprite &sprite) {
+    void SFMLVisual::computeImage(ImageSize &size, sf::Sprite &sprite) {
+        sf::Vector2f &windowSize = this->_windowSize;
+
         float availableWidth =
             std::max(0.f, windowSize.x * (1.0f - _marginLeft - _marginRight));
         float availableHeight =
@@ -155,6 +189,11 @@ namespace raytracer::visual {
             case sf::Keyboard::F:
                 this->_fullRender = true;
                 render.stopRendering();
+            case sf::Keyboard::S:
+                if (render.renderingIsFinished() && this->_fullRender) {
+                    this->_save = true;
+                }
+
             default:
                 break;
         }

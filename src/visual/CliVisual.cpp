@@ -34,4 +34,9 @@ namespace raytracer::visual {
         return true;
     }
 
+    bool CliVisual::installFile(Render &render) {
+        (void)render;
+        return true;
+    }
+
 }  // namespace raytracer::visual

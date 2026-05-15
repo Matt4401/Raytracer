@@ -20,6 +20,7 @@ namespace raytracer::visual {
 
         virtual bool allowPreview() = 0;
         virtual bool fullRender() = 0;
+        virtual bool installFile(Render &render) = 0;
     };
 
 }  // namespace raytracer::visual

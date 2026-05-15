@@ -86,7 +86,8 @@ namespace raytracer {
             this->_renderer.render(*(this->_scenes.at(0)),
                                    this->_scenes.at(0)->samplesPerPixel());
         }
-        if (!this->_renderer.renderedStopped()) {
+        if (!this->_renderer.renderedStopped() &&
+            this->_visual->installFile(this->_renderer)) {
             this->_export->writeFile(*(this->_scenes.at(0)),
                                      this->_renderer.pixels());
             return;
@@ -118,79 +119,54 @@ namespace raytracer {
     }
 
     void Core::cmdArgsHandling(const std::vector<std::string> &argv) {
-        size_t nbArgs = argv.size();
         bool gotFile = false;
 
-        using FlagHandler =
-            std::function<void(size_t, const std::vector<std::string> &)>;
-        std::map<std::string, FlagHandler> flagHandlers;
-
-        flagHandlers.insert(
-            {EXPORT_FLAG.data(),
-             [this](size_t index, const std::vector<std::string> &argv) {
-                 this->setExportViaFlag(index, argv);
-             }});
-
-        flagHandlers.insert(
-            {VISUAL_FLAG.data(),
-             [this](size_t index, const std::vector<std::string> &argv) {
-                 this->setVisualViaFlag(index, argv);
-             }});
-
-        for (size_t index = 0; index < nbArgs; ++index) {
-            const std::string &param = argv.at(index);
+        for (size_t i = 0; i < argv.size(); ++i) {
+            const std::string &param = argv[i];
 
             if (!param.starts_with("-")) {
                 if (gotFile)
                     throw exception::ParsingException(HELP_MESSAGE);
-                this->_givenFile = param;
+                _givenFile = param;
                 gotFile = true;
                 continue;
             }
-
-            auto handler = flagHandlers.find(param);
-            if (index + 1 >= nbArgs || handler == flagHandlers.end()) {
+            if (i + 1 >= argv.size())
                 throw exception::ParsingException(HELP_MESSAGE);
-            } else {
-                handler->second(index, argv);
-                index++;
-            }
+            handleFlag(param, argv[++i]);
         }
         if (!gotFile)
             throw exception::ParsingException(HELP_MESSAGE);
     }
 
-    void Core::setExportViaFlag(size_t index,
-                                const std::vector<std::string> &argv) {
-        if (this->_export != nullptr)
+    void Core::handleFlag(const std::string &flag, const std::string &value) {
+        static const std::map<
+            std::string, std::function<std::unique_ptr<exporter::IExport>()>>
+            exporters = {
+                {"ppm", [] { return std::make_unique<exporter::ExportPPM>(); }},
+            };
+        static const std::map<std::string,
+                              std::function<std::unique_ptr<visual::IVisual>()>>
+            visuals = {
+                {"cli", [] { return std::make_unique<visual::CliVisual>(); }},
+                {"sfml", [] { return std::make_unique<visual::SFMLVisual>(); }},
+            };
+
+        auto pick = [&](auto &map, auto &target) {
+            if (target != nullptr)
+                throw exception::ParsingException(HELP_MESSAGE);
+            auto it = map.find(value);
+            if (it == map.end())
+                throw exception::ParsingException(HELP_MESSAGE);
+            target = it->second();
+        };
+
+        if (flag == EXPORT_FLAG)
+            pick(exporters, _export);
+        else if (flag == VISUAL_FLAG)
+            pick(visuals, _visual);
+        else
             throw exception::ParsingException(HELP_MESSAGE);
-
-        std::map<std::string, std::unique_ptr<exporter::IExport>> exportMap;
-        exportMap.insert({"ppm", std::make_unique<exporter::ExportPPM>()});
-
-        if (auto iter = exportMap.find(argv.at(index + 1));
-            iter != exportMap.end()) {
-            this->_export = std::move(iter->second);
-        } else {
-            throw exception::ParsingException(HELP_MESSAGE);
-        }
-    }
-
-    void Core::setVisualViaFlag(size_t index,
-                                const std::vector<std::string> &argv) {
-        if (this->_visual != nullptr)
-            throw exception::ParsingException(HELP_MESSAGE);
-
-        std::map<std::string, std::unique_ptr<visual::IVisual>> exportMap;
-        exportMap.insert({"cli", std::make_unique<visual::CliVisual>()});
-        exportMap.insert({"sfml", std::make_unique<visual::SFMLVisual>()});
-
-        if (auto iter = exportMap.find(argv.at(index + 1));
-            iter != exportMap.end()) {
-            this->_visual = std::move(iter->second);
-        } else {
-            throw exception::ParsingException(HELP_MESSAGE);
-        }
     }
 
 }  // namespace raytracer
