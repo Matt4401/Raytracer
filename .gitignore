@@ -12,3 +12,4 @@ raytracer
 *.ppm
 examples/configs/
 benchmarks/
+screenshots/*

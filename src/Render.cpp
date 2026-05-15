@@ -146,9 +146,10 @@ namespace raytracer {
     void Render::initRender(const object::scene::IScene &scene, int samples,
                             int &imageWidth, int &imageHeight,
                             unsigned int &workerCount) {
+        const auto &camera = scene.cameras().at(0);
         _samples = samples;
-        imageWidth = scene.cameras().at(0)->imageWidth();
-        imageHeight = scene.cameras().at(0)->imageHeight();
+        imageWidth = camera->imageWidth();
+        imageHeight = camera->imageHeight();
         _pixels.assign(imageWidth * imageHeight, maths::Color());
 
         workerCount = std::max(1u, std::thread::hardware_concurrency());
@@ -200,7 +201,8 @@ namespace raytracer {
 
     void Render::renderRows(const object::scene::IScene &scene,
                             unsigned int workerId, int imageHeight) {
-        int imageWidth = scene.cameras().at(0)->imageWidth();
+        const auto &camera = scene.cameras().at(0);
+        int imageWidth = camera->imageWidth();
         const double invImageWidth = 1.0 / imageWidth;
         const double invImageHeight = 1.0 / imageHeight;
 
@@ -217,7 +219,7 @@ namespace raytracer {
 
         Render::RenderState st;
         st.scene = &scene;
-        st.cam = scene.cameras().at(0).get();
+        st.cam = camera.get();
         st.invImageWidth = invImageWidth;
         st.invImageHeight = invImageHeight;
         st.cx = cx;
