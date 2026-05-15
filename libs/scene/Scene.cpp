@@ -68,12 +68,16 @@ namespace raytracer::object::scene {
         } else {
             bool hitAnything = false;
             primitive::HitRecord closestRecord;
+            closestRecord.t = INF;
+            closestRecord.objectId = -1;
             double closestT = INF;
 
             for (const auto &primitive : _primitives) {
                 if (!primitive)
                     continue;
                 primitive::HitRecord tempRecord;
+                tempRecord.t = INF;
+                tempRecord.objectId = -1;
                 if (primitive->hits(ray, tempRecord) &&
                     tempRecord.t < closestT) {
                     closestT = tempRecord.t;
