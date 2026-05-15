@@ -46,13 +46,13 @@ TEST(PRIMITIVE, limited_cone_closed_prefers_cap_over_side) {
     LimitedCone openCone(Vector(0, 0, 0), 1.0, 2.0, false);
 
     std::map<std::string, std::any> args;
-    args["center"] = std::map<std::string, std::any>{{"x", 0.0},
-                                                      {"y", 0.0},
-                                                      {"z", 0.0}};
+    args["center"] =
+        std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}};
     args["k"] = 1.0;
     args["height"] = 2.0;
     args["closed"] = true;
-    args["material"] = std::shared_ptr<raytracer::object::material::IMaterial>{};
+    args["material"] =
+        std::shared_ptr<raytracer::object::material::IMaterial>{};
     LimitedCone closedCone(args);
 
     Ray ray(Vector(0.5, 2.0, 0.0), Vector(0, -1, 0));

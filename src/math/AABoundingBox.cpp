@@ -97,7 +97,7 @@ namespace raytracer::maths {
             const double direction = axes[i][1];
             const double min = axes[i][2];
             const double max = axes[i][2] + dims[i];
-            if (direction == 0.0) {
+            if (std::abs(direction) < EPS) {
                 if (axes[i][0] < min || axes[i][0] > max) {
                     return -1.0;
                 }
