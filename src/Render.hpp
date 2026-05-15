@@ -48,6 +48,7 @@ namespace raytracer {
             double invImageHeight = 0.0;
             maths::Vector cx{0, 0, 0};
             maths::Vector cy{0, 0, 0};
+            maths::Vector forward{0, 0, 0};
             double sampleWeight = 0.0;
             unsigned short *xi = nullptr;
         };

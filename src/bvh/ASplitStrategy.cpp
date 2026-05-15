@@ -17,6 +17,6 @@ namespace raytracer::bvh {
     }
 
     bool ASplitStrategy::hasEnoughPrimitives(const std::size_t count) {
-        return count > MIN_PRIMITIVES_FOR_SPLIT;
+        return count >= MIN_PRIMITIVES_FOR_SPLIT;
     }
 }  // namespace raytracer::bvh

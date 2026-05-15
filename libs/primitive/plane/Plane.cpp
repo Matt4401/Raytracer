@@ -61,7 +61,7 @@ namespace raytracer::object::primitive {
 
     IPrimitive::AABoundingBox Plane::boundingBox() {
         if (!_hasLimit) {
-            return {-1e6, -1e6, -1e6, 2e6, 2e6, 2e6};
+            return INFINITE_BOUNDING_BOX;
         }
         return _sceneLimit;
     }
