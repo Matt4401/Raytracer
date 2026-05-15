@@ -15,6 +15,49 @@
 #include "math/Vector.hpp"
 #include "object/ICamera.hpp"
 
+namespace raytracer::render_detail {
+    static constexpr double K_CAMERA_FACTOR = 0.5135;
+
+    static maths::Vector pickReferenceAxis(const maths::Vector &forward) {
+        const maths::Vector worldUp(0, 1, 0);
+        if (std::fabs(forward.dot(worldUp)) > 0.999) {
+            return maths::Vector(0, 0, 1);
+        }
+        return worldUp;
+    }
+
+    static void buildCameraBasis(const maths::Vector &rotation,
+                                 const double aspectRatio, maths::Vector &cx,
+                                 maths::Vector &cy, maths::Vector &forward) {
+        forward = rotation;
+        if (forward.magnitude() == 0.0) {
+            forward = maths::Vector(0, 0, -1);
+        }
+        forward = forward.normalized();
+
+        const maths::Vector reference = pickReferenceAxis(forward);
+        maths::Vector right = forward.cross(reference);
+        if (right.magnitude() == 0.0) {
+            right = forward.cross(maths::Vector(1, 0, 0));
+        }
+        if (right.magnitude() == 0.0) {
+            right = maths::Vector(1, 0, 0);
+        } else {
+            right = right.normalized();
+        }
+
+        maths::Vector up = right.cross(forward);
+        if (up.magnitude() == 0.0) {
+            up = maths::Vector(0, 1, 0);
+        } else {
+            up = up.normalized();
+        }
+
+        cx = right * (aspectRatio * K_CAMERA_FACTOR);
+        cy = up * K_CAMERA_FACTOR;
+    }
+}  // namespace raytracer::render_detail
+
 namespace raytracer {
 
     void Render::computeStratifiedSample(unsigned short *xi, double &dx,
@@ -30,7 +73,7 @@ namespace raytracer {
                                       double dy) {
         double px = ((sx + 0.5 + dx) / 2.0 + x) * st.invImageWidth - 0.5;
         double py = ((sy + 0.5 + dy) / 2.0 + y) * st.invImageHeight - 0.5;
-        maths::Vector d = st.cx * px + st.cy * py + st.cam->rotation();
+        maths::Vector d = st.cx * px + st.cy * py + st.forward;
         return maths::Ray(st.cam->position() + d * 140.0, d.normalized());
     }
 
@@ -166,10 +209,13 @@ namespace raytracer {
         const int samplesPerSubpixel = std::max(1, _samples / 4);
         const double sampleWeight = 1.0 / samplesPerSubpixel;
 
-        const maths::Vector cx((imageWidth * Render::KCX_FACTOR) / imageHeight,
-                               0, 0);
-        const maths::Vector cy =
-            cx.cross(camera->rotation()).normalized() * Render::KCX_FACTOR;
+        maths::Vector cx;
+        maths::Vector cy;
+        maths::Vector forward;
+        render_detail::buildCameraBasis(
+            camera->rotation(),
+            static_cast<double>(imageWidth) / static_cast<double>(imageHeight),
+            cx, cy, forward);
 
         Render::RenderState st;
         st.scene = &scene;
@@ -178,6 +224,7 @@ namespace raytracer {
         st.invImageHeight = invImageHeight;
         st.cx = cx;
         st.cy = cy;
+        st.forward = forward;
         st.sampleWeight = sampleWeight;
 
         while (true) {

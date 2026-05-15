@@ -144,6 +144,55 @@ if (NOT SKIP_INTERNET)
 
     gtest_discover_tests(primitive_tests)
 
+    add_executable(transformations_tests
+            src/main.cpp
+            src/transformations/test_transform.cpp
+            src/transformations/test_rectangle_transforms.cpp
+            ${CMAKE_SOURCE_DIR}/libs/transformations/translation/Translation.cpp
+            ${CMAKE_SOURCE_DIR}/libs/transformations/scale/Scale.cpp
+            ${CMAKE_SOURCE_DIR}/libs/transformations/rotation/Rotation.cpp
+            ${CMAKE_SOURCE_DIR}/src/object/transformations/ATransformDecorator.cpp
+            ${CMAKE_SOURCE_DIR}/libs/primitive/sphere/Sphere.cpp
+            ${CMAKE_SOURCE_DIR}/libs/primitive/rectangle/Rectangle.cpp
+            ${CMAKE_SOURCE_DIR}/src/plugin/ObjectFactory.cpp
+            ${CMAKE_SOURCE_DIR}/src/plugin/PluginManager.cpp
+    )
+
+    target_link_libraries(transformations_tests PRIVATE
+            GTest::gtest
+            GTest::gmock
+            raytracer_core
+    )
+
+    target_include_directories(transformations_tests PRIVATE
+            ${CMAKE_SOURCE_DIR}
+            ${CMAKE_SOURCE_DIR}/include
+            ${CMAKE_SOURCE_DIR}/src
+    )
+
+    gtest_discover_tests(transformations_tests)
+
+    add_executable(math_tests
+            src/main.cpp
+            src/math/test_matrix4.cpp
+            ${CMAKE_SOURCE_DIR}/src/math/Matrix4.cpp
+            ${CMAKE_SOURCE_DIR}/src/math/Vector.cpp
+    )
+
+    target_link_libraries(math_tests PRIVATE
+            GTest::gtest
+            GTest::gmock
+            raytracer_core
+    )
+
+    target_include_directories(math_tests PRIVATE
+            ${CMAKE_SOURCE_DIR}
+            ${CMAKE_SOURCE_DIR}/include
+            ${CMAKE_SOURCE_DIR}/src
+    )
+
+    gtest_discover_tests(math_tests)
+
     add_executable(bvh_tests
             src/main.cpp
             src/bvh/test_aabounding_box.cpp
