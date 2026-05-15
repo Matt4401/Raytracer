@@ -59,6 +59,8 @@ namespace raytracer::maths {
         /// @return the entry distance of the ray in the box, or -1 if there
         /// is no intersection.
         double intersects(const Ray &ray) const;
+      private:
+        static constexpr double EPS = 1e-12;
     };
 
 }  // namespace raytracer::maths
