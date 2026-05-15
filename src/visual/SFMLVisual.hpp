@@ -40,7 +40,8 @@ namespace raytracer::visual {
         sf::RenderWindow _window;
         sf::Vector2f _windowSize;
         std::chrono::high_resolution_clock::time_point _start;
-        sf::Image _image;
+        std::vector<maths::Color> _cachedPreviewPixels;
+        ImageSize _cacheImageSize;
         sf::Font _font;
         sf::Vector2u _imagePosition;
 

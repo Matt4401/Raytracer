@@ -9,6 +9,7 @@
 
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Texture.hpp>
@@ -18,8 +19,10 @@
 #include <SFML/Window/VideoMode.hpp>
 #include <algorithm>
 #include <chrono>
+#include <iostream>
 #include <string>
 #include <thread>
+#include <utility>
 #include <vector>
 
 #include "Render.hpp"
@@ -83,8 +86,6 @@ namespace raytracer::visual {
             ImageSize imageSize = render.imageSize();
             this->_font.loadFromFile("assets/arial.ttf");
 
-            this->_image.create(imageSize.width, imageSize.heigth,
-                                sf::Color::Black);
             std::chrono::time_point last = std::chrono::steady_clock::now();
 
             while (!render.renderingIsFinished() && this->_window.isOpen()) {
@@ -100,9 +101,15 @@ namespace raytracer::visual {
                 }
                 this->eventHandling(render);
             }
+            this->_window.clear();
             this->updateWindow(render, imageSize);
+            this->_window.display();
             while (this->_window.isOpen() && !this->fullRender()) {
                 this->eventHandling(render);
+            }
+            if (this->_fullRender && this->_cachedPreviewPixels.empty()) {
+                this->_cachedPreviewPixels = render.pixels();
+                this->_cacheImageSize = imageSize;
             }
             this->_window.setActive(false);
         });
@@ -117,6 +124,10 @@ namespace raytracer::visual {
     void SFMLVisual::updateWindow(Render &render, ImageSize &imageSize) {
         this->updateWindowSize();
 
+        if (!this->_cachedPreviewPixels.empty()) {
+            this->dispayPixels(this->_cachedPreviewPixels,
+                               this->_cacheImageSize);
+        }
         this->dispayPixels(render.pixels(), imageSize);
         this->displayText(
             this->_windowSize.x * 0.5f, this->_windowSize.y * 0.1f,
@@ -139,20 +150,22 @@ namespace raytracer::visual {
 
     void SFMLVisual::dispayPixels(std::vector<maths::Color> &pixels,
                                   ImageSize &size) {
+        sf::Image image;
+
+        image.create(size.width, size.heigth, sf::Color::Transparent);
         for (int y = 0; y < size.heigth; y++) {
             for (int x = 0; x < size.width; x++) {
                 maths::Color &color = pixels.at(y * size.width + x);
 
                 if ((color.r == 0 && color.g == 0 && color.b == 0))
                     continue;
-                this->_image.setPixel(x, y,
-                                      sf::Color(color.r, color.g, color.b));
+                image.setPixel(x, y, sf::Color(color.r, color.g, color.b));
             }
         }
         sf::Texture texture;
         sf::Sprite sprite;
 
-        texture.loadFromImage(this->_image);
+        texture.loadFromImage(image);
         sprite.setTexture(texture);
         this->computeImage(size, sprite);
 
@@ -189,11 +202,11 @@ namespace raytracer::visual {
             case sf::Keyboard::F:
                 this->_fullRender = true;
                 render.stopRendering();
+                break;
             case sf::Keyboard::S:
-                if (render.renderingIsFinished() && this->_fullRender) {
+                if (render.renderingIsFinished() && this->_fullRender)
                     this->_save = true;
-                }
-
+                break;
             default:
                 break;
         }
