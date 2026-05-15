@@ -55,8 +55,12 @@ namespace raytracer {
 
         for (int sy = 0; sy < 2; ++sy) {
             for (int sx = 0; sx < 2; ++sx) {
+                maths::Vector subpixel = sampleSubpixel(st, x, y, sx, sy);
                 pixel =
-                    pixel + sampleSubpixel(st, x, y, sx, sy) * st.sampleWeight;
+                    pixel + maths::Vector(std::clamp(subpixel.x, 0.0, 1.0),
+                                          std::clamp(subpixel.y, 0.0, 1.0),
+                                          std::clamp(subpixel.z, 0.0, 1.0)) *
+                                0.25;
             }
         }
 
