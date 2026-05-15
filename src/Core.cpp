@@ -7,6 +7,8 @@
 
 #include "Core.hpp"
 
+#include <unistd.h>
+
 #include <algorithm>
 #include <any>
 #include <cstddef>
@@ -17,6 +19,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "exception/ParsingException.hpp"
 #include "exporter/ExportPPM.hpp"
@@ -40,10 +43,10 @@ namespace raytracer {
         if (this->_visual == nullptr)
             this->_visual = std::make_unique<visual::CliVisual>();
 
-        this->_renderer.setPrintProgressCallback([this](int activeWorkers,
-                                                        const Render &render) {
-            return this->_visual->printProgress(activeWorkers, this->_renderer);
-        });
+        this->_renderer.setPrintProgressCallback(
+            [this](int activeWorkers, Render &render) {
+                return this->_visual->printProgress(activeWorkers, render);
+            });
         this->_plugManager.updatePluginList(pluginsPath);
         this->_plugManager.fillFactory(this->_objFactory);
 
@@ -57,13 +60,45 @@ namespace raytracer {
         this->_scenes.at(0)->buildBVH(this->_scenes.at(0)->bvhStrategy());
     }
 
-    void Core::run() {
-        this->_renderer.render(*(this->_scenes.at(0)), 1,
-                               this->_scenes.at(0)->samplesPerPixel());
+    void Core::runScene() {
+        if (this->_visual->allowPreview()) {
+            int cachedSample = this->_scenes.at(0)->samplesPerPixel();
+            int cachedWidth =
+                this->_scenes.at(0)->cameras().at(0)->imageWidth();
+            int cachedHeight =
+                this->_scenes.at(0)->cameras().at(0)->imageHeight();
+
+            this->_scenes.at(0)->setSamplesPerPixel(PREVIEW_SAMPLE_PER_PIXEL);
+            this->_scenes.at(0)->cameras().at(0)->setImageHeight(cachedHeight /
+                                                                 2);
+            this->_scenes.at(0)->cameras().at(0)->setImageWidth(cachedWidth /
+                                                                2);
+
+            this->_renderer.render(*(this->_scenes.at(0)),
+                                   this->_scenes.at(0)->samplesPerPixel());
+
+            this->_scenes.at(0)->setSamplesPerPixel(cachedSample);
+
+            this->_scenes.at(0)->cameras().at(0)->setImageHeight(cachedHeight);
+            this->_scenes.at(0)->cameras().at(0)->setImageWidth(cachedWidth);
+        }
+        if (!this->_visual->allowPreview() || this->_visual->fullRender()) {
+            this->_renderer.render(*(this->_scenes.at(0)),
+                                   this->_scenes.at(0)->samplesPerPixel());
+        }
         if (!this->_renderer.renderedStopped()) {
             this->_export->writeFile(*(this->_scenes.at(0)),
                                      this->_renderer.pixels());
+            return;
         }
+    }
+
+    void Core::run() {
+        if (this->_scenes.size() == 0) {
+            this->runScene();
+            return;
+        }
+        this->runScene();
     }
 
     std::pair<bool, int> Core::helpMessage(
@@ -143,7 +178,7 @@ namespace raytracer {
 
     void Core::setVisualViaFlag(size_t index,
                                 const std::vector<std::string> &argv) {
-        if (this->_export != nullptr)
+        if (this->_visual != nullptr)
             throw exception::ParsingException(HELP_MESSAGE);
 
         std::map<std::string, std::unique_ptr<visual::IVisual>> exportMap;

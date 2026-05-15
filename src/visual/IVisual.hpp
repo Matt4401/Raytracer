@@ -17,6 +17,9 @@ namespace raytracer::visual {
 
         virtual std::thread printProgress(int activeWorkers,
                                           Render &render) = 0;
+
+        virtual bool allowPreview() = 0;
+        virtual bool fullRender() = 0;
     };
 
 }  // namespace raytracer::visual

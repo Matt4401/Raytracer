@@ -7,8 +7,11 @@
 
 #include "Render.hpp"
 
+#include <algorithm>
 #include <chrono>
 #include <iostream>
+#include <memory>
+#include <vector>
 
 #include "math/Color.hpp"
 #include "math/Ray.hpp"
@@ -101,10 +104,10 @@ namespace raytracer {
         this->_stopRendering.store(true);
     }
 
-    void Render::render(const object::scene::IScene &scene, int pixel,
-                        int samples) {
+    void Render::render(const object::scene::IScene &scene, int samples) {
         auto startTotal = std::chrono::high_resolution_clock::now();
         unsigned int workerCount = 0;
+        this->_pixels.clear();
 
         initRender(scene, samples, workerCount);
 
@@ -128,6 +131,7 @@ namespace raytracer {
         _workerDone = std::make_unique<std::atomic<int>[]>(workerCount);
         _workerRows = std::vector<int>(workerCount);
         _renderingFinished = false;
+        _stopRendering.store(false);
         _nextRow.store(0);
 
         std::atomic<int> *workerDone = _workerDone.get();

@@ -71,6 +71,7 @@ namespace raytracer::object::scene {
         virtual const std::vector<std::shared_ptr<camera::ICamera>> &cameras()
             const = 0;
 
+        virtual void setSamplesPerPixel(int nbSample) = 0;
         virtual int samplesPerPixel() const = 0;
 
         virtual void buildBVH(std::string_view strategy) = 0;

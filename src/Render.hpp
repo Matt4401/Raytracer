@@ -39,8 +39,7 @@ namespace raytracer {
         /// @param scene The scene to render.
         /// @param pixel Pixel parameter (unused).
         /// @param samples Number of samples per pixel.
-        void render(const object::scene::IScene &scene, int pixel = 1,
-                    int samples = 40);
+        void render(const object::scene::IScene &scene, int samples = 40);
 
         std::vector<maths::Color> &pixels();
         bool renderingIsFinished() const;

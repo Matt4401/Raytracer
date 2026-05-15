@@ -59,13 +59,17 @@ namespace raytracer {
         static constexpr std::string_view PLUGINS_FOLDER_PATH = "./plugins/";
         static constexpr std::string_view EXPORT_FLAG = "-e";
         static constexpr std::string_view VISUAL_FLAG = "-v";
+        static constexpr int PREVIEW_SAMPLE_PER_PIXEL = 10;
         static constexpr std::string_view HELP_MESSAGE =
             "USAGE: ./raytracer <SCENE_FILE> \n"
             "\tSCENE_FILE: scene configuration\n"
             "\t-e: export mode (ppm)\n"
             "\t-v: visual mode (cli/sfml)\n";
 
+        void runScene();
+
         void cmdArgsHandling(const std::vector<std::string> &argv);
+        bool _preview = true;
 
         void setExportViaFlag(size_t index,
                               const std::vector<std::string> &argv);

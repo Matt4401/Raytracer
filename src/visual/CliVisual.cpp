@@ -26,4 +26,12 @@ namespace raytracer::visual {
         });
     }
 
+    bool CliVisual::allowPreview() {
+        return false;
+    }
+
+    bool CliVisual::fullRender() {
+        return true;
+    }
+
 }  // namespace raytracer::visual
