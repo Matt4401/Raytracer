@@ -15,7 +15,7 @@
 namespace raytracer::bvh {
     class ASplitStrategy : public ISplitStrategy {
       protected:
-        static constexpr std::size_t MIN_PRIMITIVES_FOR_SPLIT = 4;
+        static constexpr std::size_t MIN_PRIMITIVES_FOR_SPLIT = 5;
         static constexpr double EPS = 1e-12;
 
         static Axis longestAxis(const maths::AABoundingBox& nodeBox);
