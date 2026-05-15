@@ -213,7 +213,7 @@ namespace raytracer {
         maths::Vector cy;
         maths::Vector forward;
         render_detail::buildCameraBasis(
-            scene.cameras().at(0)->rotation(),
+            camera->rotation(),
             static_cast<double>(imageWidth) / static_cast<double>(imageHeight),
             cx, cy, forward);
 
