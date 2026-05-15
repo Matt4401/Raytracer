@@ -14,7 +14,8 @@
 
 namespace raytracer::object::primitive {
 
-    bool ATransformDecorator::hits(const maths::Ray &ray, HitRecord &record) const {
+    bool ATransformDecorator::hits(const maths::Ray &ray,
+                                   HitRecord &record) const {
         maths::Ray localRay;
         localRay.origin = _inverse.transformPoint(ray.origin);
         localRay.direction = _inverse.transformVector(ray.direction);
@@ -24,7 +25,8 @@ namespace raytracer::object::primitive {
             return false;
         }
 
-        const maths::Vector worldHit = _matrix.transformPoint(localRecord.hitPoint);
+        const maths::Vector worldHit =
+            _matrix.transformPoint(localRecord.hitPoint);
         const double denom = ray.direction.dot(ray.direction);
         double worldT = 0.0;
 
@@ -81,16 +83,19 @@ namespace raytracer::object::primitive {
             wzmax = std::max(wzmax, tp.z);
         }
 
-        return {wxmin, wymin, wzmin, wxmax - wxmin, wymax - wymin, wzmax - wzmin};
+        return {wxmin,         wymin,         wzmin,
+                wxmax - wxmin, wymax - wymin, wzmax - wzmin};
     }
 
-    SurfaceData ATransformDecorator::surfaceData(const HitRecord &record) const {
+    SurfaceData ATransformDecorator::surfaceData(
+        const HitRecord &record) const {
         HitRecord localRecord = record;
         localRecord.hitPoint = _inverse.transformPoint(record.hitPoint);
 
         SurfaceData localData = this->_wrapped->surfaceData(localRecord);
-        maths::Vector transformedNormal = _inverseTranspose.transformVector(localData.normal);
+        maths::Vector transformedNormal =
+            _inverseTranspose.transformVector(localData.normal);
         localData.normal = transformedNormal.normalized();
         return localData;
     }
-} // namespace raytracer::object::primitive
+}  // namespace raytracer::object::primitive

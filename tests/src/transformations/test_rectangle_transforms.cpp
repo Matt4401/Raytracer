@@ -6,23 +6,28 @@
 */
 
 #include <gtest/gtest.h>
-#include <map>
+
 #include <any>
-#include "math/Ray.hpp"
-#include "libs/primitive/rectangle/Rectangle.hpp"
-#include "../libs/transformations/translation/Translation.hpp"
-#include "../libs/transformations/scale/Scale.hpp"
+#include <map>
+
 #include "../libs/transformations/rotation/Rotation.hpp"
+#include "../libs/transformations/scale/Scale.hpp"
+#include "../libs/transformations/translation/Translation.hpp"
+#include "libs/primitive/rectangle/Rectangle.hpp"
+#include "math/Ray.hpp"
 
 using namespace raytracer::maths;
 using namespace raytracer::object::primitive;
 
 TEST(TRANSFORMS, rectangle_rotation_90_deg) {
-    auto rect = std::make_shared<Rectangle>(Vector(1, 0, 0), Vector(1, 2, 3), Vector(4, 0, 0));
+    auto rect = std::make_shared<Rectangle>(Vector(1, 0, 0), Vector(1, 2, 3),
+                                            Vector(4, 0, 0));
     std::map<std::string, std::any> args = {
-        {"primitive", std::dynamic_pointer_cast<raytracer::object::IObject>(rect)},
-        {"x", 0.0}, {"y", 0.0}, {"z", 90.0}
-    };
+        {"primitive",
+         std::dynamic_pointer_cast<raytracer::object::IObject>(rect)},
+        {"x", 0.0},
+        {"y", 0.0},
+        {"z", 90.0}};
     Rotation rotatedRect(args);
 
     Ray rayX(Vector(0, 1, 1.5), Vector(1, 0, 0));
@@ -34,17 +39,22 @@ TEST(TRANSFORMS, rectangle_rotation_90_deg) {
 }
 
 TEST(TRANSFORMS, complex_chain_order) {
-    auto rect = std::make_shared<Rectangle>(Vector(1, 0, 0), Vector(1, 2, 3), Vector(4, 0, 0));
+    auto rect = std::make_shared<Rectangle>(Vector(1, 0, 0), Vector(1, 2, 3),
+                                            Vector(4, 0, 0));
 
     auto sMat = std::make_shared<Scale>(std::map<std::string, std::any>{
-        {"primitive", std::dynamic_pointer_cast<raytracer::object::IObject>(rect)},
-        {"x", 1.0}, {"y", 1.0}, {"z", 2.0}
-    });
+        {"primitive",
+         std::dynamic_pointer_cast<raytracer::object::IObject>(rect)},
+        {"x", 1.0},
+        {"y", 1.0},
+        {"z", 2.0}});
 
     Translation finalObj(std::map<std::string, std::any>{
-        {"primitive", std::dynamic_pointer_cast<raytracer::object::IObject>(sMat)},
-        {"x", 5.0}, {"y", 0.0}, {"z", 0.0}
-    });
+        {"primitive",
+         std::dynamic_pointer_cast<raytracer::object::IObject>(sMat)},
+        {"x", 5.0},
+        {"y", 0.0},
+        {"z", 0.0}});
 
     Ray ray(Vector(0, 1, 4), Vector(1, 0, 0));
     HitRecord rec;
