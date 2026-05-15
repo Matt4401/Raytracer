@@ -65,32 +65,21 @@ namespace raytracer::object::scene {
                 return true;
             }
             return false;
-        }
-
-        bool hitAnything = false;
-        primitive::HitRecord closestRecord;
-        double closestT = INF;
-
-        for (const auto &primitive : _primitives) {
-            if (!primitive) {
-                continue;
+        } else {
+            for (const auto &primitive : _primitives) {
+                if (primitive->hits(ray, record)) {
+                    return true;
+                }
             }
-            primitive::HitRecord tempRecord;
-            if (primitive->hits(ray, tempRecord) && tempRecord.t < closestT) {
-                closestT = tempRecord.t;
-                closestRecord = tempRecord;
-                hitAnything = true;
-            }
+            return record.objectId != -1;
         }
-
-        if (hitAnything) {
-            record = closestRecord;
-        }
-        return hitAnything;
+        return false;
     }
 
     maths::Vector Scene::radiance(const maths::Ray &ray, int depth,
                                   unsigned short *xi, int emissive) const {
+        if (depth > K_MAX_RADIANCE_DEPTH)
+            return maths::Vector();
         primitive::HitRecord hitRecord;
         if (!intersect(ray, hitRecord))
             return maths::Vector();
@@ -98,8 +87,6 @@ namespace raytracer::object::scene {
         hitRecord.hitPoint = ray.origin + ray.direction * hitRecord.t;
         const std::shared_ptr<primitive::IPrimitive> &obj =
             _primitives.at(hitRecord.objectId);
-        if (depth > K_MAX_RADIANCE_DEPTH)
-            return maths::Vector();
 
         primitive::SurfaceData surfData = obj->surfaceData(hitRecord);
         maths::Vector x = hitRecord.hitPoint;
