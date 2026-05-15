@@ -27,9 +27,8 @@ namespace raytracer::render_detail {
     }
 
     static void buildCameraBasis(const maths::Vector &rotation,
-                                 const double aspectRatio,
-                                 maths::Vector &cx, maths::Vector &cy,
-                                 maths::Vector &forward) {
+                                 const double aspectRatio, maths::Vector &cx,
+                                 maths::Vector &cy, maths::Vector &forward) {
         forward = rotation;
         if (forward.magnitude() == 0.0) {
             forward = maths::Vector(0, 0, -1);
@@ -211,10 +210,10 @@ namespace raytracer {
         maths::Vector cx;
         maths::Vector cy;
         maths::Vector forward;
-        render_detail::buildCameraBasis(scene.cameras().at(0)->rotation(),
-                                        static_cast<double>(imageWidth) /
-                                            static_cast<double>(imageHeight),
-                                        cx, cy, forward);
+        render_detail::buildCameraBasis(
+            scene.cameras().at(0)->rotation(),
+            static_cast<double>(imageWidth) / static_cast<double>(imageHeight),
+            cx, cy, forward);
 
         Render::RenderState st;
         st.scene = &scene;

@@ -12,12 +12,19 @@
 #include "object/primitive/APrimitiveDecorator.hpp"
 
 namespace raytracer::object::primitive {
-    class ATransformDecorator : public APrimitiveDecorator, public object::AObject {
+    class ATransformDecorator : public APrimitiveDecorator,
+                                public object::AObject {
       public:
-        ATransformDecorator(Type type) : APrimitiveDecorator(nullptr), AObject(type) {}
+        ATransformDecorator(Type type)
+            : APrimitiveDecorator(nullptr), AObject(type) {
+        }
 
-        const std::string &name() const noexcept override { return _wrapped->name(); }
-        maths::Vector center() const noexcept override { return _wrapped->center(); }
+        const std::string &name() const noexcept override {
+            return _wrapped->name();
+        }
+        maths::Vector center() const noexcept override {
+            return _wrapped->center();
+        }
 
         bool hits(const maths::Ray &ray, HitRecord &record) const override;
         AABoundingBox boundingBox() override;
@@ -28,4 +35,4 @@ namespace raytracer::object::primitive {
         maths::Matrix4 _inverse;
         maths::Matrix4 _inverseTranspose;
     };
-}
+}  // namespace raytracer::object::primitive

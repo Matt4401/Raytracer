@@ -9,6 +9,7 @@
 
 #include <any>
 #include <map>
+
 #include "object/transformations/ATransformDecorator.hpp"
 
 namespace raytracer::object::primitive {
