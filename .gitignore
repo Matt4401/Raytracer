@@ -10,3 +10,5 @@ raytracer
 *.so
 .DS_Store
 *.ppm
+examples/configs/
+benchmarks/
