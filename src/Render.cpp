@@ -94,22 +94,61 @@ namespace raytracer {
 
     maths::Color Render::computePixelColor(const Render::RenderState &st, int x,
                                            int y) const {
-        maths::Vector pixel(0, 0, 0);
+        return computePixelColorAdaptive(st, x, y);
+    }
 
-        for (int sy = 0; sy < 2; ++sy) {
-            for (int sx = 0; sx < 2; ++sx) {
-                maths::Vector subpixel = sampleSubpixel(st, x, y, sx, sy);
-                pixel =
-                    pixel + maths::Vector(std::clamp(subpixel.x, 0.0, 1.0),
-                                          std::clamp(subpixel.y, 0.0, 1.0),
-                                          std::clamp(subpixel.z, 0.0, 1.0)) *
-                                0.25;
+    double Render::luminance(const maths::Vector &v) {
+        return 0.2126 * v.x + 0.7152 * v.y + 0.0722 * v.z;
+    }
+
+    maths::Vector Render::sampleSubpixelOnce(const Render::RenderState &st,
+                                             int x, int y, int sx,
+                                             int sy) const {
+        double dx, dy;
+        computeStratifiedSample(st.xi, dx, dy);
+        maths::Ray primary = castPrimaryRay(st, x, y, sx, sy, dx, dy);
+        return st.scene->radiance(primary, 0, st.xi);
+    }
+
+    maths::Color Render::computePixelColorAdaptive(const Render::RenderState &st,
+                                                   int x, int y) const {
+        const int minSamples = std::max(1, _minSamples);
+        const int maxIterations = (_maxAdaptiveSamples > 0) ? _maxAdaptiveSamples 
+                                                     : std::max(1, _samples / 4);
+        const double relThreshold = _varianceThreshold;
+
+        int n = 0;
+        double meanLum = 0.0;
+        double m2Lum = 0.0;
+        maths::Vector meanColor(0, 0, 0);
+
+        while (n < maxIterations) {
+            maths::Vector pixSample(0, 0, 0);
+            for (int sy = 0; sy < 2; ++sy) {
+                for (int sx = 0; sx < 2; ++sx) {
+                    maths::Vector sub = sampleSubpixelOnce(st, x, y, sx, sy);
+                    pixSample = pixSample + sub * 0.25;
+                }
+            }
+
+            ++n;
+            maths::Vector deltaColor = pixSample - meanColor;
+            meanColor = meanColor + deltaColor * (1.0 / n);
+
+            double sLum = luminance(pixSample);
+            double delta = sLum - meanLum;
+            meanLum += delta / n;
+            m2Lum += delta * (sLum - meanLum);
+
+            if (n >= minSamples) {
+                double varLum = (n > 1) ? (m2Lum / (n - 1)) : 0.0;
+                if (meanLum > 0.0) {
+                    double relVar = varLum / (meanLum * meanLum);
+                    if (relVar < relThreshold) break;
+                }
             }
         }
-
-        return maths::Color(std::clamp(pixel.x * 255.0, 0.0, 255.0),
-                            std::clamp(pixel.y * 255.0, 0.0, 255.0),
-                            std::clamp(pixel.z * 255.0, 0.0, 255.0));
+        return maths::Color(meanColor.x, meanColor.y, meanColor.z);
     }
 
     std::thread Render::printProgress(int activeWorkers, int imageHeight) {

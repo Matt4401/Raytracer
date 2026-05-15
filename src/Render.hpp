@@ -53,7 +53,16 @@ namespace raytracer {
             unsigned short *xi = nullptr;
         };
 
-        static constexpr double KCX_FACTOR = 0.5135;
+        int _minSamples = 2;
+        int _maxAdaptiveSamples = 0;
+        double _varianceThreshold = 1e-2;
+
+        /// @brief Compute luminance from a color/vector.
+        static double luminance(const maths::Vector &v);
+
+        /// @brief Compute pixel color using adaptive sampling (2x2 subpixels).
+        maths::Color computePixelColorAdaptive(const RenderState &st, int x,
+                       int y) const;
 
         /// @brief Compute stratified jitter offsets for a sample.
         static void computeStratifiedSample(unsigned short *xi, double &dx,
@@ -66,6 +75,10 @@ namespace raytracer {
         /// @brief Sample a subpixel and accumulate radiance.
         maths::Vector sampleSubpixel(const RenderState &st, int x, int y,
                                      int sx, int sy) const;
+
+        /// @brief Take a single stratified sample for a subpixel (one sample).
+        maths::Vector sampleSubpixelOnce(const RenderState &st, int x, int y,
+                 int sx, int sy) const;
 
         /// @brief Compute final pixel color from all subpixels.
         maths::Color computePixelColor(const RenderState &st, int x,
