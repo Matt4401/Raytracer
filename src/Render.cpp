@@ -94,7 +94,10 @@ namespace raytracer {
 
     maths::Color Render::computePixelColor(const Render::RenderState &st, int x,
                                            int y) const {
-        return computePixelColorAdaptive(st, x, y);
+        if (st.scene->adaptiveSampling()) {
+            return computePixelColorAdaptive(st, x, y);
+        }
+        return computePixelColorBasic(st, x, y);
     }
 
     double Render::luminance(const maths::Vector &v) {
@@ -110,11 +113,12 @@ namespace raytracer {
         return st.scene->radiance(primary, 0, st.xi);
     }
 
-    maths::Color Render::computePixelColorAdaptive(const Render::RenderState &st,
-                                                   int x, int y) const {
+    maths::Color Render::computePixelColorAdaptive(
+        const Render::RenderState &st, int x, int y) const {
         const int minSamples = std::max(1, _minSamples);
-        const int maxIterations = (_maxAdaptiveSamples > 0) ? _maxAdaptiveSamples 
-                                                     : std::max(1, _samples / 4);
+        const int maxIterations = (_maxAdaptiveSamples > 0)
+                                      ? _maxAdaptiveSamples
+                                      : std::max(1, _samples / 4);
         const double relThreshold = _varianceThreshold;
 
         int n = 0;
@@ -144,14 +148,39 @@ namespace raytracer {
                 double varLum = (n > 1) ? (m2Lum / (n - 1)) : 0.0;
                 if (meanLum > 0.0) {
                     double relVar = varLum / (meanLum * meanLum);
-                    if (relVar < relThreshold) break;
+                    if (relVar < relThreshold)
+                        break;
                 }
             }
         }
+        return maths::Color(static_cast<unsigned char>(
+                                std::clamp(meanColor.x * 255.0, 0.0, 255.0)),
+                            static_cast<unsigned char>(
+                                std::clamp(meanColor.y * 255.0, 0.0, 255.0)),
+                            static_cast<unsigned char>(
+                                std::clamp(meanColor.z * 255.0, 0.0, 255.0)));
+    }
+
+    maths::Color Render::computePixelColorBasic(const Render::RenderState &st,
+                                                int x, int y) const {
+        maths::Vector pixel(0, 0, 0);
+
+        for (int sy = 0; sy < 2; ++sy) {
+            for (int sx = 0; sx < 2; ++sx) {
+                maths::Vector subpixel = sampleSubpixel(st, x, y, sx, sy);
+                pixel =
+                    pixel + maths::Vector(std::clamp(subpixel.x, 0.0, 1.0),
+                                          std::clamp(subpixel.y, 0.0, 1.0),
+                                          std::clamp(subpixel.z, 0.0, 1.0)) *
+                                0.25;
+            }
+        }
+
         return maths::Color(
-            static_cast<unsigned char>(std::clamp(meanColor.x * 255.0, 0.0, 255.0)),
-            static_cast<unsigned char>(std::clamp(meanColor.y * 255.0, 0.0, 255.0)),
-            static_cast<unsigned char>(std::clamp(meanColor.z * 255.0, 0.0, 255.0)));
+            static_cast<unsigned char>(std::clamp(pixel.x * 255.0, 0.0, 255.0)),
+            static_cast<unsigned char>(std::clamp(pixel.y * 255.0, 0.0, 255.0)),
+            static_cast<unsigned char>(
+                std::clamp(pixel.z * 255.0, 0.0, 255.0)));
     }
 
     std::thread Render::printProgress(int activeWorkers, int imageHeight) {

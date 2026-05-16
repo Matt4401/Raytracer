@@ -62,7 +62,11 @@ namespace raytracer {
 
         /// @brief Compute pixel color using adaptive sampling (2x2 subpixels).
         maths::Color computePixelColorAdaptive(const RenderState &st, int x,
-                       int y) const;
+                                               int y) const;
+
+        /// @brief Compute pixel color using the basic 2x2 sampling path.
+        maths::Color computePixelColorBasic(const RenderState &st, int x,
+                                            int y) const;
 
         /// @brief Compute stratified jitter offsets for a sample.
         static void computeStratifiedSample(unsigned short *xi, double &dx,
@@ -78,7 +82,7 @@ namespace raytracer {
 
         /// @brief Take a single stratified sample for a subpixel (one sample).
         maths::Vector sampleSubpixelOnce(const RenderState &st, int x, int y,
-                 int sx, int sy) const;
+                                         int sx, int sy) const;
 
         /// @brief Compute final pixel color from all subpixels.
         maths::Color computePixelColor(const RenderState &st, int x,

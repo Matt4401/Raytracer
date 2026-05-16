@@ -53,6 +53,9 @@ namespace raytracer::object::scene {
         util::Helpers::unsignedInt(_samplesPerPixel, "samplesPerPixel",
                                    "Scene");
 
+        _adaptiveSampling = util::ObjectMiddleware::optional<bool>(
+            params, "adaptiveSampling", true, "Scene");
+
         _bvhStrategy = util::ObjectMiddleware::optional<std::string>(
             params, "bvhStrategy", "", "Scene");
     }
@@ -147,6 +150,10 @@ namespace raytracer::object::scene {
 
     bool AScene::haveCamera() {
         return this->_cameras.size() > 0;
+    }
+
+    bool AScene::adaptiveSampling() const {
+        return _adaptiveSampling;
     }
 
     int AScene::samplesPerPixel() const {

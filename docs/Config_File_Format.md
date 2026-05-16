@@ -25,6 +25,7 @@ sceneParameters:
         samples = 0;
         radius = 0.0;
     };
+    adaptiveSampling = false;
     ambientLight: {
         color: { r = 0; g = 0; b = 0; };
         intensity = 0.0;
@@ -36,7 +37,7 @@ sceneParameters:
 };
 ```
 
-**All fields in `sceneParameters` are mandatory** and required to initialize the scene properly.
+**All fields in `sceneParameters` are mandatory**, except `adaptiveSampling`, which is optional and defaults to `true`.
 
 ### Rule 2: Objects Have Name and Parameters
 
