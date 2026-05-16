@@ -22,8 +22,9 @@ namespace raytracer::exporter {
 
     void ExportPPM::writeFile(const raytracer::object::scene::IScene &scene,
                               const std::vector<maths::Color> &pixels) const {
-        int imageWidth = scene.cameras().at(0)->imageWidth();
-        int imageHeight = scene.cameras().at(0)->imageHeight();
+        const auto &camera = scene.cameras().at(0);
+        int imageWidth = camera->imageWidth();
+        int imageHeight = camera->imageHeight();
         std::cout << "P3\n" << imageWidth << " " << imageHeight << "\n255\n";
         for (const auto &col : pixels) writeColor(col);
     }

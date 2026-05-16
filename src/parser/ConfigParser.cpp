@@ -112,6 +112,62 @@ namespace raytracer::parsing {
             });
     }
 
+    std::shared_ptr<object::IObject> ConfigParser::computeTransforms(
+        const std::shared_ptr<object::IObject> &baseObject,
+        const libconfig::Setting &objectData) {
+        if (!objectData.exists(std::string(K_TRANSFORMATIONS_KEYWORD))) {
+            return baseObject;
+        }
+
+        const libconfig::Setting &transformList =
+            objectData.lookup(std::string(K_TRANSFORMATIONS_KEYWORD));
+        if (!transformList.isList() && !transformList.isArray()) {
+            throw exception::ParsingException("'{}' must be a list or array",
+                                              K_TRANSFORMATIONS_KEYWORD);
+        }
+
+        std::shared_ptr<object::IObject> current = baseObject;
+
+        for (int index = 0; index < transformList.getLength(); ++index) {
+            const libconfig::Setting &entry = transformList[index];
+            if (!entry.isGroup()) {
+                throw exception::ParsingException(
+                    "Each '{}' entry must be a group",
+                    K_TRANSFORMATIONS_KEYWORD);
+            }
+
+            std::map<std::string, std::any> params =
+                LibCfgUtils::groupToMap(entry);
+            const auto nameIt = params.find(std::string(K_NAME_KEYWORD));
+            if (nameIt == params.end()) {
+                throw exception::ParsingException(
+                    "Each '{}' entry must define '{}'",
+                    K_TRANSFORMATIONS_KEYWORD, K_NAME_KEYWORD);
+            }
+
+            std::string transformName;
+            try {
+                transformName = std::any_cast<std::string>(nameIt->second);
+            } catch (const std::bad_any_cast &) {
+                throw exception::ParsingException(
+                    "'{}' must be a string in '{}' entry", K_NAME_KEYWORD,
+                    K_TRANSFORMATIONS_KEYWORD);
+            }
+            params.erase(nameIt);
+            params.insert_or_assign("primitive", current);
+
+            std::shared_ptr<object::IObject> transformed =
+                this->_buildCallback(transformName, params);
+            if (!transformed) {
+                throw exception::ParsingException(
+                    "Failed to build transform '{}'", transformName);
+            }
+            current = transformed;
+        }
+
+        return current;
+    }
+
     void ConfigParser::computeObject(const std::string &parentName,
                                      const libconfig::Setting &objectData) {
         ObjectInfo info = this->getObjectInfo(objectData);
@@ -125,10 +181,16 @@ namespace raytracer::parsing {
         if (objectData.exists(std::string(K_MATERIAL_KEYWORD))) {
             this->computeMaterial(info, objectData);
         }
-        this->buildAndAssign(info,
-                             [this](std::shared_ptr<object::IObject> &object) {
-                                 this->_scene->addObject(object);
-                             });
+
+        std::shared_ptr<object::IObject> object =
+            this->_buildCallback(info.name, info.params);
+        if (!object) {
+            throw raytracer::exception::ParsingException(
+                "Failed to build \"{}\"", info.name);
+        }
+
+        object = this->computeTransforms(object, objectData);
+        this->_scene->addObject(object);
     }
 
     void ConfigParser::parseObjectList(const libconfig::Setting &list) {

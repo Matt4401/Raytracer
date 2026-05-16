@@ -23,9 +23,16 @@ namespace raytracer::bvh {
             const double base = (res.axis == Axis::X)   ? nodeBox.x
                                 : (res.axis == Axis::Y) ? nodeBox.y
                                                         : nodeBox.z;
-            const double offset = (denom > 0.0 && std::isfinite(denom))
-                                      ? (c - base) / denom
-                                      : 0.0;
+            double offset = 0.5;
+            if (std::isfinite(denom) && denom > EPS) {
+                offset = (c - base) / denom;
+            }
+            if (!std::isfinite(offset))
+                offset = 0.5;
+            if (offset < 0.0)
+                offset = 0.0;
+            if (offset > 1.0)
+                offset = 1.0;
             size_t b = static_cast<size_t>(N_BUCKETS * offset);
 
             if (b >= N_BUCKETS)

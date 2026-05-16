@@ -41,10 +41,14 @@ set(SRCS
         src/Render.cpp
         src/exporter/ExportPPM.cpp
 		src/visual/CliVisual.cpp
-		src/visual/SFMLVisual.cpp
+		src/visual/SFML/SFMLContext.cpp
+		src/visual/SFML/SFMLSelectionPage.cpp
+		src/visual/SFML/SFMLPage.cpp
+		src/visual/SFML/SFMLImagePage.cpp
         src/exception/Exception.cpp
         src/math/Color.cpp
         src/math/Vector.cpp
+        src/math/Matrix4.cpp
         src/math/Noise.cpp
         src/math/Rectangle.cpp
         src/math/AABoundingBox.cpp
@@ -55,6 +59,7 @@ set(SRCS
         src/bvh/bvhSplitStrategy/MedianStrategy.cpp
         src/bvh/bvhSplitStrategy/MidpointStrategy.cpp
         src/object/primitive/APrimitive.cpp
+        src/object/transformations/ATransformDecorator.cpp
         src/object/material/ABasicMaterial.cpp
         src/object/material/APerlinBasedMaterial.cpp
         src/object/material/AWorleyBasedMaterial.cpp
@@ -71,6 +76,10 @@ set(HEADERS
         src/Core.hpp
         src/Render.hpp
 		src/exporter/ExportPPM.hpp
+		src/visual/SFML/SFMLImagePage.hpp
+		src/visual/SFML/SFMLSelectionPage.hpp
+		src/visual/SFML/SFMLPage.hpp
+		src/visual/SFML/SFMLContext.hpp
 		src/exporter/IExport.hpp
 		src/visual/CliVisual.hpp
 		src/visual/IVisual.hpp
@@ -86,6 +95,7 @@ set(HEADERS
         include/exception/PluginException.hpp
         include/math/Color.hpp
         include/math/Vector.hpp
+        include/math/Matrix4.hpp
         include/math/Ray.hpp
         include/object/AObject.hpp
         include/object/ACamera.hpp

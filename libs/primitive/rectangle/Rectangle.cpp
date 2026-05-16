@@ -27,8 +27,9 @@ namespace raytracer::object::primitive {
           _maxPoint(util::Helpers::toVector(args, "maxPoint", "Rectangle")),
           _normal(util::Helpers::toVector(args, "normal", "Rectangle")) {
         _normal = util::Helpers::normalVector(_normal);
-        util::Helpers::notCollinearVector(_maxPoint, _center, "maxPoint",
-                                          "center", "Rectangle");
+        const maths::Vector edge = _maxPoint - _center;
+        util::Helpers::notCollinearVector(edge, _normal, "maxPoint - center",
+                                          "normal", "Rectangle");
     }
 
     Rectangle::Rectangle(const maths::Vector &center,
@@ -45,8 +46,9 @@ namespace raytracer::object::primitive {
           _maxPoint(maxPoint),
           _normal(normal) {
         _normal = util::Helpers::normalVector(_normal);
-        util::Helpers::notCollinearVector(_maxPoint, _center, "maxPoint",
-                                          "center", "Rectangle");
+        const maths::Vector edge = _maxPoint - _center;
+        util::Helpers::notCollinearVector(edge, _normal, "maxPoint - center",
+                                          "normal", "Rectangle");
     }
 
     maths::Vector Rectangle::maxPoint() const {

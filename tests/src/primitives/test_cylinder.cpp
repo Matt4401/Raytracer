@@ -53,13 +53,13 @@ TEST(PRIMITIVE, limited_cylinder_open_misses_cap_hit) {
 
 TEST(PRIMITIVE, limited_cylinder_closed_hits_cap) {
     std::map<std::string, std::any> args;
-    args["center"] = std::map<std::string, std::any>{{"x", 0.0},
-                                                      {"y", 0.0},
-                                                      {"z", 0.0}};
+    args["center"] =
+        std::map<std::string, std::any>{{"x", 0.0}, {"y", 0.0}, {"z", 0.0}};
     args["radius"] = 1.0;
     args["height"] = 2.0;
     args["closed"] = true;
-    args["material"] = std::shared_ptr<raytracer::object::material::IMaterial>{};
+    args["material"] =
+        std::shared_ptr<raytracer::object::material::IMaterial>{};
 
     LimitedCylinder lc(args);
     Ray ray(Vector(0, 2, 0), Vector(0, -1, 0));
