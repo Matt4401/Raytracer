@@ -50,7 +50,7 @@ namespace raytracer::parsing {
          * @return list of scene parsed in the file. The first of the list will
          * be the filepath scene. The others will be the others defined in it
          */
-        std::vector<std::shared_ptr<object::scene::IScene>> parse(
+        std::shared_ptr<object::scene::IScene> parse(
             const std::filesystem::path &filepath);
 
         void parse(const std::shared_ptr<object::scene::IScene> &sceneBuffer,
@@ -64,14 +64,13 @@ namespace raytracer::parsing {
 
         buildCallback _buildCallback = nullptr;
         libconfig::Config _cfg;
-        std::vector<std::shared_ptr<object::scene::IScene>> _scenes = {};
+        std::shared_ptr<object::scene::IScene> _scene;
 
         static constexpr std::string_view K_SCENE_PARAMETERS =
             "sceneParameters";
         static constexpr std::string_view K_PARAMETERS_KEYWORD = "parameters";
         static constexpr std::string_view K_NAME_KEYWORD = "name";
         static constexpr std::string_view K_MATERIAL_KEYWORD = "material";
-        static constexpr std::string_view K_SCENES_KEYWORD = "scenes";
         static constexpr std::string_view K_EXTRA_KEYWORD = "objects_clusters";
 
         /**

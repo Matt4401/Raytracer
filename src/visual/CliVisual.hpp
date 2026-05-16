@@ -21,6 +21,12 @@ namespace raytracer::visual {
         bool allowPreview() override;
         bool fullRender() override;
         bool installFile(Render &render) override;
+        bool stopLoop() override;
+        std::string selectScene(IVisual::scenesMap &scene,
+                                Render &render) override;
+
+      private:
+        bool _stop = false;
     };
 
 }  // namespace raytracer::visual

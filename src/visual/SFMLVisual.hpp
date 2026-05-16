@@ -15,8 +15,8 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
+#include <cstddef>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "Render.hpp"
@@ -35,9 +35,23 @@ namespace raytracer::visual {
         bool allowPreview() override;
         bool fullRender() override;
         bool installFile(Render &render) override;
+        bool stopLoop() override;
+        std::string selectScene(scenesMap &scene, Render &render) override;
 
       private:
         sf::RenderWindow _window;
+        bool _fullRender = false;
+        bool _stop = false;
+        bool _save = false;
+        bool _goBack = false;
+
+        void displayText(float posX, float posY, const std::string &str);
+        void updateWindowSize();
+        void eventHandling(
+            Render &render,
+            const std::function<void(sf::Event &event)> &customCondition);
+
+        // image rendering
         sf::Vector2f _windowSize;
         std::chrono::high_resolution_clock::time_point _start;
         std::vector<maths::Color> _cachedPreviewPixels;
@@ -45,22 +59,24 @@ namespace raytracer::visual {
         sf::Font _font;
         sf::Vector2u _imagePosition;
 
-        bool _fullRender = false;
-        bool _save = false;
-
         float _marginTop = 0.20f;
         float _marginBottom = 0.20f;
         float _marginLeft = 0.2f;
         float _marginRight = 0.05f;
 
-        void updateWindow(Render &render, ImageSize &imageSize);
-        void updateWindowSize();
-
+        void updateImageWindow(Render &render, ImageSize &imageSize);
         void dispayPixels(std::vector<maths::Color> &pixels, ImageSize &size);
-        void displayText(float posX, float posY, const std::string &str);
+        void eventImagePageHandling(sf::Event &event, Render &render);
         void computeImage(ImageSize &size, sf::Sprite &sprite);
 
-        void eventHandling(Render &render);
-        void keyPressHandling(sf::Event &event, Render &render);
+        // selection scene
+        std::vector<sf::FloatRect> _sceneButtonBounds;
+        std::vector<std::string> _sceneNames;
+        int _hoveredScene = -1;
+        int _scrollOffset = 0;
+
+        void drawSceneSelection(scenesMap &scenes);
+        bool eventSelectionPageHandling(sf::Event &event, scenesMap &scenes,
+                                        std::string &name);
     };
 }  // namespace raytracer::visual

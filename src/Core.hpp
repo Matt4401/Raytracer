@@ -7,7 +7,9 @@
 
 #pragma once
 
+#include <cstddef>
 #include <filesystem>
+#include <map>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -50,11 +52,12 @@ namespace raytracer {
         PluginManager _plugManager;
         ObjectFactory _objFactory;
         Render _renderer;
+        size_t _selectedScene = 0;
 
-        std::vector<std::shared_ptr<object::scene::IScene>> _scenes;
+        std::map<std::filesystem::path, std::shared_ptr<object::scene::IScene>>
+            _scenes;
         std::unique_ptr<exporter::IExport> _export = nullptr;
         std::unique_ptr<visual::IVisual> _visual = nullptr;
-        std::filesystem::path _givenFile;
 
         static constexpr std::string_view PLUGINS_FOLDER_PATH = "./plugins/";
         static constexpr std::string_view EXPORT_FLAG = "-e";
@@ -66,10 +69,10 @@ namespace raytracer {
             "\t-e: export mode (ppm)\n"
             "\t-v: visual mode (cli/sfml)\n";
 
-        void runScene();
+        void runScene(const std::shared_ptr<object::scene::IScene> &scene);
+
         template <typename Base>
         using Factory = std::function<std::unique_ptr<Base>()>;
-
         void cmdArgsHandling(const std::vector<std::string> &argv);
         void handleFlag(const std::string &flag, const std::string &value);
     };

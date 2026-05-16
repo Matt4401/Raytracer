@@ -10,6 +10,7 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Image.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Texture.hpp>
@@ -19,10 +20,9 @@
 #include <SFML/Window/VideoMode.hpp>
 #include <algorithm>
 #include <chrono>
-#include <iostream>
+#include <functional>
 #include <string>
 #include <thread>
-#include <utility>
 #include <vector>
 
 #include "Render.hpp"
@@ -50,18 +50,123 @@ namespace raytracer::visual {
         return this->_fullRender;
     }
 
+    bool SFMLVisual::stopLoop() {
+        return this->_stop || this->_save;
+    }
+
+    std::string SFMLVisual::selectScene(scenesMap &scenes, Render &render) {
+        bool selected = false;
+        std::string name;
+
+        this->_goBack = false;
+        this->_fullRender = false;
+        this->_save = false;
+        this->_cachedPreviewPixels.clear();
+        this->_window.setActive(true);
+        this->_font.loadFromFile("assets/arial.ttf");
+
+        while (!selected && this->_window.isOpen() && !this->_stop) {
+            this->_window.clear();
+            this->updateWindowSize();
+            this->drawSceneSelection(scenes);
+            this->_window.display();
+
+            this->eventHandling(
+                render, [this, &selected, &name, &scenes](sf::Event &event) {
+                    if (this->eventSelectionPageHandling(event, scenes, name))
+                        selected = true;
+                });
+        }
+        this->_window.setActive(false);
+        return name;
+    }
+
+    void SFMLVisual::drawSceneSelection(scenesMap &scenes) {
+        this->displayText(this->_windowSize.x * 0.5f,
+                          this->_windowSize.y * 0.08f, "Select a Scene");
+
+        this->_sceneButtonBounds.clear();
+        this->_sceneNames.clear();
+
+        const float buttonWidth = this->_windowSize.x * 0.6f;
+        const float buttonHeight = 50.f;
+        const float spacing = 10.f;
+        const float startX = (this->_windowSize.x - buttonWidth) / 2.f;
+        const float startY = this->_windowSize.y * 0.18f;
+
+        sf::Vector2i mousePos = sf::Mouse::getPosition(this->_window);
+        sf::Vector2f mouseF(static_cast<float>(mousePos.x),
+                            static_cast<float>(mousePos.y));
+
+        int index = 0;
+        for (const auto &pair : scenes) {
+            const std::string &sceneName = pair.first;
+            float y = startY + index * (buttonHeight + spacing);
+
+            if (y + buttonHeight > this->_windowSize.y * 0.95f) {
+                index++;
+                continue;
+            }
+
+            sf::FloatRect bounds(startX, y, buttonWidth, buttonHeight);
+            bool hovered = bounds.contains(mouseF);
+
+            sf::RectangleShape button(sf::Vector2f(buttonWidth, buttonHeight));
+            button.setPosition(startX, y);
+            button.setFillColor(hovered ? sf::Color(80, 120, 200)
+                                        : sf::Color(60, 60, 80));
+            button.setOutlineThickness(2.f);
+            button.setOutlineColor(sf::Color(150, 150, 180));
+            this->_window.draw(button);
+
+            sf::Text text(sceneName, this->_font);
+            text.setCharacterSize(24);
+            text.setFillColor(sf::Color::White);
+            sf::FloatRect tb = text.getLocalBounds();
+            text.setOrigin(tb.left + tb.width / 2.f, tb.top + tb.height / 2.f);
+            text.setPosition(startX + buttonWidth / 2.f,
+                             y + buttonHeight / 2.f);
+            this->_window.draw(text);
+
+            this->_sceneButtonBounds.push_back(bounds);
+            this->_sceneNames.push_back(sceneName);
+            index++;
+        }
+    }
+
+    bool SFMLVisual::eventSelectionPageHandling(sf::Event &event,
+                                                scenesMap &scenes,
+                                                std::string &name) {
+        (void)scenes;
+        if (event.type != sf::Event::MouseButtonPressed)
+            return false;
+        if (event.mouseButton.button != sf::Mouse::Left)
+            return false;
+
+        sf::Vector2f click(static_cast<float>(event.mouseButton.x),
+                           static_cast<float>(event.mouseButton.y));
+
+        for (size_t i = 0; i < this->_sceneButtonBounds.size(); i++) {
+            if (this->_sceneButtonBounds[i].contains(click)) {
+                name = this->_sceneNames[i];
+                return true;
+            }
+        }
+        return false;
+    }
+
     bool SFMLVisual::installFile(Render &render) {
         this->_window.setActive(true);
         std::chrono::time_point last = std::chrono::steady_clock::now();
 
-        while (this->_window.isOpen() && !this->_save) {
+        while (this->_window.isOpen() && !this->_save && !this->_goBack) {
             std::chrono::time_point now = std::chrono::steady_clock::now();
             double elapsed = std::chrono::duration<double>(now - last).count();
             ImageSize imageSize = render.imageSize();
 
             if (elapsed >= 1.0) {
                 this->_window.clear();
-                this->updateWindow(render, imageSize);
+                this->updateImageWindow(render, imageSize);
 
                 this->displayText(this->_windowSize.x * 0.5f,
                                   this->_windowSize.y * 0.9f,
@@ -69,12 +174,11 @@ namespace raytracer::visual {
                 this->_window.display();
                 last = now;
             }
-
-            this->eventHandling(render);
+            this->eventHandling(render, [this, &render](sf::Event &event) {
+                this->eventImagePageHandling(event, render);
+            });
         }
-
         this->_window.setActive(false);
-
         return this->_save;
     }
 
@@ -82,30 +186,38 @@ namespace raytracer::visual {
         return std::thread([this, &render, activeWorkers]() {
             (void)activeWorkers;
 
+            std::function<void()> callEvent = [this, &render]() {
+                this->eventHandling(render, [this, &render](sf::Event &event) {
+                    this->eventImagePageHandling(event, render);
+                });
+            };
+
             this->_window.setActive(true);
             ImageSize imageSize = render.imageSize();
             this->_font.loadFromFile("assets/arial.ttf");
 
             std::chrono::time_point last = std::chrono::steady_clock::now();
 
-            while (!render.renderingIsFinished() && this->_window.isOpen()) {
+            while (!render.renderingIsFinished() && this->_window.isOpen() &&
+                   !this->_goBack) {
                 std::chrono::time_point now = std::chrono::steady_clock::now();
                 double elapsed =
                     std::chrono::duration<double>(now - last).count();
 
                 if (elapsed >= 1.0) {
                     this->_window.clear();
-                    this->updateWindow(render, imageSize);
+                    this->updateImageWindow(render, imageSize);
                     this->_window.display();
                     last = now;
                 }
-                this->eventHandling(render);
+                callEvent();
             }
             this->_window.clear();
-            this->updateWindow(render, imageSize);
+            this->updateImageWindow(render, imageSize);
             this->_window.display();
-            while (this->_window.isOpen() && !this->fullRender()) {
-                this->eventHandling(render);
+            while (this->_window.isOpen() && !this->fullRender() &&
+                   !this->_goBack) {
+                callEvent();
             }
             if (this->_fullRender && this->_cachedPreviewPixels.empty()) {
                 this->_cachedPreviewPixels = render.pixels();
@@ -121,7 +233,7 @@ namespace raytracer::visual {
                                          static_cast<float>(windowSize.y));
     }
 
-    void SFMLVisual::updateWindow(Render &render, ImageSize &imageSize) {
+    void SFMLVisual::updateImageWindow(Render &render, ImageSize &imageSize) {
         this->updateWindowSize();
 
         if (!this->_cachedPreviewPixels.empty()) {
@@ -197,8 +309,14 @@ namespace raytracer::visual {
         sprite.setPosition(posX, posY);
     }
 
-    void SFMLVisual::keyPressHandling(sf::Event &event, Render &render) {
+    void SFMLVisual::eventImagePageHandling(sf::Event &event, Render &render) {
+        if (event.type != sf::Event::KeyPressed)
+            return;
         switch (event.key.code) {
+            case sf::Keyboard::Backspace:
+                this->_goBack = true;
+                render.stopRendering();
+                break;
             case sf::Keyboard::F:
                 this->_fullRender = true;
                 render.stopRendering();
@@ -212,7 +330,9 @@ namespace raytracer::visual {
         }
     }
 
-    void SFMLVisual::eventHandling(Render &render) {
+    void SFMLVisual::eventHandling(
+        Render &render,
+        const std::function<void(sf::Event &event)> &customCondition) {
         sf::Event event;
 
         while (this->_window.pollEvent(event)) {
@@ -222,11 +342,10 @@ namespace raytracer::visual {
             }
             if (event.type == sf::Event::Closed) {
                 render.stopRendering();
+                this->_stop = true;
                 this->_window.close();
             }
-            if (event.type == sf::Event::KeyPressed) {
-                this->keyPressHandling(event, render);
-            }
+            customCondition(event);
         }
     }
 

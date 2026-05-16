@@ -56,50 +56,45 @@ namespace raytracer {
                 -> std::shared_ptr<object::IObject> {
                 return this->_objFactory.build(name, param);
             });
-        this->_scenes = parser.parse(this->_givenFile);
-        this->_scenes.at(0)->buildBVH(this->_scenes.at(0)->bvhStrategy());
+        for (auto &scene : this->_scenes) {
+            scene.second = parser.parse(scene.first);
+            scene.second->buildBVH(scene.second->bvhStrategy());
+        }
     }
 
-    void Core::runScene() {
+    void Core::runScene(const std::shared_ptr<object::scene::IScene> &scene) {
         if (this->_visual->allowPreview()) {
-            int cachedSample = this->_scenes.at(0)->samplesPerPixel();
-            int cachedWidth =
-                this->_scenes.at(0)->cameras().at(0)->imageWidth();
-            int cachedHeight =
-                this->_scenes.at(0)->cameras().at(0)->imageHeight();
+            int cachedWidth = scene->cameras().at(0)->imageWidth();
+            int cachedHeight = scene->cameras().at(0)->imageHeight();
 
-            this->_scenes.at(0)->setSamplesPerPixel(PREVIEW_SAMPLE_PER_PIXEL);
-            this->_scenes.at(0)->cameras().at(0)->setImageHeight(cachedHeight /
-                                                                 2);
-            this->_scenes.at(0)->cameras().at(0)->setImageWidth(cachedWidth /
-                                                                2);
-
-            this->_renderer.render(*(this->_scenes.at(0)),
-                                   this->_scenes.at(0)->samplesPerPixel());
-
-            this->_scenes.at(0)->setSamplesPerPixel(cachedSample);
-
-            this->_scenes.at(0)->cameras().at(0)->setImageHeight(cachedHeight);
-            this->_scenes.at(0)->cameras().at(0)->setImageWidth(cachedWidth);
+            scene->cameras().at(0)->setImageHeight(cachedHeight / 2);
+            scene->cameras().at(0)->setImageWidth(cachedWidth / 2);
+            this->_renderer.render(*scene, PREVIEW_SAMPLE_PER_PIXEL);
+            scene->cameras().at(0)->setImageHeight(cachedHeight);
+            scene->cameras().at(0)->setImageWidth(cachedWidth);
         }
-        if (!this->_visual->allowPreview() || this->_visual->fullRender()) {
-            this->_renderer.render(*(this->_scenes.at(0)),
-                                   this->_scenes.at(0)->samplesPerPixel());
-        }
+        if (!this->_visual->allowPreview() || this->_visual->fullRender())
+            this->_renderer.render(*scene, scene->samplesPerPixel());
+
         if (!this->_renderer.renderedStopped() &&
-            this->_visual->installFile(this->_renderer)) {
-            this->_export->writeFile(*(this->_scenes.at(0)),
-                                     this->_renderer.pixels());
-            return;
-        }
+            this->_visual->installFile(this->_renderer))
+            this->_export->writeFile(*scene, this->_renderer.pixels());
     }
 
     void Core::run() {
-        if (this->_scenes.size() == 0) {
-            this->runScene();
+        if (this->_scenes.size() == 1) {
+            auto it = std::next(this->_scenes.begin(), 0);
+            this->runScene(it->second);
             return;
         }
-        this->runScene();
+        while (!this->_visual->stopLoop()) {
+            std::string sceneName =
+                this->_visual->selectScene(this->_scenes, this->_renderer);
+
+            if (sceneName.empty())
+                return;
+            this->runScene(this->_scenes.find(sceneName)->second);
+        }
     }
 
     std::pair<bool, int> Core::helpMessage(
@@ -119,23 +114,18 @@ namespace raytracer {
     }
 
     void Core::cmdArgsHandling(const std::vector<std::string> &argv) {
-        bool gotFile = false;
-
         for (size_t i = 0; i < argv.size(); ++i) {
             const std::string &param = argv[i];
 
             if (!param.starts_with("-")) {
-                if (gotFile)
-                    throw exception::ParsingException(HELP_MESSAGE);
-                _givenFile = param;
-                gotFile = true;
+                this->_scenes.emplace(param, nullptr);
                 continue;
             }
             if (i + 1 >= argv.size())
                 throw exception::ParsingException(HELP_MESSAGE);
             handleFlag(param, argv[++i]);
         }
-        if (!gotFile)
+        if (this->_scenes.empty())
             throw exception::ParsingException(HELP_MESSAGE);
     }
 

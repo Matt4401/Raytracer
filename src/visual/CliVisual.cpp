@@ -7,7 +7,9 @@
 
 #include "visual/CliVisual.hpp"
 
+#include <cstddef>
 #include <iostream>
+#include <iterator>
 #include <thread>
 
 #include "Render.hpp"
@@ -37,6 +39,15 @@ namespace raytracer::visual {
     bool CliVisual::installFile(Render &render) {
         (void)render;
         return true;
+    }
+
+    bool CliVisual::stopLoop() {
+        return this->_stop;
+    }
+
+    std::string CliVisual::selectScene(scenesMap &scene,
+                                       [[maybe_unused]] Render &render) {
+        return std::next(scene.begin(), 0)->first;
     }
 
 }  // namespace raytracer::visual
