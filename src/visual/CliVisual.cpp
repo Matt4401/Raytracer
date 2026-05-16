@@ -36,7 +36,7 @@ namespace raytracer::visual {
         return true;
     }
 
-    bool CliVisual::installFile(Render &render) {
+    bool CliVisual::wantSave(Render &render) {
         (void)render;
         return true;
     }

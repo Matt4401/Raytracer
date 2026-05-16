@@ -25,8 +25,8 @@ namespace raytracer::visual {
         _ctx.window().draw(text);
     }
 
-    void SFMLPage::checkEvents(Render &render,
-                              const std::function<void(sf::Event &)> &onEvent) {
+    void SFMLPage::checkEvents(
+        Render &render, const std::function<void(sf::Event &)> &onEvent) {
         sf::Event event;
         auto &win = _ctx.window();
 
@@ -41,6 +41,25 @@ namespace raytracer::visual {
                 win.close();
             }
             onEvent(event);
+        }
+    }
+
+    void SFMLPage::runLoop(Render &render, const std::function<bool()> &stop,
+                           const std::function<void()> &draw,
+                           const std::function<void(sf::Event &)> &onEvent) {
+        auto last = std::chrono::steady_clock::now();
+
+        while (_ctx.window().isOpen() && !stop()) {
+            auto now = std::chrono::steady_clock::now();
+            double elapsed = std::chrono::duration<double>(now - last).count();
+
+            if (elapsed >= 1.0) {
+                _ctx.window().clear();
+                draw();
+                _ctx.window().display();
+                last = now;
+            }
+            checkEvents(render, onEvent);
         }
     }
 }  // namespace raytracer::visual

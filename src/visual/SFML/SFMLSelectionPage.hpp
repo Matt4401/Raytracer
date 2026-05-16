@@ -21,13 +21,29 @@ namespace raytracer::visual {
       public:
         using SFMLPage::SFMLPage;
 
+        /**
+         * @brief Run the scene selection interface.
+         * Displays available scenes and allows the user to select one.
+         * @param scenes Map of available scenes indexed by their file paths.
+         * @param render The render context to pass to the selected scene.
+         * @return The name/identifier of the selected scene.
+         */
         std::string run(IVisual::scenesMap &scenes, Render &render);
 
       private:
         std::vector<sf::FloatRect> _buttonBounds;
         std::vector<std::string> _sceneNames;
+        float _buttonWidth = 50.f;
+        float _buttonHeight = 50.f;
+
+        static constexpr float SPACING = 20.f;
 
         void draw(IVisual::scenesMap &scenes);
+
+        void drawHover(sf::RenderWindow &win, const sf::FloatRect &bounds,
+                       float startX, float y);
+        void drawConfigName(const std::string &sceneName, sf::RenderWindow &win,
+                            float startX, float y);
 
         bool handleEvent(sf::Event &event, std::string &outName);
     };

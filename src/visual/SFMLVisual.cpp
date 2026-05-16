@@ -155,7 +155,7 @@ namespace raytracer::visual {
         return false;
     }
 
-    bool SFMLVisual::installFile(Render &render) {
+    bool SFMLVisual::wantSave(Render &render) {
         this->_window.setActive(true);
         std::chrono::time_point last = std::chrono::steady_clock::now();
 

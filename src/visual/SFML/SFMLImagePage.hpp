@@ -21,18 +21,45 @@ namespace raytracer::visual {
       public:
         using SFMLPage::SFMLPage;
 
+        /**
+         * @brief Reset the image page to initial state.
+         * Clears cached pixels and resets UI state flags.
+         */
         void reset();
 
+        /**
+         * @brief Display rendering progress in the image page.
+         * @param render The render context containing rendering state.
+         * @return A thread handle for the progress display task.
+         */
         std::thread printProgress(Render &render);
 
-        bool installFile(Render &render);
+        /**
+         * @brief Handle file installation/export from the image page.
+         * @param render The render context containing the rendered image data.
+         * @return true if file installation was successful, false otherwise.
+         */
+        bool wantSave(Render &render);
 
+        /**
+         * @brief Check if a full render operation is in progress.
+         * @return true if full render is active, false otherwise.
+         */
         bool fullRender() const {
             return _fullRender;
         }
+        /**
+         * @brief Check if the user has requested to save the rendered image.
+         * @return true if save is requested, false otherwise.
+         */
         bool save() const {
             return _save;
         }
+        /**
+         * @brief Check if the user has requested to go back to the previous
+         * page.
+         * @return true if back navigation is requested, false otherwise.
+         */
         bool back() const {
             return _goBack;
         }
@@ -49,6 +76,10 @@ namespace raytracer::visual {
 
         std::vector<maths::Color> _cachedPreviewPixels;
         ImageSize _cacheImageSize;
+
+        bool isActive() const {
+            return _ctx.window().isOpen() && !_goBack;
+        }
 
         void drawFrame(Render &render, ImageSize &imageSize);
         void drawPixels(std::vector<maths::Color> &pixels, ImageSize &size);

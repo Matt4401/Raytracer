@@ -9,6 +9,7 @@
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Mouse.hpp>
 
 #include "visual/IVisual.hpp"
@@ -37,54 +38,64 @@ namespace raytracer::visual {
         return name;
     }
 
-    void SFMLSelectionPage::draw(IVisual::scenesMap &scenes) {
-        const auto &ws = _ctx.windowSize();
-        auto &win = _ctx.window();
+    void SFMLSelectionPage::drawHover(sf::RenderWindow &win,
+                                      const sf::FloatRect &bounds, float startX,
+                                      float y) {
+        sf::Vector2i mp = sf::Mouse::getPosition(win);
+        sf::Vector2f mouseF(static_cast<float>(mp.x), static_cast<float>(mp.y));
 
-        displayText(ws.x * 0.5f, ws.y * 0.08f, "Select a Scene");
+        bool hovered = bounds.contains(mouseF);
+
+        sf::RectangleShape btn(
+            sf::Vector2f(this->_buttonWidth, this->_buttonHeight));
+        btn.setPosition(startX, y);
+        btn.setFillColor(hovered ? sf::Color(80, 120, 200)
+                                 : sf::Color(60, 60, 80));
+        btn.setOutlineThickness(2.f);
+        btn.setOutlineColor(sf::Color(150, 150, 180));
+        win.draw(btn);
+
+        this->_buttonBounds.push_back(bounds);
+    }
+
+    void SFMLSelectionPage::drawConfigName(const std::string &sceneName,
+                                           sf::RenderWindow &win, float startX,
+                                           float y) {
+        sf::Text text(sceneName, _ctx.font());
+        text.setCharacterSize(24);
+        text.setFillColor(sf::Color::White);
+        sf::FloatRect tb = text.getLocalBounds();
+        text.setOrigin(tb.left + tb.width / 2.f, tb.top + tb.height / 2.f);
+        text.setPosition(startX + this->_buttonWidth / 2.f,
+                         y + this->_buttonHeight / 2.f);
+        win.draw(text);
+
+        this->_sceneNames.push_back(sceneName);
+    }
+
+    void SFMLSelectionPage::draw(IVisual::scenesMap &scenes) {
+        const sf::Vector2f &ws = _ctx.windowSize();
+        sf::RenderWindow &win = _ctx.window();
+        this->_buttonWidth = ws.x * 0.6f;
+        const float startY = ws.y * 0.18f;
+        const float startX = (ws.x - this->_buttonWidth) / 2.f;
+        int index = 0;
 
         _buttonBounds.clear();
         _sceneNames.clear();
 
-        const float bw = ws.x * 0.6f;
-        const float bh = 50.f;
-        const float spacing = 10.f;
-        const float startX = (ws.x - bw) / 2.f;
-        const float startY = ws.y * 0.18f;
+        displayText(ws.x * 0.5f, ws.y * 0.08f, "Select a Scene");
 
-        sf::Vector2i mp = sf::Mouse::getPosition(win);
-        sf::Vector2f mouseF(static_cast<float>(mp.x), static_cast<float>(mp.y));
-
-        int index = 0;
         for (const auto &pair : scenes) {
-            const std::string &sceneName = pair.first;
-            float y = startY + index * (bh + spacing);
-            if (y + bh > ws.y * 0.95f) {
+            float y = startY + index * (this->_buttonHeight + SPACING);
+            if (y + this->_buttonHeight > ws.y * 0.95f) {
                 index++;
                 continue;
             }
-
-            sf::FloatRect bounds(startX, y, bw, bh);
-            bool hovered = bounds.contains(mouseF);
-
-            sf::RectangleShape btn(sf::Vector2f(bw, bh));
-            btn.setPosition(startX, y);
-            btn.setFillColor(hovered ? sf::Color(80, 120, 200)
-                                     : sf::Color(60, 60, 80));
-            btn.setOutlineThickness(2.f);
-            btn.setOutlineColor(sf::Color(150, 150, 180));
-            win.draw(btn);
-
-            sf::Text text(sceneName, _ctx.font());
-            text.setCharacterSize(24);
-            text.setFillColor(sf::Color::White);
-            sf::FloatRect tb = text.getLocalBounds();
-            text.setOrigin(tb.left + tb.width / 2.f, tb.top + tb.height / 2.f);
-            text.setPosition(startX + bw / 2.f, y + bh / 2.f);
-            win.draw(text);
-
-            _buttonBounds.push_back(bounds);
-            _sceneNames.push_back(sceneName);
+            sf::FloatRect bounds(startX, y, this->_buttonWidth,
+                                 this->_buttonHeight);
+            this->drawHover(win, bounds, startX, y);
+            this->drawConfigName(pair.first, win, startX, y);
             index++;
         }
     }

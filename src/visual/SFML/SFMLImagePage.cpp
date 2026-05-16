@@ -11,7 +11,6 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <algorithm>
-#include <chrono>
 
 namespace raytracer::visual {
 
@@ -24,34 +23,32 @@ namespace raytracer::visual {
 
     std::thread SFMLImagePage::printProgress(Render &render) {
         return std::thread([this, &render]() {
-            auto check = [this, &render]() {
-                checkEvents(render, [this, &render](sf::Event &e) {
-                    handleEvent(e, render);
-                });
-            };
-
             _ctx.window().setActive(true);
             ImageSize imageSize = render.imageSize();
-            auto last = std::chrono::steady_clock::now();
 
-            while (!render.renderingIsFinished() && _ctx.window().isOpen() &&
-                   !_goBack) {
-                auto now = std::chrono::steady_clock::now();
-                double elapsed =
-                    std::chrono::duration<double>(now - last).count();
-                if (elapsed >= 1.0) {
-                    _ctx.window().clear();
-                    drawFrame(render, imageSize);
-                    _ctx.window().display();
-                    last = now;
-                }
-                check();
+            auto onEvent = [this, &render](sf::Event &e) {
+                handleEvent(e, render);
+            };
+            auto draw = [this, &render, &imageSize]() {
+                drawFrame(render, imageSize);
+            };
+
+            runLoop(
+                render,
+                [this, &render]() {
+                    return !isActive() || render.renderingIsFinished();
+                },
+                draw, onEvent);
+
+            if (_ctx.window().isOpen()) {
+                _ctx.window().clear();
+                draw();
+                _ctx.window().display();
             }
-            _ctx.window().clear();
-            drawFrame(render, imageSize);
-            _ctx.window().display();
 
-            while (_ctx.window().isOpen() && !_fullRender && !_goBack) check();
+            runLoop(
+                render, [this]() { return !isActive() || _fullRender; }, draw,
+                onEvent);
 
             if (_fullRender && _cachedPreviewPixels.empty()) {
                 _cachedPreviewPixels = render.pixels();
@@ -61,28 +58,20 @@ namespace raytracer::visual {
         });
     }
 
-    bool SFMLImagePage::installFile(Render &render) {
+    bool SFMLImagePage::wantSave(Render &render) {
         _ctx.window().setActive(true);
-        auto last = std::chrono::steady_clock::now();
+        ImageSize imageSize = render.imageSize();
 
-        while (_ctx.window().isOpen() && !_save && !_goBack) {
-            auto now = std::chrono::steady_clock::now();
-            double elapsed = std::chrono::duration<double>(now - last).count();
-            ImageSize imageSize = render.imageSize();
-
-            if (elapsed >= 1.0) {
-                _ctx.window().clear();
+        runLoop(
+            render, [this]() { return !isActive() || _save; },
+            [this, &render, &imageSize]() {
                 drawFrame(render, imageSize);
                 displayText(_ctx.windowSize().x * 0.5f,
                             _ctx.windowSize().y * 0.9f,
                             "Click on \"S\" to save this file");
-                _ctx.window().display();
-                last = now;
-            }
-            checkEvents(render, [this, &render](sf::Event &e) {
-                handleEvent(e, render);
-            });
-        }
+            },
+            [this, &render](sf::Event &e) { handleEvent(e, render); });
+
         _ctx.window().setActive(false);
         return _save;
     }
@@ -127,6 +116,7 @@ namespace raytracer::visual {
         float sx = aw / static_cast<float>(size.width);
         float sy = ah / static_cast<float>(size.heigth);
         float scale = std::max(0.f, std::min(sx, sy));
+
         if (scale <= 0.f)
             return;
 
@@ -134,6 +124,7 @@ namespace raytracer::visual {
         float dh = size.heigth * scale;
         float px = ws.x * _marginLeft + (aw - dw) / 2.f;
         float py = ws.y * _marginTop + (ah - dh) / 2.f;
+
         sprite.setScale(scale, scale);
         sprite.setPosition(px, py);
     }

@@ -77,7 +77,7 @@ namespace raytracer {
             this->_renderer.render(*scene, scene->samplesPerPixel());
 
         if (!this->_renderer.renderedStopped() &&
-            this->_visual->installFile(this->_renderer))
+            this->_visual->wantSave(this->_renderer))
             this->_export->writeFile(*scene, this->_renderer.pixels());
     }
 
