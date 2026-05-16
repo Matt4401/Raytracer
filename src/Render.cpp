@@ -148,7 +148,10 @@ namespace raytracer {
                 }
             }
         }
-        return maths::Color(meanColor.x, meanColor.y, meanColor.z);
+        return maths::Color(
+            static_cast<unsigned char>(std::clamp(meanColor.x * 255.0, 0.0, 255.0)),
+            static_cast<unsigned char>(std::clamp(meanColor.y * 255.0, 0.0, 255.0)),
+            static_cast<unsigned char>(std::clamp(meanColor.z * 255.0, 0.0, 255.0)));
     }
 
     std::thread Render::printProgress(int activeWorkers, int imageHeight) {
