@@ -8,8 +8,9 @@
 #include "SFMLImagePage.hpp"
 
 #include <SFML/Graphics/Image.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Texture.hpp>
-#include <SFML/Window/Keyboard.hpp>
+#include <SFML/Window/Mouse.hpp>
 #include <algorithm>
 
 namespace raytracer::visual {
@@ -18,6 +19,7 @@ namespace raytracer::visual {
         _fullRender = false;
         _save = false;
         _goBack = false;
+        _showSaveButton = false;
         _cachedPreviewPixels.clear();
     }
 
@@ -61,17 +63,14 @@ namespace raytracer::visual {
     bool SFMLImagePage::wantSave(Render &render) {
         _ctx.window().setActive(true);
         ImageSize imageSize = render.imageSize();
+        _showSaveButton = true;
 
         runLoop(
             render, [this]() { return !isActive() || _save; },
-            [this, &render, &imageSize]() {
-                drawFrame(render, imageSize);
-                displayText(_ctx.windowSize().x * 0.5f,
-                            _ctx.windowSize().y * 0.9f,
-                            "Click on \"S\" to save this file");
-            },
+            [this, &render, &imageSize]() { drawFrame(render, imageSize); },
             [this, &render](sf::Event &e) { handleEvent(e, render); });
 
+        _showSaveButton = false;
         _ctx.window().setActive(false);
         return _save;
     }
@@ -85,8 +84,22 @@ namespace raytracer::visual {
         auto pixels = render.pixels();
         drawPixels(pixels, imageSize);
 
-        displayText(_ctx.windowSize().x * 0.5f, _ctx.windowSize().y * 0.1f,
-                    _fullRender ? "Full Render Mode" : "preview Mode");
+        displayText(_ctx.windowSize().x * 0.5f, _ctx.windowSize().y * 0.07f,
+                    _fullRender ? "Full Render Mode" : "Preview Mode");
+
+        const auto &ws = _ctx.windowSize();
+        float btnW = std::max(120.f, ws.x * 0.4f);
+        float btnH = std::max(30.f, ws.y * 0.06f);
+        float btnY = ws.y * 0.92f - btnH / 2.f;
+
+        if (!_fullRender) {
+            _fullRenderButton =
+                sf::FloatRect((ws.x - btnW) / 2.f, btnY, btnW, btnH);
+            drawButton(_fullRenderButton, "Full Render (F)");
+        } else if (_showSaveButton) {
+            _saveButton = sf::FloatRect((ws.x - btnW) / 2.f, btnY, btnW, btnH);
+            drawButton(_saveButton, "Save (S)");
+        }
     }
 
     void SFMLImagePage::drawPixels(std::vector<maths::Color> &pixels,
@@ -124,29 +137,56 @@ namespace raytracer::visual {
         float dh = size.heigth * scale;
         float px = ws.x * _marginLeft + (aw - dw) / 2.f;
         float py = ws.y * _marginTop + (ah - dh) / 2.f;
-
         sprite.setScale(scale, scale);
         sprite.setPosition(px, py);
     }
 
+    void SFMLImagePage::drawButton(const sf::FloatRect &rect,
+                                   const std::string &label) {
+        sf::RectangleShape box(sf::Vector2f(rect.width, rect.height));
+        box.setPosition(rect.left, rect.top);
+
+        // Hover effect
+        sf::Vector2i mousePos = sf::Mouse::getPosition(_ctx.window());
+        bool hovered = isMouseOver(rect, mousePos.x, mousePos.y);
+
+        box.setFillColor(hovered ? sf::Color(80, 80, 120)
+                                 : sf::Color(50, 50, 80));
+        box.setOutlineColor(sf::Color::White);
+        box.setOutlineThickness(2.f);
+        _ctx.window().draw(box);
+
+        displayText(rect.left + rect.width / 2.f, rect.top + rect.height / 2.f,
+                    label);
+    }
+
+    bool SFMLImagePage::isMouseOver(const sf::FloatRect &rect, int mx,
+                                    int my) const {
+        return rect.contains(static_cast<float>(mx), static_cast<float>(my));
+    }
+
     void SFMLImagePage::handleEvent(sf::Event &event, Render &render) {
-        if (event.type != sf::Event::KeyPressed)
-            return;
-        switch (event.key.code) {
-            case sf::Keyboard::Backspace:
-                _goBack = true;
-                render.stopRendering();
-                break;
-            case sf::Keyboard::F:
+        if (event.type == sf::Event::MouseButtonPressed &&
+            event.mouseButton.button == sf::Mouse::Left) {
+            int mx = event.mouseButton.x;
+            int my = event.mouseButton.y;
+
+            if (!_fullRender && isMouseOver(_fullRenderButton, mx, my)) {
                 _fullRender = true;
                 render.stopRendering();
-                break;
-            case sf::Keyboard::S:
-                if (render.renderingIsFinished() && _fullRender)
-                    _save = true;
-                break;
-            default:
-                break;
+                return;
+            }
+            if (_showSaveButton && render.renderingIsFinished() &&
+                _fullRender && isMouseOver(_saveButton, mx, my)) {
+                _save = true;
+                return;
+            }
+        }
+
+        if (event.type == sf::Event::KeyPressed &&
+            event.key.code == sf::Keyboard::Backspace) {
+            _goBack = true;
+            render.stopRendering();
         }
     }
 }  // namespace raytracer::visual

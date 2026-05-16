@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <thread>
 #include <vector>
@@ -70,12 +71,17 @@ namespace raytracer::visual {
         bool _goBack = false;
 
         float _marginTop = 0.15f;
-        float _marginBottom = 0.10f;
+        float _marginBottom = 0.15f;
         float _marginLeft = 0.10f;
         float _marginRight = 0.10f;
 
         std::vector<maths::Color> _cachedPreviewPixels;
         ImageSize _cacheImageSize;
+
+        // Button rectangles (in window coordinates), updated each frame
+        sf::FloatRect _fullRenderButton;
+        sf::FloatRect _saveButton;
+        bool _showSaveButton = false;
 
         bool isActive() const {
             return _ctx.window().isOpen() && !_goBack;
@@ -85,5 +91,7 @@ namespace raytracer::visual {
         void drawPixels(std::vector<maths::Color> &pixels, ImageSize &size);
         void layoutSprite(ImageSize &size, sf::Sprite &sprite);
         void handleEvent(sf::Event &event, Render &render);
+        void drawButton(const sf::FloatRect &rect, const std::string &label);
+        bool isMouseOver(const sf::FloatRect &rect, int mx, int my) const;
     };
 }  // namespace raytracer::visual
