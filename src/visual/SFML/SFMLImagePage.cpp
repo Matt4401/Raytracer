@@ -16,89 +16,96 @@
 namespace raytracer::visual {
 
     void SFMLImagePage::reset() {
-        _fullRender = false;
-        _save = false;
-        _goBack = false;
-        _showSaveButton = false;
-        _cachedPreviewPixels.clear();
+        this->_fullRender = false;
+        this->_save = false;
+        this->_goBack = false;
+        this->_showSaveButton = false;
+        this->_cachedPreviewPixels.clear();
     }
 
     std::thread SFMLImagePage::printProgress(Render &render) {
         return std::thread([this, &render]() {
-            _ctx.window().setActive(true);
+            this->_ctx.window().setActive(true);
             ImageSize imageSize = render.imageSize();
 
             auto onEvent = [this, &render](sf::Event &e) {
-                handleEvent(e, render);
+                this->handleEvent(e, render);
             };
             auto draw = [this, &render, &imageSize]() {
-                drawFrame(render, imageSize);
+                this->drawFrame(render, imageSize);
             };
 
-            runLoop(
+            this->runLoop(
                 render,
                 [this, &render]() {
-                    return !isActive() || render.renderingIsFinished();
+                    return !this->isActive() || render.renderingIsFinished();
                 },
                 draw, onEvent);
 
-            if (_ctx.window().isOpen()) {
-                _ctx.window().clear();
+            if (this->_ctx.window().isOpen()) {
+                this->_ctx.window().clear();
                 draw();
-                _ctx.window().display();
+                this->_ctx.window().display();
             }
 
-            runLoop(
-                render, [this]() { return !isActive() || _fullRender; }, draw,
-                onEvent);
+            this->runLoop(
+                render,
+                [this]() { return !this->isActive() || this->_fullRender; },
+                draw, onEvent);
 
-            if (_fullRender && _cachedPreviewPixels.empty()) {
-                _cachedPreviewPixels = render.pixels();
-                _cacheImageSize = imageSize;
+            if (this->_fullRender && this->_cachedPreviewPixels.empty()) {
+                this->_cachedPreviewPixels = render.pixels();
+                this->_cacheImageSize = imageSize;
             }
-            _ctx.window().setActive(false);
+            this->_ctx.window().setActive(false);
         });
     }
 
     bool SFMLImagePage::wantSave(Render &render) {
-        _ctx.window().setActive(true);
+        this->_ctx.window().setActive(true);
         ImageSize imageSize = render.imageSize();
-        _showSaveButton = true;
+        this->_showSaveButton = true;
 
-        runLoop(
-            render, [this]() { return !isActive() || _save; },
-            [this, &render, &imageSize]() { drawFrame(render, imageSize); },
-            [this, &render](sf::Event &e) { handleEvent(e, render); });
+        this->runLoop(
+            render, [this]() { return !this->isActive() || this->_save; },
+            [this, &render, &imageSize]() {
+                this->drawFrame(render, imageSize);
+            },
+            [this, &render](sf::Event &e) { this->handleEvent(e, render); });
 
-        _showSaveButton = false;
-        _ctx.window().setActive(false);
-        return _save;
+        this->_showSaveButton = false;
+        this->_ctx.window().setActive(false);
+        return this->_save;
     }
 
     void SFMLImagePage::drawFrame(Render &render, ImageSize &imageSize) {
-        _ctx.updateWindowSize();
+        this->_ctx.updateWindowSize();
 
-        if (!_cachedPreviewPixels.empty())
-            drawPixels(_cachedPreviewPixels, _cacheImageSize);
+        if (!this->_cachedPreviewPixels.empty())
+            this->drawPixels(this->_cachedPreviewPixels, this->_cacheImageSize);
 
         auto pixels = render.pixels();
-        drawPixels(pixels, imageSize);
+        this->drawPixels(pixels, imageSize);
 
-        displayText(_ctx.windowSize().x * 0.5f, _ctx.windowSize().y * 0.07f,
-                    _fullRender ? "Full Render Mode" : "Preview Mode");
+        this->displayText(
+            this->_ctx.windowSize().x * 0.5f, this->_ctx.windowSize().y * 0.07f,
+            this->_fullRender ? "Full Render Mode" : "Preview Mode");
 
-        const auto &ws = _ctx.windowSize();
+        const auto &ws = this->_ctx.windowSize();
         float btnW = std::max(120.f, ws.x * 0.4f);
         float btnH = std::max(30.f, ws.y * 0.06f);
         float btnY = ws.y * 0.92f - btnH / 2.f;
 
-        if (!_fullRender) {
-            _fullRenderButton =
+        this->drawButton(this->_fullRenderButton, "Full Render");
+
+        if (!this->_fullRender) {
+            this->_fullRenderButton =
                 sf::FloatRect((ws.x - btnW) / 2.f, btnY, btnW, btnH);
-            drawButton(_fullRenderButton, "Full Render (F)");
-        } else if (_showSaveButton) {
-            _saveButton = sf::FloatRect((ws.x - btnW) / 2.f, btnY, btnW, btnH);
-            drawButton(_saveButton, "Save (S)");
+            this->drawButton(this->_fullRenderButton, "Full Render");
+        } else if (this->_showSaveButton) {
+            this->_saveButton =
+                sf::FloatRect((ws.x - btnW) / 2.f, btnY, btnW, btnH);
+            this->drawButton(this->_saveButton, "Save");
         }
     }
 
@@ -123,41 +130,48 @@ namespace raytracer::visual {
     }
 
     void SFMLImagePage::layoutSprite(ImageSize &size, sf::Sprite &sprite) {
-        const auto &ws = _ctx.windowSize();
-        float aw = std::max(0.f, ws.x * (1.0f - _marginLeft - _marginRight));
-        float ah = std::max(0.f, ws.y * (1.0f - _marginTop - _marginBottom));
+        const auto &ws = this->_ctx.windowSize();
+
+        const float headerH = std::max(40.f, ws.y * 0.10f);
+        const float footerH = std::max(60.f, ws.y * 0.12f);
+        const float sideM = std::max(20.f, ws.x * 0.05f);
+
+        float aw = std::max(0.f, ws.x - 2.f * sideM);
+        float ah = std::max(0.f, ws.y - headerH - footerH - 2.f);
+        if (aw <= 0.f || ah <= 0.f)
+            return;
+
         float sx = aw / static_cast<float>(size.width);
         float sy = ah / static_cast<float>(size.heigth);
-        float scale = std::max(0.f, std::min(sx, sy));
-
+        float scale = std::min(sx, sy);
         if (scale <= 0.f)
             return;
 
         float dw = size.width * scale;
         float dh = size.heigth * scale;
-        float px = ws.x * _marginLeft + (aw - dw) / 2.f;
-        float py = ws.y * _marginTop + (ah - dh) / 2.f;
+        float px = sideM + (aw - dw) / 2.f;
+        float py = headerH + (ah - dh) / 2.f;
+
         sprite.setScale(scale, scale);
         sprite.setPosition(px, py);
     }
-
     void SFMLImagePage::drawButton(const sf::FloatRect &rect,
                                    const std::string &label) {
         sf::RectangleShape box(sf::Vector2f(rect.width, rect.height));
         box.setPosition(rect.left, rect.top);
 
         // Hover effect
-        sf::Vector2i mousePos = sf::Mouse::getPosition(_ctx.window());
-        bool hovered = isMouseOver(rect, mousePos.x, mousePos.y);
+        sf::Vector2i mousePos = sf::Mouse::getPosition(this->_ctx.window());
+        bool hovered = this->isMouseOver(rect, mousePos.x, mousePos.y);
 
         box.setFillColor(hovered ? sf::Color(80, 80, 120)
                                  : sf::Color(50, 50, 80));
         box.setOutlineColor(sf::Color::White);
         box.setOutlineThickness(2.f);
-        _ctx.window().draw(box);
+        this->_ctx.window().draw(box);
 
-        displayText(rect.left + rect.width / 2.f, rect.top + rect.height / 2.f,
-                    label);
+        this->displayText(rect.left + rect.width / 2.f,
+                          rect.top + rect.height / 2.f, label);
     }
 
     bool SFMLImagePage::isMouseOver(const sf::FloatRect &rect, int mx,
@@ -171,21 +185,23 @@ namespace raytracer::visual {
             int mx = event.mouseButton.x;
             int my = event.mouseButton.y;
 
-            if (!_fullRender && isMouseOver(_fullRenderButton, mx, my)) {
-                _fullRender = true;
+            if (!this->_fullRender &&
+                this->isMouseOver(this->_fullRenderButton, mx, my)) {
+                this->_fullRender = true;
                 render.stopRendering();
                 return;
             }
-            if (_showSaveButton && render.renderingIsFinished() &&
-                _fullRender && isMouseOver(_saveButton, mx, my)) {
-                _save = true;
+            if (this->_showSaveButton && render.renderingIsFinished() &&
+                this->_fullRender &&
+                this->isMouseOver(this->_saveButton, mx, my)) {
+                this->_save = true;
                 return;
             }
         }
 
         if (event.type == sf::Event::KeyPressed &&
             event.key.code == sf::Keyboard::Backspace) {
-            _goBack = true;
+            this->_goBack = true;
             render.stopRendering();
         }
     }

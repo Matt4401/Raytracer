@@ -21,20 +21,20 @@ namespace raytracer::visual {
         std::string name;
         bool selected = false;
 
-        _ctx.window().setActive(true);
+        this->_ctx.window().setActive(true);
 
         while (!selected && _ctx.window().isOpen() && !_stop) {
-            _ctx.window().clear();
-            _ctx.updateWindowSize();
+            this->_ctx.window().clear();
+            this->_ctx.updateWindowSize();
             draw(scenes);
-            _ctx.window().display();
+            this->_ctx.window().display();
 
             checkEvents(render, [&](sf::Event &e) {
                 if (handleEvent(e, name))
                     selected = true;
             });
         }
-        _ctx.window().setActive(false);
+        this->_ctx.window().setActive(false);
         return name;
     }
 
@@ -81,8 +81,8 @@ namespace raytracer::visual {
         const float startX = (ws.x - this->_buttonWidth) / 2.f;
         int index = 0;
 
-        _buttonBounds.clear();
-        _sceneNames.clear();
+        this->_buttonBounds.clear();
+        this->_sceneNames.clear();
 
         displayText(ws.x * 0.5f, ws.y * 0.08f, "Select a Scene");
 

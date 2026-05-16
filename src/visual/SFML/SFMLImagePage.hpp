@@ -70,8 +70,8 @@ namespace raytracer::visual {
         bool _save = false;
         bool _goBack = false;
 
-        float _marginTop = 0.15f;
-        float _marginBottom = 0.15f;
+        float _marginTop = 0.0f;
+        float _marginBottom = 0.0f;
         float _marginLeft = 0.10f;
         float _marginRight = 0.10f;
 
