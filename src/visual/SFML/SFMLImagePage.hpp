@@ -81,6 +81,7 @@ namespace raytracer::visual {
         // Button rectangles (in window coordinates), updated each frame
         sf::FloatRect _fullRenderButton;
         sf::FloatRect _saveButton;
+        sf::FloatRect _backButton;
         bool _showSaveButton = false;
 
         bool isActive() const {
@@ -91,7 +92,5 @@ namespace raytracer::visual {
         void drawPixels(std::vector<maths::Color> &pixels, ImageSize &size);
         void layoutSprite(ImageSize &size, sf::Sprite &sprite);
         void handleEvent(sf::Event &event, Render &render);
-        void drawButton(const sf::FloatRect &rect, const std::string &label);
-        bool isMouseOver(const sf::FloatRect &rect, int mx, int my) const;
     };
 }  // namespace raytracer::visual

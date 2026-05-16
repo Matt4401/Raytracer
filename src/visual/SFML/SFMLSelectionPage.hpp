@@ -40,11 +40,6 @@ namespace raytracer::visual {
 
         void draw(IVisual::scenesMap &scenes);
 
-        void drawHover(sf::RenderWindow &win, const sf::FloatRect &bounds,
-                       float startX, float y);
-        void drawConfigName(const std::string &sceneName, sf::RenderWindow &win,
-                            float startX, float y);
-
         bool handleEvent(sf::Event &event, std::string &outName);
     };
 }  // namespace raytracer::visual

@@ -12,6 +12,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Mouse.hpp>
 
+#include "SFMLSelectionPage.hpp"
 #include "visual/IVisual.hpp"
 
 namespace raytracer::visual {
@@ -38,44 +39,8 @@ namespace raytracer::visual {
         return name;
     }
 
-    void SFMLSelectionPage::drawHover(sf::RenderWindow &win,
-                                      const sf::FloatRect &bounds, float startX,
-                                      float y) {
-        sf::Vector2i mp = sf::Mouse::getPosition(win);
-        sf::Vector2f mouseF(static_cast<float>(mp.x), static_cast<float>(mp.y));
-
-        bool hovered = bounds.contains(mouseF);
-
-        sf::RectangleShape btn(
-            sf::Vector2f(this->_buttonWidth, this->_buttonHeight));
-        btn.setPosition(startX, y);
-        btn.setFillColor(hovered ? sf::Color(80, 120, 200)
-                                 : sf::Color(60, 60, 80));
-        btn.setOutlineThickness(2.f);
-        btn.setOutlineColor(sf::Color(150, 150, 180));
-        win.draw(btn);
-
-        this->_buttonBounds.push_back(bounds);
-    }
-
-    void SFMLSelectionPage::drawConfigName(const std::string &sceneName,
-                                           sf::RenderWindow &win, float startX,
-                                           float y) {
-        sf::Text text(sceneName, _ctx.font());
-        text.setCharacterSize(24);
-        text.setFillColor(sf::Color::White);
-        sf::FloatRect tb = text.getLocalBounds();
-        text.setOrigin(tb.left + tb.width / 2.f, tb.top + tb.height / 2.f);
-        text.setPosition(startX + this->_buttonWidth / 2.f,
-                         y + this->_buttonHeight / 2.f);
-        win.draw(text);
-
-        this->_sceneNames.push_back(sceneName);
-    }
-
     void SFMLSelectionPage::draw(IVisual::scenesMap &scenes) {
         const sf::Vector2f &ws = _ctx.windowSize();
-        sf::RenderWindow &win = _ctx.window();
         this->_buttonWidth = ws.x * 0.6f;
         const float startY = ws.y * 0.18f;
         const float startX = (ws.x - this->_buttonWidth) / 2.f;
@@ -94,8 +59,9 @@ namespace raytracer::visual {
             }
             sf::FloatRect bounds(startX, y, this->_buttonWidth,
                                  this->_buttonHeight);
-            this->drawHover(win, bounds, startX, y);
-            this->drawConfigName(pair.first, win, startX, y);
+            this->drawButton(bounds, pair.first);
+            this->_buttonBounds.push_back(bounds);
+            this->_sceneNames.push_back(pair.first);
             index++;
         }
     }

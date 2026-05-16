@@ -63,5 +63,19 @@ namespace raytracer::visual {
         void runLoop(Render &render, const std::function<bool()> &stop,
                      const std::function<void()> &draw,
                      const std::function<void(sf::Event &)> &onEvent);
+
+        /**
+         * @brief Draw a labeled button with a hover effect.
+         * @param rect The button rectangle in window coordinates.
+         * @param label The text label centered inside the button.
+         * @param textSize The font size for the label (default: 24).
+         */
+        void drawButton(const sf::FloatRect &rect, const std::string &label,
+                        unsigned int textSize = 24);
+
+        /**
+         * @brief Check whether mouse coordinates are inside a rectangle.
+         */
+        bool isMouseOver(const sf::FloatRect &rect, int mx, int my) const;
     };
 }  // namespace raytracer::visual

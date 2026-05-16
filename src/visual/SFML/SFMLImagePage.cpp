@@ -96,7 +96,11 @@ namespace raytracer::visual {
         float btnH = std::max(30.f, ws.y * 0.06f);
         float btnY = ws.y * 0.92f - btnH / 2.f;
 
-        this->drawButton(this->_fullRenderButton, "Full Render");
+        float backW = std::max(80.f, ws.x * 0.08f);
+        float backH = std::max(30.f, ws.y * 0.05f);
+        float backMargin = std::max(10.f, ws.x * 0.01f);
+        this->_backButton = sf::FloatRect(backMargin, backMargin, backW, backH);
+        this->drawButton(this->_backButton, "<");
 
         if (!this->_fullRender) {
             this->_fullRenderButton =
@@ -155,29 +159,6 @@ namespace raytracer::visual {
         sprite.setScale(scale, scale);
         sprite.setPosition(px, py);
     }
-    void SFMLImagePage::drawButton(const sf::FloatRect &rect,
-                                   const std::string &label) {
-        sf::RectangleShape box(sf::Vector2f(rect.width, rect.height));
-        box.setPosition(rect.left, rect.top);
-
-        // Hover effect
-        sf::Vector2i mousePos = sf::Mouse::getPosition(this->_ctx.window());
-        bool hovered = this->isMouseOver(rect, mousePos.x, mousePos.y);
-
-        box.setFillColor(hovered ? sf::Color(80, 80, 120)
-                                 : sf::Color(50, 50, 80));
-        box.setOutlineColor(sf::Color::White);
-        box.setOutlineThickness(2.f);
-        this->_ctx.window().draw(box);
-
-        this->displayText(rect.left + rect.width / 2.f,
-                          rect.top + rect.height / 2.f, label);
-    }
-
-    bool SFMLImagePage::isMouseOver(const sf::FloatRect &rect, int mx,
-                                    int my) const {
-        return rect.contains(static_cast<float>(mx), static_cast<float>(my));
-    }
 
     void SFMLImagePage::handleEvent(sf::Event &event, Render &render) {
         if (event.type == sf::Event::MouseButtonPressed &&
@@ -185,6 +166,11 @@ namespace raytracer::visual {
             int mx = event.mouseButton.x;
             int my = event.mouseButton.y;
 
+            if (this->isMouseOver(this->_backButton, mx, my)) {
+                this->_goBack = true;
+                render.stopRendering();
+                return;
+            }
             if (!this->_fullRender &&
                 this->isMouseOver(this->_fullRenderButton, mx, my)) {
                 this->_fullRender = true;
@@ -197,12 +183,6 @@ namespace raytracer::visual {
                 this->_save = true;
                 return;
             }
-        }
-
-        if (event.type == sf::Event::KeyPressed &&
-            event.key.code == sf::Keyboard::Backspace) {
-            this->_goBack = true;
-            render.stopRendering();
         }
     }
 }  // namespace raytracer::visual

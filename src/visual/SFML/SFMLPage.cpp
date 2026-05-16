@@ -8,6 +8,7 @@
 #include "SFMLPage.hpp"
 
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/View.hpp>
 
@@ -62,5 +63,28 @@ namespace raytracer::visual {
             }
             this->checkEvents(render, onEvent);
         }
+    }
+
+    void SFMLPage::drawButton(const sf::FloatRect &rect,
+                              const std::string &label, unsigned int textSize) {
+        sf::RectangleShape box(sf::Vector2f(rect.width, rect.height));
+        box.setPosition(rect.left, rect.top);
+
+        sf::Vector2i mousePos = sf::Mouse::getPosition(this->_ctx.window());
+        bool hovered = this->isMouseOver(rect, mousePos.x, mousePos.y);
+
+        box.setFillColor(hovered ? sf::Color(80, 80, 120)
+                                 : sf::Color(50, 50, 80));
+        box.setOutlineColor(sf::Color::White);
+        box.setOutlineThickness(2.f);
+        this->_ctx.window().draw(box);
+
+        this->displayText(rect.left + rect.width / 2.f,
+                          rect.top + rect.height / 2.f, label, textSize);
+    }
+
+    bool SFMLPage::isMouseOver(const sf::FloatRect &rect, int mx,
+                               int my) const {
+        return rect.contains(static_cast<float>(mx), static_cast<float>(my));
     }
 }  // namespace raytracer::visual
