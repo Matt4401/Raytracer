@@ -22,13 +22,59 @@ namespace raytracer::maths {
       public:
         static constexpr double EPSILON = 1e-12;
 
+        /**
+         * This function solves the cubic equation ax^3 + bx^2 + cx + d = 0 and
+         * stores the real roots in the provided array. It returns the number of
+         * real roots found, which can be 0, 1, 2, or 3.
+         * @param a Coefficient of x^3
+         * @param b Coefficient of x^2
+         * @param c Coefficient of x
+         * @param d Constant term
+         * @param roots Output array to store the roots (size 3)
+         * @return Number of real roots found (0, 1, 2, or 3)
+         */
         static int solveCubic(double a, double b, double c, double d,
                               std::array<double, 3>& roots) noexcept;
+
+        /**
+         * This function solves the quartic equation ax^4 + bx^3 + cx^2 + dx + e
+         * = 0 and stores the real roots in the provided array. It returns the
+         * number of real roots found, which can be 0, 1, 2, 3, or 4.
+         * @param a Coefficient of x^4
+         * @param b Coefficient of x^3
+         * @param c Coefficient of x^2
+         * @param d Coefficient of x
+         * @param e Constant term
+         * @param roots Output array to store the roots (size 4)
+         * @return Number of real roots found (0, 1, 2, 3, or 4)
+         */
         static int solveQuartic(double a, double b, double c, double d,
                                 double e,
                                 std::array<double, 4>& roots) noexcept;
+
+        /**
+         * This function solves the quadratic equation ax^2 + bx + c = 0 and
+         * stores the real roots in the provided references. It returns the
+         * number of real roots found, which can be 0, 1, or 2.
+         * @param a Coefficient of x^2
+         * @param b Coefficient of x
+         * @param c Constant term
+         * @param r0 Output reference to store the first root (if any)
+         * @param r1 Output reference to store the second root (if any)
+         * @return Number of real roots found (0, 1, or 2)
+         */
         static int solveQuadratic(double a, double b, double c, double& r0,
                                   double& r1) noexcept;
+
+        /**
+         * This function solves the linear equation ax + b = 0 and stores the
+         * real root in the provided reference. It returns the number of real
+         * roots found, which can be 0 or 1.
+         * @param a Coefficient of x
+         * @param b Constant term
+         * @param r0 Output reference to store the root (if any)
+         * @return Number of real roots found (0 or 1)
+         */
         static int solveLinear(double a, double b, double& r0) noexcept;
 
       private:
