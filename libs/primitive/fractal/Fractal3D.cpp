@@ -91,10 +91,8 @@ namespace raytracer::object::primitive {
                 record.objectId = id();
                 return true;
             }
-
-            t += std::max(de, _epsilon * 0.5);  // avoidinfinite loop
+            t += std::max(de, _epsilon * 0.5);  // avoid infinite loop
         }
-
         return false;
     }
 
