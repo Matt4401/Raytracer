@@ -46,9 +46,8 @@ namespace raytracer::object::primitive {
 
     Fractal3D::Fractal3D(
         std::shared_ptr<raytracer::object::material::IMaterial> material,
-        std::shared_ptr<IFractalStrategy> strategy,
-        const maths::Vector &center, const int maxSteps, const double epsilon,
-        const double maxDist)
+        std::shared_ptr<IFractalStrategy> strategy, const maths::Vector &center,
+        const int maxSteps, const double epsilon, const double maxDist)
         : APrimitive("Fractal3D", center, std::move(material)),
           _strategy(std::move(strategy)),
           _maxSteps(maxSteps),
@@ -62,25 +61,25 @@ namespace raytracer::object::primitive {
             return false;
         const maths::Vector dir = ray.direction / mag;
         const maths::Vector oc = ray.origin - _center;
-        const double R = _strategy->boundingRadius();
+        const double r = _strategy->boundingRadius();
         const double b = oc.dot(dir);
-        const double c = oc.dot(oc) - R * R;
+        const double c = oc.dot(oc) - r * r;
         const double disc = b * b - c;
 
         if (disc < 0.0)
             return false;
 
         const double sqrtDisc = std::sqrt(disc);
-        const double t_enter = -b - sqrtDisc;
-        const double t_exit = -b + sqrtDisc;
+        const double tEnter = -b - sqrtDisc;
+        const double tExit = -b + sqrtDisc;
 
-        if (t_exit < K_RAY_EPSILON)
+        if (tExit < K_RAY_EPSILON)
             return false;
 
-        double t = std::max(t_enter, K_RAY_EPSILON);
+        double t = std::max(tEnter, K_RAY_EPSILON);
 
         for (int step = 0; step < _maxSteps; ++step) {
-            if (t > t_exit || t > _maxDist)
+            if (t > tExit || t > _maxDist)
                 break;
 
             const maths::Vector p = oc + dir * t;
