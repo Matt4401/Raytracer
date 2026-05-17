@@ -42,6 +42,7 @@ namespace raytracer::object::scene {
         void setAmbientOcclusion(int samples, double radius) override;
 
         bool haveCamera() override;
+        bool adaptiveSampling() const override;
 
         AmbientOcclusion ambientOcclusion() const override;
         AmbientLight ambientLight() const override;
@@ -74,6 +75,7 @@ namespace raytracer::object::scene {
         AmbientOcclusion _ambientOcclusion;
         AmbientLight _ambientLight;
         AmbientDiffuse _ambientDiffuse;
+        bool _adaptiveSampling = false;
 
         int _samplesPerPixel = 100;
         std::string _bvhStrategy = "sah";

@@ -37,6 +37,10 @@ namespace raytracer {
 
       protected:
       private:
+        static constexpr double LUMINANCE_RED = 0.2126;
+        static constexpr double LUMINANCE_GREEN = 0.7152;
+        static constexpr double LUMINANCE_BLUE = 0.0722;
+
         std::thread printProgress(int activeWorkers, int imageHeight);
         void renderRows(const object::scene::IScene &scene,
                         unsigned int workerId, int imageHeight);
@@ -53,7 +57,20 @@ namespace raytracer {
             unsigned short *xi = nullptr;
         };
 
-        static constexpr double KCX_FACTOR = 0.5135;
+        int _minSamples = 2;
+        int _maxAdaptiveSamples = 0;
+        double _varianceThreshold = 1e-2;
+
+        /// @brief Compute luminance from a color/vector.
+        static double luminance(const maths::Vector &v);
+
+        /// @brief Compute pixel color using adaptive sampling (2x2 subpixels).
+        maths::Color computePixelColorAdaptive(const RenderState &st, int x,
+                                               int y) const;
+
+        /// @brief Compute pixel color using the basic 2x2 sampling path.
+        maths::Color computePixelColorBasic(const RenderState &st, int x,
+                                            int y) const;
 
         /// @brief Compute stratified jitter offsets for a sample.
         static void computeStratifiedSample(unsigned short *xi, double &dx,
@@ -66,6 +83,10 @@ namespace raytracer {
         /// @brief Sample a subpixel and accumulate radiance.
         maths::Vector sampleSubpixel(const RenderState &st, int x, int y,
                                      int sx, int sy) const;
+
+        /// @brief Take a single stratified sample for a subpixel (one sample).
+        maths::Vector sampleSubpixelOnce(const RenderState &st, int x, int y,
+                                         int sx, int sy) const;
 
         /// @brief Compute final pixel color from all subpixels.
         maths::Color computePixelColor(const RenderState &st, int x,
