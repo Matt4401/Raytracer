@@ -49,7 +49,8 @@ namespace raytracer::visual {
         this->_buttonBounds.clear();
         this->_sceneNames.clear();
 
-        displayText(windowSize.x * 0.5f, windowSize.y * 0.08f, "Select a Scene");
+        displayText(windowSize.x * 0.5f, windowSize.y * 0.08f,
+                    "Select a Scene");
 
         for (const auto &pair : scenes) {
             float y = startY + index * (this->_buttonHeight + SPACING);

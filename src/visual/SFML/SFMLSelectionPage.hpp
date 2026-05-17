@@ -29,7 +29,7 @@ namespace raytracer::visual {
          * indicate exit.
          */
         int run(std::vector<object::scene::SceneInstance> &scenes,
-          Render &render);
+                Render &render);
 
       private:
         std::vector<sf::FloatRect> _buttonBounds;
