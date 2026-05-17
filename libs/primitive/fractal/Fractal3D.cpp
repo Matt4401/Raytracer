@@ -27,7 +27,7 @@ namespace raytracer::object::primitive {
               util::ObjectMiddleware::validate<
                   std::shared_ptr<raytracer::object::material::IMaterial>>(
                   args, "material", "Fractal3D")),
-          _strategy(buildMandelbulbStrategy(args, "Fractal3D")),
+          _strategy(buildFractalStrategy(args, "Fractal3D")),
           _maxSteps(static_cast<int>(util::ObjectMiddleware::validate<double>(
               args, "maxSteps", "Fractal3D"))),
           _epsilon(util::ObjectMiddleware::validate<double>(args, "epsilon",
