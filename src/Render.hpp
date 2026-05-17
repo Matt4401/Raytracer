@@ -37,6 +37,10 @@ namespace raytracer {
 
       protected:
       private:
+        static constexpr double LUMINANCE_RED = 0.2126;
+        static constexpr double LUMINANCE_GREEN = 0.7152;
+        static constexpr double LUMINANCE_BLUE = 0.0722;
+
         std::thread printProgress(int activeWorkers, int imageHeight);
         void renderRows(const object::scene::IScene &scene,
                         unsigned int workerId, int imageHeight);

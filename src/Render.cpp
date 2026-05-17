@@ -101,7 +101,8 @@ namespace raytracer {
     }
 
     double Render::luminance(const maths::Vector &v) {
-        return 0.2126 * v.x + 0.7152 * v.y + 0.0722 * v.z;
+        return LUMINANCE_RED * v.x + LUMINANCE_GREEN * v.y +
+               LUMINANCE_BLUE * v.z;
     }
 
     maths::Vector Render::sampleSubpixelOnce(const Render::RenderState &st,
