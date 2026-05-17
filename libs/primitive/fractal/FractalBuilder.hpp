@@ -21,6 +21,21 @@ namespace raytracer::object::primitive {
         const std::map<std::string, std::any> &params,
         const std::string &contextName);
 
+    std::shared_ptr<IFractalStrategy> buildMengerSpongeStrategy(
+        const std::map<std::string, std::any> &params,
+        const std::string &contextName);
+
+    std::shared_ptr<IFractalStrategy> buildKochSnowflake3DStrategy(
+        const std::map<std::string, std::any> &params,
+        const std::string &contextName);
+
+    std::shared_ptr<IFractalStrategy> buildFractalStrategy(
+        const std::map<std::string, std::any> &params,
+        const std::string &contextName);
+
+    IObject *buildFractal(const std::map<std::string, std::any> &params,
+                          const std::string &contextName);
+
     IObject *buildMandelbulb(const std::map<std::string, std::any> &params,
                              const std::string &contextName);
 
