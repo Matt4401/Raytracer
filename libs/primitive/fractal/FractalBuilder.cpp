@@ -67,5 +67,4 @@ namespace raytracer::object::primitive {
         }
         return new Fractal3D(strategy, center, maxSteps, epsilon, maxDist);
     }
-
 }  // namespace raytracer::object::primitive
