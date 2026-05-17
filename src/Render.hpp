@@ -10,6 +10,8 @@
 
 #include <atomic>
 #include <chrono>
+#include <functional>
+#include <iostream>
 #include <memory>
 #include <thread>
 #include <vector>
@@ -21,7 +23,15 @@
 #include "object/IScene.hpp"
 
 namespace raytracer {
+
+    struct ImageSize {
+        int width = 0;
+        int heigth = 0;
+    };
     class Render {
+        using PrintProgressCallback =
+            std::function<std::thread(int activeWorkers, Render &render)>;
+
       public:
         Render() = default;
         ~Render() = default;
@@ -30,18 +40,24 @@ namespace raytracer {
         /// @param scene The scene to render.
         /// @param pixel Pixel parameter (unused).
         /// @param samples Number of samples per pixel.
-        void render(const object::scene::IScene &scene, int pixel = 1,
-                    int samples = 40);
+        void render(const object::scene::IScene &scene, int samples = 40);
 
-        const std::vector<maths::Color> &pixels() const;
+        std::vector<maths::Color> &pixels();
+        bool renderingIsFinished() const;
+        bool renderedStopped() const;
+        void stopRendering();
+        int getPercentRendered(int activeWorkers) const;
+        void setPrintProgressCallback(const PrintProgressCallback &callback);
+        ImageSize imageSize();
+        void requestReload();
+        bool reloadRequested() const;
+        void clearReload();
 
-      protected:
       private:
         static constexpr double LUMINANCE_RED = 0.2126;
         static constexpr double LUMINANCE_GREEN = 0.7152;
         static constexpr double LUMINANCE_BLUE = 0.0722;
 
-        std::thread printProgress(int activeWorkers, int imageHeight);
         void renderRows(const object::scene::IScene &scene,
                         unsigned int workerId, int imageHeight);
 
@@ -93,21 +109,24 @@ namespace raytracer {
                                        int y) const;
 
         void initRender(const object::scene::IScene &scene, int samples,
-                        int &imageWidth, int &imageHeight,
                         unsigned int &workerCount);
         void startWorkers(const object::scene::IScene &scene,
                           unsigned int workerCount,
                           unsigned int &activeWorkers);
         void finishRender(
-            unsigned int activeWorkers, int imageHeight,
+            unsigned int activeWorkers,
             const std::chrono::high_resolution_clock::time_point &startTotal);
 
         std::vector<maths::Color> _pixels;
+        PrintProgressCallback _printCallback = nullptr;
+        ImageSize _imageSize;
+        std::atomic<bool> _reloadRequested{false};
 
         std::vector<std::thread> _workers;
         std::unique_ptr<std::atomic<int>[]> _workerDone;
         std::vector<int> _workerRows;
         std::atomic<bool> _renderingFinished;
+        std::atomic<bool> _stopRendering = false;
         std::atomic<int> _nextRow{0};
         int _samples = 40;
     };

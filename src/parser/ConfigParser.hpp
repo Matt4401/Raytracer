@@ -47,12 +47,20 @@ namespace raytracer::parsing {
         /**
          * @brief Parses a configuration file.
          * @param filepath The path to the configuration file.
-         * @return list of scene parsed in the file. The first of the list will
-         * be the filepath scene. The others will be the others defined in it
+         * @return A shared pointer to the scene parsed from the file. The first
+         *         scene in the list will be the main scene. Others will be
+         *         additional scenes defined in the configuration.
          */
-        std::vector<std::shared_ptr<object::scene::IScene>> parse(
+        std::shared_ptr<object::scene::IScene> parse(
             const std::filesystem::path &filepath);
 
+        /**
+         * @brief Parses a configuration file and populates an existing scene
+         * buffer.
+         * @param sceneBuffer The shared pointer to the scene to populate with
+         *                    parsed data.
+         * @param filepath The path to the configuration file to parse.
+         */
         void parse(const std::shared_ptr<object::scene::IScene> &sceneBuffer,
                    const std::filesystem::path &filepath);
 
@@ -64,7 +72,7 @@ namespace raytracer::parsing {
 
         buildCallback _buildCallback = nullptr;
         libconfig::Config _cfg;
-        std::vector<std::shared_ptr<object::scene::IScene>> _scenes = {};
+        std::shared_ptr<object::scene::IScene> _scene;
 
         static constexpr std::string_view K_SCENE_PARAMETERS =
             "sceneParameters";
@@ -73,7 +81,6 @@ namespace raytracer::parsing {
         static constexpr std::string_view K_MATERIAL_KEYWORD = "material";
         static constexpr std::string_view K_TRANSFORMATIONS_KEYWORD =
             "transformations";
-        static constexpr std::string_view K_SCENES_KEYWORD = "scenes";
         static constexpr std::string_view K_EXTRA_KEYWORD = "objects_clusters";
 
         /**

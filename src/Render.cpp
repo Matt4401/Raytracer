@@ -7,8 +7,11 @@
 
 #include "Render.hpp"
 
+#include <algorithm>
 #include <chrono>
 #include <iostream>
+#include <memory>
+#include <vector>
 
 #include "math/Color.hpp"
 #include "math/Ray.hpp"
@@ -184,45 +187,79 @@ namespace raytracer {
                 std::clamp(pixel.z * 255.0, 0.0, 255.0)));
     }
 
-    std::thread Render::printProgress(int activeWorkers, int imageHeight) {
-        return std::thread([this, activeWorkers, imageHeight]() {
-            while (!_renderingFinished.load()) {
-                int done = 0;
-                for (unsigned int w = 0; w < activeWorkers; ++w)
-                    done += _workerDone[w].load();
-                double pct =
-                    imageHeight == 0 ? 100.0 : (100.0 * done) / imageHeight;
-                std::cerr << "\rRender " << (int)pct << "% ";
-                std::cerr << std::flush;
-                std::this_thread::sleep_for(std::chrono::milliseconds(250));
-            }
-            std::cerr << "\rRender 100%\n";
-        });
+    bool Render::renderingIsFinished() const {
+        return _renderingFinished.load();
     }
 
-    void Render::render(const object::scene::IScene &scene, int pixel,
-                        int samples) {
+    bool Render::renderedStopped() const {
+        return this->_stopRendering.load();
+    }
+
+    int Render::getPercentRendered(int activeWorkers) const {
+        int done = 0;
+
+        for (int w = 0; w < activeWorkers; ++w) {
+            done += _workerDone[w].load();
+        }
+        return (int)this->_imageSize.heigth == 0
+                   ? 100.0
+                   : (100.0 * done) / this->_imageSize.heigth;
+    }
+
+    ImageSize Render::imageSize() {
+        return this->_imageSize;
+    }
+
+    void Render::setPrintProgressCallback(
+        const PrintProgressCallback &callback) {
+        this->_printCallback = callback;
+    }
+
+    void Render::stopRendering() {
+        this->_stopRendering.store(true);
+    }
+
+    void Render::requestReload() {
+        _reloadRequested.store(true);
+        _stopRendering.store(true);
+    }
+
+    bool Render::reloadRequested() const {
+        return this->_reloadRequested.load();
+    }
+
+    void Render::clearReload() {
+        this->_reloadRequested.store(false);
+        this->_stopRendering.store(false);
+    }
+
+    void Render::render(const object::scene::IScene &scene, int samples) {
         auto startTotal = std::chrono::high_resolution_clock::now();
-        int imageWidth = 0;
-        int imageHeight = 0;
         unsigned int workerCount = 0;
 
-        initRender(scene, samples, imageWidth, imageHeight, workerCount);
+        initRender(scene, samples, workerCount);
 
         unsigned int activeWorkers = 0;
         startWorkers(scene, workerCount, activeWorkers);
 
-        finishRender(activeWorkers, imageHeight, startTotal);
+        finishRender(activeWorkers, startTotal);
     }
 
     void Render::initRender(const object::scene::IScene &scene, int samples,
-                            int &imageWidth, int &imageHeight,
                             unsigned int &workerCount) {
         const auto &camera = scene.cameras().at(0);
+
+        this->_pixels.clear();
+        this->_workers.clear();
+        this->_pixels.clear();
+        this->_renderingFinished.store(false);
+        this->_nextRow.store(0);
+
         _samples = samples;
-        imageWidth = camera->imageWidth();
-        imageHeight = camera->imageHeight();
-        _pixels.assign(imageWidth * imageHeight, maths::Color());
+        this->_imageSize.width = camera->imageWidth();
+        this->_imageSize.heigth = camera->imageHeight();
+        _pixels.assign(this->_imageSize.width * this->_imageSize.heigth,
+                       maths::Color());
 
         workerCount = std::max(1u, std::thread::hardware_concurrency());
 
@@ -230,6 +267,7 @@ namespace raytracer {
         _workerDone = std::make_unique<std::atomic<int>[]>(workerCount);
         _workerRows = std::vector<int>(workerCount);
         _renderingFinished = false;
+        _stopRendering.store(false);
         _nextRow.store(0);
 
         std::atomic<int> *workerDone = _workerDone.get();
@@ -251,23 +289,26 @@ namespace raytracer {
     }
 
     void Render::finishRender(
-        unsigned int activeWorkers, int imageHeight,
+        unsigned int activeWorkers,
         const std::chrono::high_resolution_clock::time_point &startTotal) {
-        auto progressThread = printProgress(activeWorkers, imageHeight);
+        auto progressThread = this->_printCallback(activeWorkers, *this);
 
         for (auto &w : _workers) w.join();
         _renderingFinished.store(true);
+        this->_workers.clear();
         progressThread.join();
 
         auto endRender = std::chrono::high_resolution_clock::now();
         auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                       endRender - startTotal)
                       .count();
-        std::cerr << "Render time: " << ms / 60000 << "min "
-                  << (ms % 60000) / 1000 << "s\n";
+        if (!this->_stopRendering.load()) {
+            std::cerr << "Render time: " << ms / 60000 << "min "
+                      << (ms % 60000) / 1000 << "s\n";
+        }
     }
 
-    const std::vector<maths::Color> &Render::pixels() const {
+    std::vector<maths::Color> &Render::pixels() {
         return this->_pixels;
     }
 
@@ -299,7 +340,7 @@ namespace raytracer {
         st.forward = forward;
         st.sampleWeight = sampleWeight;
 
-        while (true) {
+        while (!(this->_stopRendering.load())) {
             const int y = _nextRow.fetch_add(1);
             if (y >= imageHeight) {
                 break;
@@ -308,6 +349,9 @@ namespace raytracer {
                 0, 0, static_cast<unsigned short>((y + 1) * (y + 1) * (y + 1))};
             st.xi = xi;
             for (int x = 0; x < imageWidth; ++x) {
+                if (this->_stopRendering.load()) {
+                    break;
+                }
                 const int idx = (imageHeight - y - 1) * imageWidth + x;
                 _pixels[idx] = computePixelColor(st, x, y);
             }
