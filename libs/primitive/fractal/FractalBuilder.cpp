@@ -14,7 +14,7 @@
 
 #include "exception/PluginException.hpp"
 #include "fractal/Fractal3D.hpp"
-#include "fractal/MandelbulbStrategy.hpp"
+#include "strategy/MandelbulbStrategy.hpp"
 #include "util/middleware/Helpers.hpp"
 #include "util/middleware/ObjectMiddleware.hpp"
 

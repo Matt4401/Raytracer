@@ -5,7 +5,7 @@
 ** MandelbulbStrategy
 */
 
-#include "fractal/MandelbulbStrategy.hpp"
+#include "MandelbulbStrategy.hpp"
 
 #include <algorithm>
 #include <cmath>

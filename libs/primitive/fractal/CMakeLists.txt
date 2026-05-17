@@ -5,14 +5,14 @@ SET (SRCS
 	FractalPlugin.cpp
 	FractalBuilder.cpp
 	Fractal3D.cpp
-	MandelbulbStrategy.cpp
+        strategy/MandelbulbStrategy.cpp
 )
 
 SET (HEADERS
 	FractalBuilder.hpp
 	Fractal3D.hpp
 	IFractalStrategy.hpp
-	MandelbulbStrategy.hpp
+	strategy/MandelbulbStrategy.hpp
 )
 
 add_library(fractal_plug SHARED ${SRCS} ${HEADERS})
