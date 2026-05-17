@@ -55,7 +55,9 @@ namespace raytracer::object::scene {
         const std::vector<std::shared_ptr<camera::ICamera>> &cameras()
             const override;
 
+        void setSamplesPerPixel(int nbSample) override;
         int samplesPerPixel() const override;
+
         void buildBVH(std::string_view strategy) override;
         std::string_view bvhStrategy() const override;
 

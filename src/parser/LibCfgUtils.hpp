@@ -49,6 +49,13 @@ namespace raytracer::parsing {
         static std::vector<std::any> arrayToVector(
             const libconfig::Setting &array);
 
+        /**
+         * @brief Aggregates string values from a named setting into a vector.
+         * @param root The root libconfig setting to search within.
+         * @param aggregateName The name of the setting to aggregate strings
+         * from.
+         * @return A vector containing all the aggregated string values.
+         */
         static std::vector<std::string> stringAggregateToVector(
             libconfig::Setting &root, const std::string_view &aggregateName);
     };

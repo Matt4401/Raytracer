@@ -84,8 +84,7 @@ TEST(CORE_ARGUMENTS, multiple_config_files) {
     std::vector<std::string> args = {CONFIG_PATH + "valid.cfg",
                                      CONFIG_PATH + "valid.cfg"};
 
-    ASSERT_THROW(core.init(args, PLUGINS_PATH),
-                 raytracer::exception::ParsingException);
+    ASSERT_NO_THROW(core.init(args, PLUGINS_PATH));
 }
 
 TEST(CORE_ARGUMENTS, config_file_first_then_export) {

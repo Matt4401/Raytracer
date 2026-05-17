@@ -152,6 +152,10 @@ namespace raytracer::object::scene {
         return this->_cameras.size() > 0;
     }
 
+    void AScene::setSamplesPerPixel(int nbSample) {
+        this->_samplesPerPixel = nbSample;
+    }
+
     bool AScene::adaptiveSampling() const {
         return _adaptiveSampling;
     }

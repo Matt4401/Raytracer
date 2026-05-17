@@ -13,6 +13,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "exception/ParsingException.hpp"
@@ -36,7 +37,7 @@ namespace raytracer::parsing {
         }
         try {
             this->_cfg.clear();
-            this->_scenes.clear();
+            this->_scene = nullptr;
             this->_cfg.readFile(filepath);
 
         } catch (const libconfig::FileIOException &) {
@@ -128,8 +129,7 @@ namespace raytracer::parsing {
 
         std::shared_ptr<object::IObject> current = baseObject;
 
-        for (unsigned int index = 0; index < transformList.getLength();
-             ++index) {
+        for (int index = 0; index < transformList.getLength(); ++index) {
             const libconfig::Setting &entry = transformList[index];
             if (!entry.isGroup()) {
                 throw exception::ParsingException(
@@ -191,11 +191,11 @@ namespace raytracer::parsing {
         }
 
         object = this->computeTransforms(object, objectData);
-        this->_scenes.at(0)->addObject(object);
+        this->_scene->addObject(object);
     }
 
     void ConfigParser::parseObjectList(const libconfig::Setting &list) {
-        for (unsigned int index = 0; index < list.getLength(); ++index) {
+        for (int index = 0; index < list.getLength(); ++index) {
             this->computeObject(list.getName(), list[index]);
         }
     }
@@ -228,7 +228,7 @@ namespace raytracer::parsing {
         if (auto scene =
                 std::dynamic_pointer_cast<object::scene::IScene>(objectScene)) {
             root.remove(sceneCfg.getName());
-            this->_scenes.emplace_back(scene);
+            this->_scene = scene;
         }
     }
 
@@ -246,7 +246,7 @@ namespace raytracer::parsing {
         this->subFileHandling(
             extrasPath, path,
             [this](ConfigParser &parser, const std::filesystem::path &path) {
-                parser.parse(this->_scenes.at(0), path);
+                parser.parse(this->_scene, path);
             });
     }
 
@@ -270,35 +270,25 @@ namespace raytracer::parsing {
         }
     }
 
-    std::vector<std::shared_ptr<object::scene::IScene>> ConfigParser::parse(
+    std::shared_ptr<object::scene::IScene> ConfigParser::parse(
         const std::filesystem::path &filepath) {
         this->loadConfig(filepath);
         libconfig::Setting &root = this->_cfg.getRoot();
         this->makeScene(root);
-        std::vector<std::string> scenesPath =
-            LibCfgUtils::stringAggregateToVector(root, K_SCENES_KEYWORD);
 
         this->parseObjects(root, filepath);
-        if (!this->_scenes.at(0)->haveCamera()) {
+        if (!this->_scene->haveCamera()) {
             throw exception::ParsingException(
                 "Scene in {} do not have any cameras", filepath.string());
         }
-        this->subFileHandling(
-            scenesPath, filepath,
-            [this](ConfigParser &parser, const std::filesystem::path &path) {
-                std::vector<std::shared_ptr<object::scene::IScene>> scenes =
-                    parser.parse(path);
-                this->_scenes.insert(this->_scenes.end(), scenes.begin(),
-                                     scenes.end());
-            });
-        return this->_scenes;
+        return std::move(this->_scene);
     }
 
     void ConfigParser::parse(
         const std::shared_ptr<object::scene::IScene> &sceneBuffer,
         const std::filesystem::path &filepath) {
         this->loadConfig(filepath);
-        this->_scenes.emplace_back(sceneBuffer);
+        this->_scene = sceneBuffer;
         this->parseObjects(this->_cfg.getRoot(), filepath);
     }
 }  // namespace raytracer::parsing
