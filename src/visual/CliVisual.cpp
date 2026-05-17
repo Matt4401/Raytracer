@@ -7,12 +7,11 @@
 
 #include "visual/CliVisual.hpp"
 
-#include <cstddef>
 #include <iostream>
-#include <iterator>
 #include <thread>
 
 #include "Render.hpp"
+#include "object/IScene.hpp"
 
 namespace raytracer::visual {
 
@@ -45,9 +44,16 @@ namespace raytracer::visual {
         return this->_stop;
     }
 
-    std::string CliVisual::selectScene(scenesMap &scene,
-                                       [[maybe_unused]] Render &render) {
-        return std::next(scene.begin(), 0)->first;
+    bool CliVisual::isBackRequested() {
+        return false;
+    }
+
+    int CliVisual::selectScene(
+        std::vector<object::scene::SceneInstance> &scenes,
+        [[maybe_unused]] Render &render) {
+        (void)render;
+        (void)scenes;
+        return 0;
     }
 
 }  // namespace raytracer::visual

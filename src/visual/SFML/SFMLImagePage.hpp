@@ -70,15 +70,13 @@ namespace raytracer::visual {
         bool _save = false;
         bool _goBack = false;
 
+        std::vector<maths::Color> _cachedPreviewPixels;
+        ImageSize _cacheImageSize;
         float _marginTop = 0.0f;
         float _marginBottom = 0.0f;
         float _marginLeft = 0.10f;
         float _marginRight = 0.10f;
 
-        std::vector<maths::Color> _cachedPreviewPixels;
-        ImageSize _cacheImageSize;
-
-        // Button rectangles (in window coordinates), updated each frame
         sf::FloatRect _fullRenderButton;
         sf::FloatRect _saveButton;
         sf::FloatRect _backButton;

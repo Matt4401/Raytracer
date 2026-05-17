@@ -126,9 +126,9 @@ namespace raytracer {
     int Render::getPercentRendered(int activeWorkers) const {
         int done = 0;
 
-        for (unsigned int w = 0; w < activeWorkers; ++w)
+        for (int w = 0; w < activeWorkers; ++w) {
             done += _workerDone[w].load();
-
+        }
         return (int)this->_imageSize.heigth == 0
                    ? 100.0
                    : (100.0 * done) / this->_imageSize.heigth;
@@ -150,7 +150,6 @@ namespace raytracer {
     void Render::render(const object::scene::IScene &scene, int samples) {
         auto startTotal = std::chrono::high_resolution_clock::now();
         unsigned int workerCount = 0;
-        this->_pixels.clear();
 
         initRender(scene, samples, workerCount);
 
@@ -163,6 +162,13 @@ namespace raytracer {
     void Render::initRender(const object::scene::IScene &scene, int samples,
                             unsigned int &workerCount) {
         const auto &camera = scene.cameras().at(0);
+
+        this->_pixels.clear();
+        this->_workers.clear();
+        this->_pixels.clear();
+        this->_renderingFinished.store(false);
+        this->_nextRow.store(0);
+
         _samples = samples;
         this->_imageSize.width = camera->imageWidth();
         this->_imageSize.heigth = camera->imageHeight();
@@ -203,6 +209,7 @@ namespace raytracer {
 
         for (auto &w : _workers) w.join();
         _renderingFinished.store(true);
+        this->_workers.clear();
         progressThread.join();
 
         auto endRender = std::chrono::high_resolution_clock::now();

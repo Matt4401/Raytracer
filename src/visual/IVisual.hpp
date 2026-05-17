@@ -12,8 +12,10 @@
 #include <memory>
 #include <string>
 #include <thread>
+#include <vector>
 
 #include "Render.hpp"
+#include "object/IScene.hpp"
 
 namespace raytracer::visual {
     class IVisual {
@@ -58,11 +60,16 @@ namespace raytracer::visual {
         virtual bool stopLoop() = 0;
         /**
          * @brief Allow the user to select a scene from available scenes.
-         * @param scene Map of available scenes indexed by their file paths.
+         * @param scene Vector of available scenes.
          * @param render The render context for the selected scene.
-         * @return The name/identifier of the selected scene.
+         * @return The index of the selected scene, or a negative value to
+         * indicate exit.
          */
-        virtual std::string selectScene(scenesMap &scene, Render &render) = 0;
+        virtual int selectScene(
+            std::vector<object::scene::SceneInstance> &scene,
+            Render &render) = 0;
+
+        virtual bool isBackRequested() = 0;
     };
 
 }  // namespace raytracer::visual

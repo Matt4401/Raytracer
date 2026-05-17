@@ -38,7 +38,8 @@ namespace raytracer::visual {
             this->runLoop(
                 render,
                 [this, &render]() {
-                    return !this->isActive() || render.renderingIsFinished();
+                    return !this->isActive() || render.renderingIsFinished() ||
+                           render.renderedStopped();
                 },
                 draw, onEvent);
 
@@ -47,10 +48,12 @@ namespace raytracer::visual {
                 draw();
                 this->_ctx.window().display();
             }
-
             this->runLoop(
                 render,
-                [this]() { return !this->isActive() || this->_fullRender; },
+                [this, &render]() {
+                    return !this->isActive() || this->_fullRender ||
+                           render.reloadRequested();
+                },
                 draw, onEvent);
 
             if (this->_fullRender && this->_cachedPreviewPixels.empty()) {

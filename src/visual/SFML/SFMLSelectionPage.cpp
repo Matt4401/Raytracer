@@ -13,13 +13,12 @@
 #include <SFML/Window/Mouse.hpp>
 
 #include "SFMLSelectionPage.hpp"
-#include "visual/IVisual.hpp"
 
 namespace raytracer::visual {
 
-    std::string SFMLSelectionPage::run(IVisual::scenesMap &scenes,
-                                       Render &render) {
-        std::string name;
+    int SFMLSelectionPage::run(
+        std::vector<object::scene::SceneInstance> &scenes, Render &render) {
+        int index = -1;
         bool selected = false;
 
         this->_ctx.window().setActive(true);
@@ -31,15 +30,16 @@ namespace raytracer::visual {
             this->_ctx.window().display();
 
             checkEvents(render, [&](sf::Event &e) {
-                if (handleEvent(e, name))
+                if (handleEvent(e, index))
                     selected = true;
             });
         }
         this->_ctx.window().setActive(false);
-        return name;
+        return index;
     }
 
-    void SFMLSelectionPage::draw(IVisual::scenesMap &scenes) {
+    void SFMLSelectionPage::draw(
+        std::vector<object::scene::SceneInstance> &scenes) {
         const sf::Vector2f &ws = _ctx.windowSize();
         this->_buttonWidth = ws.x * 0.6f;
         const float startY = ws.y * 0.18f;
@@ -59,15 +59,14 @@ namespace raytracer::visual {
             }
             sf::FloatRect bounds(startX, y, this->_buttonWidth,
                                  this->_buttonHeight);
-            this->drawButton(bounds, pair.first);
+            this->drawButton(bounds, pair.filePath);
             this->_buttonBounds.push_back(bounds);
-            this->_sceneNames.push_back(pair.first);
+            this->_sceneNames.push_back(pair.filePath);
             index++;
         }
     }
 
-    bool SFMLSelectionPage::handleEvent(sf::Event &event,
-                                        std::string &outName) {
+    bool SFMLSelectionPage::handleEvent(sf::Event &event, int &outIndex) {
         if (event.type != sf::Event::MouseButtonPressed)
             return false;
         if (event.mouseButton.button != sf::Mouse::Left)
@@ -77,7 +76,7 @@ namespace raytracer::visual {
                            static_cast<float>(event.mouseButton.y));
         for (size_t i = 0; i < _buttonBounds.size(); i++) {
             if (_buttonBounds[i].contains(click)) {
-                outName = _sceneNames[i];
+                outIndex = static_cast<int>(i);
                 return true;
             }
         }

@@ -13,6 +13,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "exception/ParsingException.hpp"
@@ -280,7 +281,7 @@ namespace raytracer::parsing {
             throw exception::ParsingException(
                 "Scene in {} do not have any cameras", filepath.string());
         }
-        return this->_scene;
+        return std::move(this->_scene);
     }
 
     void ConfigParser::parse(

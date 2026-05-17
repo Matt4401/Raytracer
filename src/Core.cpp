@@ -12,6 +12,8 @@
 #include <algorithm>
 #include <any>
 #include <cstddef>
+#include <exception>
+#include <filesystem>
 #include <functional>
 #include <iostream>
 #include <map>
@@ -24,6 +26,7 @@
 #include "exception/ParsingException.hpp"
 #include "exporter/ExportPPM.hpp"
 #include "exporter/IExport.hpp"
+#include "object/IScene.hpp"
 #include "parser/ConfigParser.hpp"
 #include "plugin/ObjectFactory.hpp"
 #include "plugin/PluginManager.hpp"
@@ -35,8 +38,6 @@ namespace raytracer {
 
     void Core::init(const std::vector<std::string> &argv,
                     const std::filesystem::path &pluginsPath) {
-        parsing::ConfigParser parser;
-
         this->cmdArgsHandling(argv);
         if (this->_export == nullptr)
             this->_export = std::make_unique<exporter::ExportPPM>();
@@ -50,20 +51,43 @@ namespace raytracer {
         this->_plugManager.updatePluginList(pluginsPath);
         this->_plugManager.fillFactory(this->_objFactory);
 
-        parser.setBuildCallback(
+        this->_parser.setBuildCallback(
             [this](const std::string &name,
                    const std::map<std::string, std::any> &param)
                 -> std::shared_ptr<object::IObject> {
                 return this->_objFactory.build(name, param);
             });
         for (auto &scene : this->_scenes) {
-            scene.second = parser.parse(scene.first);
-            scene.second->buildBVH(scene.second->bvhStrategy());
+            scene.scene = this->_parser.parse(scene.filePath);
+            scene.lastUpdate = std::filesystem::last_write_time(scene.filePath);
+            scene.scene->buildBVH(scene.scene->bvhStrategy());
         }
     }
 
-    void Core::runScene(const std::shared_ptr<object::scene::IScene> &scene) {
-        if (this->_visual->allowPreview()) {
+    bool Core::updateSceneIfUpdated(SceneInstance &sceneInfo) {
+        try {
+            sceneInfo.scene = this->_parser.parse(sceneInfo.filePath);
+            sceneInfo.scene->buildBVH(sceneInfo.scene->bvhStrategy());
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Hot reload parse error: " << e.what() << "\n";
+            return false;
+        }
+    }
+
+    void Core::runPreview(SceneInstance &sceneInfo) {
+        startFileUpdateWatcher(sceneInfo);
+
+        while (!this->_visual->fullRender() && !this->_visual->stopLoop() &&
+               !this->_visual->isBackRequested()) {
+            if (this->_renderer.reloadRequested() &&
+                !this->updateSceneIfUpdated(sceneInfo)) {
+                this->_renderer.clearReload();
+                break;
+            }
+
+            this->_renderer.clearReload();
+            auto &scene = sceneInfo.scene;
             int cachedWidth = scene->cameras().at(0)->imageWidth();
             int cachedHeight = scene->cameras().at(0)->imageHeight();
 
@@ -73,9 +97,18 @@ namespace raytracer {
             scene->cameras().at(0)->setImageHeight(cachedHeight);
             scene->cameras().at(0)->setImageWidth(cachedWidth);
         }
-        if (!this->_visual->allowPreview() || this->_visual->fullRender())
-            this->_renderer.render(*scene, scene->samplesPerPixel());
 
+        stopFileUpdateWatcher();
+    }
+
+    void Core::runScene(SceneInstance &sceneInfo) {
+        if (this->_visual->allowPreview()) {
+            this->runPreview(sceneInfo);
+        }
+        auto &scene = sceneInfo.scene;
+
+        if (!this->_visual->allowPreview() || this->_visual->fullRender())
+            _renderer.render(*scene, scene->samplesPerPixel());
         if (!this->_renderer.renderedStopped() &&
             this->_visual->wantSave(this->_renderer))
             this->_export->writeFile(*scene, this->_renderer.pixels());
@@ -83,17 +116,19 @@ namespace raytracer {
 
     void Core::run() {
         if (this->_scenes.size() == 1) {
-            auto it = std::next(this->_scenes.begin(), 0);
-            this->runScene(it->second);
+            this->runScene(*this->_scenes.begin());
             return;
         }
         while (!this->_visual->stopLoop()) {
-            std::string sceneName =
+            int sceneIndex =
                 this->_visual->selectScene(this->_scenes, this->_renderer);
 
-            if (sceneName.empty())
+            if (sceneIndex < 0)
                 return;
-            this->runScene(this->_scenes.find(sceneName)->second);
+            if (static_cast<size_t>(sceneIndex) >= this->_scenes.size())
+                break;
+
+            this->runScene(this->_scenes.at(static_cast<size_t>(sceneIndex)));
         }
     }
 
@@ -118,7 +153,7 @@ namespace raytracer {
             const std::string &param = argv[i];
 
             if (!param.starts_with("-")) {
-                this->_scenes.emplace(param, nullptr);
+                this->_scenes.emplace_back(SceneInstance{nullptr, {}, param});
                 continue;
             }
             if (i + 1 >= argv.size())
@@ -157,6 +192,32 @@ namespace raytracer {
             pick(visuals, _visual);
         else
             throw exception::ParsingException(HELP_MESSAGE);
+    }
+
+    void Core::startFileUpdateWatcher(SceneInstance &scene) {
+        this->_fileUpdateRunning.store(true);
+        this->_fileUpdateWatcher = std::thread([this, &scene]() {
+            while (this->_fileUpdateRunning.load()) {
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+                try {
+                    auto t = std::filesystem::last_write_time(scene.filePath);
+                    if (t != scene.lastUpdate) {
+                        scene.lastUpdate = t;
+                        this->_renderer.requestReload();
+                    }
+                } catch (const std::exception &err) {
+                    std::cout << "Error: Fail to detect if file been updated, "
+                              << err.what() << "\n";
+                    this->_renderer.stopRendering();
+                }
+            }
+        });
+    }
+
+    void Core::stopFileUpdateWatcher() {
+        this->_fileUpdateRunning.store(false);
+        if (this->_fileUpdateWatcher.joinable())
+            this->_fileUpdateWatcher.join();
     }
 
 }  // namespace raytracer

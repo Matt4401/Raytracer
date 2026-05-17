@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <filesystem>
 #include <memory>
 
 #include "math/Color.hpp"
@@ -80,4 +81,11 @@ namespace raytracer::object::scene {
       protected:
       private:
     };
+
+    struct SceneInstance {
+        std::shared_ptr<object::scene::IScene> scene;
+        std::filesystem::file_time_type lastUpdate;
+        std::filesystem::path filePath;
+    };
+
 }  // namespace raytracer::object::scene

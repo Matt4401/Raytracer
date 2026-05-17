@@ -1,5 +1,13 @@
-// SFMLVisual.hpp
+/*
+** EPITECH PROJECT, 2026
+** SFMLVisual
+** File description:
+** SFMLVisual header
+*/
+
 #pragma once
+
+#include <vector>
 
 #include "visual/IVisual.hpp"
 #include "visual/SFML/SFMLContext.hpp"
@@ -44,11 +52,13 @@ namespace raytracer::visual {
 
         /**
          * @brief Run the SFML scene selection interface and reset image page.
-         * @param scenes Map of available scenes indexed by their file paths.
+         * @param scenes Vector of available scenes.
          * @param render The render context for the selected scene.
-         * @return The name/identifier of the selected scene.
+         * @return The index of the selected scene, or a negative value to
+         * indicate exit.
          */
-        std::string selectScene(scenesMap &scenes, Render &render) override {
+        int selectScene(std::vector<object::scene::SceneInstance> &scenes,
+                        Render &render) override {
             _image.reset();
             return _selection.run(scenes, render);
         }
@@ -71,6 +81,10 @@ namespace raytracer::visual {
          */
         bool wantSave(Render &render) override {
             return _image.wantSave(render);
+        }
+
+        bool isBackRequested() override {
+            return this->_image.back();
         }
 
       private:

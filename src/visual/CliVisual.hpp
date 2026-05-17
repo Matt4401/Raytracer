@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "object/IScene.hpp"
 #include "visual/IVisual.hpp"
 
 namespace raytracer::visual {
@@ -51,12 +52,15 @@ namespace raytracer::visual {
         /**
          * @brief Allow the user to select a scene from available scenes via
          * CLI.
-         * @param scene Map of available scenes indexed by their file paths.
+         * @param scene Vector of available scenes.
          * @param render The render context for the selected scene.
-         * @return The name/identifier of the selected scene.
+         * @return The index of the selected scene, or a negative value to
+         * indicate exit.
          */
-        std::string selectScene(IVisual::scenesMap &scene,
-                                Render &render) override;
+        int selectScene(std::vector<object::scene::SceneInstance> &scenes,
+                        Render &render) override;
+
+        bool isBackRequested() override;
 
       private:
         bool _stop = false;

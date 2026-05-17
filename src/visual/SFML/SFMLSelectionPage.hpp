@@ -13,7 +13,6 @@
 
 #include "Render.hpp"
 #include "SFMLPage.hpp"
-#include "visual/IVisual.hpp"
 
 namespace raytracer::visual {
 
@@ -24,11 +23,13 @@ namespace raytracer::visual {
         /**
          * @brief Run the scene selection interface.
          * Displays available scenes and allows the user to select one.
-         * @param scenes Map of available scenes indexed by their file paths.
+         * @param scenes Vector of available scenes.
          * @param render The render context to pass to the selected scene.
-         * @return The name/identifier of the selected scene.
+         * @return The index of the selected scene, or a negative value to
+         * indicate exit.
          */
-        std::string run(IVisual::scenesMap &scenes, Render &render);
+        int run(std::vector<object::scene::SceneInstance> &scenes,
+          Render &render);
 
       private:
         std::vector<sf::FloatRect> _buttonBounds;
@@ -38,8 +39,8 @@ namespace raytracer::visual {
 
         static constexpr float SPACING = 20.f;
 
-        void draw(IVisual::scenesMap &scenes);
+        void draw(std::vector<object::scene::SceneInstance> &scenes);
 
-        bool handleEvent(sf::Event &event, std::string &outName);
+        bool handleEvent(sf::Event &event, int &outIndex);
     };
 }  // namespace raytracer::visual

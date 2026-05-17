@@ -7,9 +7,7 @@
 
 #pragma once
 
-#include <cstddef>
 #include <filesystem>
-#include <map>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -18,11 +16,14 @@
 
 #include "Render.hpp"
 #include "exporter/IExport.hpp"
+#include "object/IScene.hpp"
+#include "parser/ConfigParser.hpp"
 #include "plugin/ObjectFactory.hpp"
 #include "plugin/PluginManager.hpp"
 #include "visual/IVisual.hpp"
 
 namespace raytracer {
+
     class Core {
       public:
         Core() = default;
@@ -49,13 +50,14 @@ namespace raytracer {
             const std::vector<std::string> &argv);
 
       private:
+        parsing::ConfigParser _parser;
         PluginManager _plugManager;
         ObjectFactory _objFactory;
-        Render _renderer;
-        size_t _selectedScene = 0;
 
-        std::map<std::filesystem::path, std::shared_ptr<object::scene::IScene>>
-            _scenes;
+        using SceneInstance = raytracer::object::scene::SceneInstance;
+        std::vector<SceneInstance> _scenes;
+        Render _renderer;
+
         std::unique_ptr<exporter::IExport> _export = nullptr;
         std::unique_ptr<visual::IVisual> _visual = nullptr;
 
@@ -69,7 +71,14 @@ namespace raytracer {
             "\t-e: export mode (ppm)\n"
             "\t-v: visual mode (cli/sfml)\n";
 
-        void runScene(const std::shared_ptr<object::scene::IScene> &scene);
+        void runPreview(SceneInstance &sceneInfo);
+        void runScene(SceneInstance &sceneInfo);
+        bool updateSceneIfUpdated(SceneInstance &sceneInfo);
+
+        std::thread _fileUpdateWatcher;
+        std::atomic<bool> _fileUpdateRunning{false};
+        void startFileUpdateWatcher(SceneInstance &scene);
+        void stopFileUpdateWatcher();
 
         template <typename Base>
         using Factory = std::function<std::unique_ptr<Base>()>;
