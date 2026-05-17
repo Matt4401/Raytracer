@@ -6,6 +6,8 @@ SET (SRCS
 	FractalBuilder.cpp
 	Fractal3D.cpp
         strategy/MandelbulbStrategy.cpp
+        strategy/MengerspongeStrategy.cpp
+        strategy/Kochsnowflake3DStrategy.cpp
 )
 
 SET (HEADERS
@@ -13,6 +15,8 @@ SET (HEADERS
 	Fractal3D.hpp
 	IFractalStrategy.hpp
 	strategy/MandelbulbStrategy.hpp
+        strategy/MengerspongeStrategy.hpp
+        strategy/Kochsnowflake3DStrategy.hpp
 )
 
 add_library(fractal_plug SHARED ${SRCS} ${HEADERS})
