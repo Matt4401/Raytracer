@@ -21,12 +21,14 @@ namespace raytracer::object::primitive {
       public:
         using object::primitive::IPrimitive::hits;
 
+        static constexpr double DEFAULT_CONSTANT = 11.8;
+
         explicit TangleCube(const std::map<std::string, std::any> &args);
         explicit TangleCube(const maths::Vector &center,
-                            double constant = 11.8);
+                            double constant = DEFAULT_CONSTANT);
         explicit TangleCube(
             std::shared_ptr<raytracer::object::material::IMaterial> material,
-            const maths::Vector &center, double constant = 11.8);
+            const maths::Vector &center, double constant = DEFAULT_CONSTANT);
 
         ~TangleCube() override = default;
 
