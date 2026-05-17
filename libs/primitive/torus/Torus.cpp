@@ -62,7 +62,7 @@ namespace raytracer::object::primitive {
 
     bool Torus::hits(const maths::Ray &ray, HitRecord &record) const {
         const double mag = ray.direction.magnitude();
-        if (mag < 1e-9)
+        if (mag < MIN_RAY_DIRECTION_MAGNITUDE)
             return false;
         const maths::Vector direction = ray.direction / mag;
         const maths::Vector localOrigin = ray.origin - _center;
@@ -101,7 +101,7 @@ namespace raytracer::object::primitive {
             for (int iter = 0; iter < 5; ++iter) {
                 const double f = evalP(ti);
                 const double df = evalDP(ti);
-                if (std::fabs(df) < 1e-15)
+                if (std::fabs(df) < NEWTON_DERIVATIVE_EPSILON)
                     break;
                 ti -= f / df;
             }
@@ -141,7 +141,7 @@ namespace raytracer::object::primitive {
         const double k = std::sqrt(localPoint.x * localPoint.x +
                                    localPoint.z * localPoint.z);
 
-        if (k < 1e-10)
+        if (k < EPSILON_AXIS)
             return maths::Vector(0, localPoint.y > 0 ? 1 : -1, 0);
         const double commonFactor = 1.0 - upperR / k;
         const maths::Vector normal(localPoint.x * commonFactor, localPoint.y,
