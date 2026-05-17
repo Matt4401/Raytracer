@@ -131,4 +131,44 @@ namespace raytracer::util {
         }
         return toVector(params, keyName, className);
     }
+
+    double Helpers::toDouble(const std::any &value,
+                            const std::string &fieldName) {
+        if (value.type() == typeid(int)) {
+            return static_cast<double>(std::any_cast<int>(value));
+        }
+        if (value.type() == typeid(long long)) {
+            return static_cast<double>(std::any_cast<long long>(value));
+        }
+        if (value.type() == typeid(double)) {
+            return std::any_cast<double>(value);
+        }
+        throw exception::PluginException(
+            "Parameter '{}' has invalid type", fieldName);
+    }
+
+    int Helpers::toInt(const std::any &value, const std::string &fieldName) {
+        const double numeric = toDouble(value, fieldName);
+        return static_cast<int>(numeric);
+    }
+
+    double Helpers::readNumeric(const std::map<std::string, std::any> &params,
+                               const std::string &key, double defaultValue) {
+        const auto it = params.find(key);
+
+        if (it == params.end()) {
+            return defaultValue;
+        }
+        return toDouble(it->second, key);
+    }
+
+    int Helpers::readInt(const std::map<std::string, std::any> &params,
+                        const std::string &key, int defaultValue) {
+        const auto it = params.find(key);
+
+        if (it == params.end()) {
+            return defaultValue;
+        }
+        return toInt(it->second, key);
+    }
 }  // namespace raytracer::util

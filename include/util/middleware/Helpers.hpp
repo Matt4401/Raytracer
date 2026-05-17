@@ -158,5 +158,46 @@ namespace raytracer::util {
                                        std::string_view fieldName1,
                                        std::string_view fieldName2,
                                        std::string_view className);
+
+        /**
+         * @brief Convert an std::any value to double.
+         * @param value The std::any value to convert.
+         * @param fieldName Name of the field for error messages.
+         * @return The converted double value.
+         * @throws PluginException If the type cannot be converted to double.
+         */
+        static double toDouble(const std::any &value,
+                              const std::string &fieldName);
+
+        /**
+         * @brief Convert an std::any value to integer.
+         * @param value The std::any value to convert.
+         * @param fieldName Name of the field for error messages.
+         * @return The converted integer value.
+         * @throws PluginException If the type cannot be converted to integer.
+         */
+        static int toInt(const std::any &value, const std::string &fieldName);
+
+        /**
+         * @brief Read a numeric (double) value from parameters with default.
+         * @param params The parameter map.
+         * @param key The key to look up.
+         * @param defaultValue Default value if key is not found.
+         * @return The numeric value or default.
+         * @throws PluginException If the value exists but cannot be converted.
+         */
+        static double readNumeric(const std::map<std::string, std::any> &params,
+                                 const std::string &key, double defaultValue);
+
+        /**
+         * @brief Read an integer value from parameters with default.
+         * @param params The parameter map.
+         * @param key The key to look up.
+         * @param defaultValue Default value if key is not found.
+         * @return The integer value or default.
+         * @throws PluginException If the value exists but cannot be converted.
+         */
+        static int readInt(const std::map<std::string, std::any> &params,
+                          const std::string &key, int defaultValue);
     };
 }  // namespace raytracer::util
