@@ -88,7 +88,7 @@ namespace raytracer::object::primitive {
             double ti = roots[i];
             if (!std::isfinite(ti))
                 continue;
-            for (int iter = 0; iter < 5; ++iter) {  // lissage newton
+            for (int iter = 0; iter < 5; ++iter) {  // Newton smoothing
                 const double f = evalP(ti);
                 const double df = evalDP(ti);
                 if (std::fabs(df) < 1e-12)
