@@ -5,9 +5,9 @@
 ** Unit tests for Torus primitive
 */
 
-#include <cmath>
-
 #include <gtest/gtest.h>
+
+#include <cmath>
 
 #include "exception/PluginException.hpp"
 #include "libs/primitive/torus/Torus.hpp"
