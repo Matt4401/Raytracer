@@ -49,6 +49,5 @@ namespace raytracer::object::primitive {
         static constexpr double EPSILON_AXIS = 1e-10;
         static constexpr double MIN_RAY_DIRECTION_MAGNITUDE = 1e-9;
         static constexpr double NEWTON_DERIVATIVE_EPSILON = 1e-15;
-
     };
 }  // namespace raytracer::object::primitive
