@@ -25,6 +25,7 @@ namespace raytracer::object::primitive {
         static constexpr double DEFAULT_EPS = 1e-5;
         static constexpr int DEFAULT_MAX_STEPS = 200;
         static constexpr double DEFAULT_MAX_DIST = 100.0;
+        static constexpr double MIN_RAY_DIRECTION_MAGNITUDE = 1e-9;
 
         explicit Fractal3D(const std::map<std::string, std::any> &args);
         explicit Fractal3D(std::shared_ptr<IFractalStrategy> strategy,

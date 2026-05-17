@@ -56,7 +56,7 @@ namespace raytracer::object::primitive {
 
     bool Fractal3D::hits(const maths::Ray &ray, HitRecord &record) const {
         const double mag = ray.direction.magnitude();
-        if (mag < 1e-9)
+        if (mag < MIN_RAY_DIRECTION_MAGNITUDE)
             return false;
         const maths::Vector dir = ray.direction / mag;
         const maths::Vector oc = ray.origin - _center;

@@ -31,6 +31,8 @@ namespace raytracer::object::primitive {
         double _power;
         int _iterations;
         double _bailout;
+
+        static constexpr double MIN_DERIVATIVE_EPSILON = 1e-15;
     };
 
 }  // namespace raytracer::object::primitive

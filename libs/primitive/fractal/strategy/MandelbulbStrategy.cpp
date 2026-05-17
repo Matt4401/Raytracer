@@ -43,7 +43,7 @@ namespace raytracer::object::primitive {
                 rn;
             z = z + p;
         }
-        if (dr < 1e-15)
+        if (dr < MIN_DERIVATIVE_EPSILON)
             return 0.0;
         return 0.5 * std::log(r) * r / dr;
     }
