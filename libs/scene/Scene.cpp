@@ -15,6 +15,29 @@
 #include "object/primitive/IPrimitive.hpp"
 #include "object/primitive/ReflTypes.hpp"
 
+namespace raytracer::object::scene::detail {
+    maths::Vector resolveShadingNormal(const primitive::SurfaceData &surfData) {
+        maths::Vector normal = surfData.normal;
+        if (normal.magnitude() == 0.0) {
+            normal = maths::Vector(0, 1, 0);
+        }
+        normal = normal.normalized();
+
+        if (surfData.material.perturbedNormal.has_value()) {
+            maths::Vector perturbed = surfData.material.perturbedNormal.value();
+            if (perturbed.magnitude() > 0.0) {
+                perturbed = perturbed.normalized();
+                if (perturbed.dot(normal) < 0.0) {
+                    perturbed = perturbed * -1;
+                }
+                return perturbed;
+            }
+        }
+
+        return normal;
+    }
+}  // namespace raytracer::object::scene::detail
+
 namespace raytracer::object::scene {
     Scene::Scene() : AScene() {
     }
@@ -107,7 +130,7 @@ namespace raytracer::object::scene {
 
         primitive::SurfaceData surfData = obj->surfaceData(hitRecord);
         maths::Vector x = hitRecord.hitPoint;
-        maths::Vector n = surfData.normal;
+        maths::Vector n = detail::resolveShadingNormal(surfData);
         maths::Vector nl = n.dot(ray.direction) < 0 ? n : n * -1;
 
         maths::Vector f = surfData.material.color.toVector();
