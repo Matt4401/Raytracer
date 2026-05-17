@@ -28,7 +28,7 @@ namespace raytracer::object::primitive {
               util::ObjectMiddleware::validate<
                   std::shared_ptr<raytracer::object::material::IMaterial>>(
                   args, "material", "Fractal3D")),
-          _strategy(fractal::buildMandelbulbStrategy(args, "Fractal3D")),
+          _strategy(buildMandelbulbStrategy(args, "Fractal3D")),
           _maxSteps(static_cast<int>(util::ObjectMiddleware::validate<double>(
               args, "maxSteps", "Fractal3D"))),
           _epsilon(util::ObjectMiddleware::validate<double>(args, "epsilon",
@@ -37,7 +37,7 @@ namespace raytracer::object::primitive {
                                                             "Fractal3D")) {
     }
 
-    Fractal3D::Fractal3D(std::shared_ptr<fractal::IFractalStrategy> strategy,
+    Fractal3D::Fractal3D(std::shared_ptr<IFractalStrategy> strategy,
                          const maths::Vector &center, const int maxSteps,
                          const double epsilon, const double maxDist)
         : Fractal3D(nullptr, std::move(strategy), center, maxSteps, epsilon,
@@ -46,7 +46,7 @@ namespace raytracer::object::primitive {
 
     Fractal3D::Fractal3D(
         std::shared_ptr<raytracer::object::material::IMaterial> material,
-        std::shared_ptr<fractal::IFractalStrategy> strategy,
+        std::shared_ptr<IFractalStrategy> strategy,
         const maths::Vector &center, const int maxSteps, const double epsilon,
         const double maxDist)
         : APrimitive("Fractal3D", center, std::move(material)),
