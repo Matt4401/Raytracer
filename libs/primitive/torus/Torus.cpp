@@ -75,9 +75,11 @@ namespace raytracer::object::primitive {
         const double a3 = 4.0 * pd;
         const double a2 =
             2.0 * k + 4.0 * pd * pd + 4.0 * majorR2 * direction.y * direction.y;
-        const double a1 = 4.0 * k * pd + 8.0 * majorR2 * localOrigin.y * direction.y;
-        const double a0 =
-            k * k + 4.0 * majorR2 * localOrigin.y * localOrigin.y - 4.0 * majorR2 * r2;
+        const double a1 =
+            4.0 * k * pd + 8.0 * majorR2 * localOrigin.y * direction.y;
+        const double a0 = k * k +
+                          4.0 * majorR2 * localOrigin.y * localOrigin.y -
+                          4.0 * majorR2 * r2;
         std::array<double, 4> roots{};
         const int count =
             maths::PolynomialSolver::solveQuartic(A4, a3, a2, a1, a0, roots);
@@ -108,7 +110,8 @@ namespace raytracer::object::primitive {
                 const double p2 = upperP.dot(upperP);
                 const double val = p2 + majorR2 - r2;
                 const double res =
-                    val * val - 4.0 * majorR2 * (upperP.x * upperP.x + upperP.z * upperP.z);
+                    val * val -
+                    4.0 * majorR2 * (upperP.x * upperP.x + upperP.z * upperP.z);
 
                 if (std::fabs(res) < 0.01 * (4.0 * majorR2 * r2)) {
                     tMin = ti;
