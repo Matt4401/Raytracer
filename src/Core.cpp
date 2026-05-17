@@ -64,7 +64,7 @@ namespace raytracer {
         }
     }
 
-    bool Core::updateSceneIfUpdated(SceneInstance &sceneInfo) {
+    bool Core::updateScene(SceneInstance &sceneInfo) {
         try {
             sceneInfo.scene = this->_parser.parse(sceneInfo.filePath);
             sceneInfo.scene->buildBVH(sceneInfo.scene->bvhStrategy());
@@ -81,7 +81,7 @@ namespace raytracer {
         while (!this->_visual->fullRender() && !this->_visual->stopLoop() &&
                !this->_visual->isBackRequested()) {
             if (this->_renderer.reloadRequested() &&
-                !this->updateSceneIfUpdated(sceneInfo)) {
+                !this->updateScene(sceneInfo)) {
                 this->_renderer.clearReload();
                 break;
             }
@@ -197,19 +197,19 @@ namespace raytracer {
     void Core::startFileUpdateWatcher(SceneInstance &scene) {
         this->_fileUpdateRunning.store(true);
         this->_fileUpdateWatcher = std::thread([this, &scene]() {
-            while (this->_fileUpdateRunning.load()) {
-                std::this_thread::sleep_for(std::chrono::seconds(1));
-                try {
+            try {
+                while (this->_fileUpdateRunning.load()) {
+                    std::this_thread::sleep_for(std::chrono::seconds(1));
                     auto t = std::filesystem::last_write_time(scene.filePath);
                     if (t != scene.lastUpdate) {
                         scene.lastUpdate = t;
                         this->_renderer.requestReload();
                     }
-                } catch (const std::exception &err) {
-                    std::cout << "Error: Fail to detect if file been updated, "
-                              << err.what() << "\n";
-                    this->_renderer.stopRendering();
                 }
+            } catch (const std::exception &err) {
+                std::cout << "Error: Fail to detect if file been updated, "
+                          << err.what() << "\n";
+                this->_renderer.stopRendering();
             }
         });
     }

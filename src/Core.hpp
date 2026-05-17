@@ -73,7 +73,7 @@ namespace raytracer {
 
         void runPreview(SceneInstance &sceneInfo);
         void runScene(SceneInstance &sceneInfo);
-        bool updateSceneIfUpdated(SceneInstance &sceneInfo);
+        bool updateScene(SceneInstance &sceneInfo);
 
         std::thread _fileUpdateWatcher;
         std::atomic<bool> _fileUpdateRunning{false};

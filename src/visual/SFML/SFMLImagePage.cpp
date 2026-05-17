@@ -94,24 +94,24 @@ namespace raytracer::visual {
             this->_ctx.windowSize().x * 0.5f, this->_ctx.windowSize().y * 0.07f,
             this->_fullRender ? "Full Render Mode" : "Preview Mode");
 
-        const auto &ws = this->_ctx.windowSize();
-        float btnW = std::max(120.f, ws.x * 0.4f);
-        float btnH = std::max(30.f, ws.y * 0.06f);
-        float btnY = ws.y * 0.92f - btnH / 2.f;
+        const auto windowSize = this->_ctx.windowSize();
+        float btnW = std::max(120.f, windowSize.x * 0.4f);
+        float btnH = std::max(30.f, windowSize.y * 0.06f);
+        float btnY = windowSize.y * 0.92f - btnH / 2.f;
 
-        float backW = std::max(80.f, ws.x * 0.08f);
-        float backH = std::max(30.f, ws.y * 0.05f);
-        float backMargin = std::max(10.f, ws.x * 0.01f);
+        float backW = std::max(80.f, windowSize.x * 0.08f);
+        float backH = std::max(30.f, windowSize.y * 0.05f);
+        float backMargin = std::max(10.f, windowSize.x * 0.01f);
         this->_backButton = sf::FloatRect(backMargin, backMargin, backW, backH);
         this->drawButton(this->_backButton, "<");
 
         if (!this->_fullRender) {
             this->_fullRenderButton =
-                sf::FloatRect((ws.x - btnW) / 2.f, btnY, btnW, btnH);
+                sf::FloatRect((windowSize.x - btnW) / 2.f, btnY, btnW, btnH);
             this->drawButton(this->_fullRenderButton, "Full Render");
         } else if (this->_showSaveButton) {
             this->_saveButton =
-                sf::FloatRect((ws.x - btnW) / 2.f, btnY, btnW, btnH);
+                sf::FloatRect((windowSize.x - btnW) / 2.f, btnY, btnW, btnH);
             this->drawButton(this->_saveButton, "Save");
         }
     }
@@ -137,55 +137,56 @@ namespace raytracer::visual {
     }
 
     void SFMLImagePage::layoutSprite(ImageSize &size, sf::Sprite &sprite) {
-        const auto &ws = this->_ctx.windowSize();
+        const auto windowSize = this->_ctx.windowSize();
 
-        const float headerH = std::max(40.f, ws.y * 0.10f);
-        const float footerH = std::max(60.f, ws.y * 0.12f);
-        const float sideM = std::max(20.f, ws.x * 0.05f);
+        const float headerH = std::max(40.f, windowSize.y * 0.10f);
+        const float footerH = std::max(60.f, windowSize.y * 0.12f);
+        const float sideMargin = std::max(20.f, windowSize.x * 0.05f);
 
-        float aw = std::max(0.f, ws.x - 2.f * sideM);
-        float ah = std::max(0.f, ws.y - headerH - footerH - 2.f);
-        if (aw <= 0.f || ah <= 0.f)
+        float avalaibleWidth = std::max(0.f, windowSize.x - 2.f * sideMargin);
+        float avalaibleHeight =
+            std::max(0.f, windowSize.y - headerH - footerH - 2.f);
+        if (avalaibleWidth <= 0.f || avalaibleHeight <= 0.f)
             return;
 
-        float sx = aw / static_cast<float>(size.width);
-        float sy = ah / static_cast<float>(size.heigth);
-        float scale = std::min(sx, sy);
+        float scale =
+            std::min(avalaibleWidth / static_cast<float>(size.width),
+                     avalaibleHeight / static_cast<float>(size.heigth));
         if (scale <= 0.f)
             return;
 
-        float dw = size.width * scale;
-        float dh = size.heigth * scale;
-        float px = sideM + (aw - dw) / 2.f;
-        float py = headerH + (ah - dh) / 2.f;
+        float displayWidth = size.width * scale;
+        float displayHeight = size.heigth * scale;
+        float x = sideMargin + (avalaibleWidth - displayWidth) / 2.f;
+        float y = headerH + (avalaibleHeight - displayHeight) / 2.f;
 
         sprite.setScale(scale, scale);
-        sprite.setPosition(px, py);
+        sprite.setPosition(x, y);
     }
 
     void SFMLImagePage::handleEvent(sf::Event &event, Render &render) {
-        if (event.type == sf::Event::MouseButtonPressed &&
-            event.mouseButton.button == sf::Mouse::Left) {
-            int mx = event.mouseButton.x;
-            int my = event.mouseButton.y;
+        if (event.type != sf::Event::MouseButtonPressed ||
+            event.mouseButton.button != sf::Mouse::Left)
+            return;
+        int mouseX = event.mouseButton.x;
+        int mouseY = event.mouseButton.y;
 
-            if (this->isMouseOver(this->_backButton, mx, my)) {
-                this->_goBack = true;
-                render.stopRendering();
-                return;
-            }
-            if (!this->_fullRender &&
-                this->isMouseOver(this->_fullRenderButton, mx, my)) {
-                this->_fullRender = true;
-                render.stopRendering();
-                return;
-            }
-            if (this->_showSaveButton && render.renderingIsFinished() &&
-                this->_fullRender &&
-                this->isMouseOver(this->_saveButton, mx, my)) {
-                this->_save = true;
-                return;
-            }
+        if (this->isMouseOver(this->_backButton, mouseX, mouseY)) {
+            this->_goBack = true;
+            render.stopRendering();
+            return;
+        }
+        if (!this->_fullRender &&
+            this->isMouseOver(this->_fullRenderButton, mouseX, mouseY)) {
+            this->_fullRender = true;
+            render.stopRendering();
+            return;
+        }
+        if (this->_showSaveButton && render.renderingIsFinished() &&
+            this->_fullRender &&
+            this->isMouseOver(this->_saveButton, mouseX, mouseY)) {
+            this->_save = true;
+            return;
         }
     }
 }  // namespace raytracer::visual

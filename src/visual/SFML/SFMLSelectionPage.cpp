@@ -40,20 +40,20 @@ namespace raytracer::visual {
 
     void SFMLSelectionPage::draw(
         std::vector<object::scene::SceneInstance> &scenes) {
-        const sf::Vector2f &ws = _ctx.windowSize();
-        this->_buttonWidth = ws.x * 0.6f;
-        const float startY = ws.y * 0.18f;
-        const float startX = (ws.x - this->_buttonWidth) / 2.f;
+        const sf::Vector2f windowSize = _ctx.windowSize();
+        this->_buttonWidth = windowSize.x * 0.6f;
+        const float startY = windowSize.y * 0.18f;
+        const float startX = (windowSize.x - this->_buttonWidth) / 2.f;
         int index = 0;
 
         this->_buttonBounds.clear();
         this->_sceneNames.clear();
 
-        displayText(ws.x * 0.5f, ws.y * 0.08f, "Select a Scene");
+        displayText(windowSize.x * 0.5f, windowSize.y * 0.08f, "Select a Scene");
 
         for (const auto &pair : scenes) {
             float y = startY + index * (this->_buttonHeight + SPACING);
-            if (y + this->_buttonHeight > ws.y * 0.95f) {
+            if (y + this->_buttonHeight > windowSize.y * 0.95f) {
                 index++;
                 continue;
             }
