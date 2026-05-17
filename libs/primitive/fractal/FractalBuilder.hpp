@@ -35,8 +35,4 @@ namespace raytracer::object::primitive {
 
     IObject *buildFractal(const std::map<std::string, std::any> &params,
                           const std::string &contextName);
-
-    IObject *buildMandelbulb(const std::map<std::string, std::any> &params,
-                             const std::string &contextName);
-
 }  // namespace raytracer::object::primitive

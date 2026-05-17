@@ -105,9 +105,4 @@ namespace raytracer::object::primitive {
         }
         return new Fractal3D(strategy, center, maxSteps, epsilon, maxDist);
     }
-
-    IObject *buildMandelbulb(const std::map<std::string, std::any> &params,
-                             const std::string &contextName) {
-        return buildFractal(params, contextName);
-    }
 }  // namespace raytracer::object::primitive
