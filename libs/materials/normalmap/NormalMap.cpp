@@ -20,9 +20,9 @@ namespace raytracer::object::material::detail {
     };
 
     OrthonormalBasis buildBasis(const maths::Vector& normal) {
-        const maths::Vector reference = std::fabs(normal.z) < 0.999
-                                            ? maths::Vector(0, 0, 1)
-                                            : maths::Vector(0, 1, 0);
+        const maths::Vector reference = std::fabs(normal.y) < 0.999
+                                            ? maths::Vector(0, 1, 0)
+                                            : maths::Vector(1, 0, 0);
         const maths::Vector tangent = reference.cross(normal).normalized();
         const maths::Vector bitangent = normal.cross(tangent).normalized();
         return {tangent, bitangent};
