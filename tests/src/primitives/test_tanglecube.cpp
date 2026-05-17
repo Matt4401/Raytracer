@@ -5,9 +5,9 @@
 ** Unit tests for TangleCube primitive
 */
 
-#include <cmath>
-
 #include <gtest/gtest.h>
+
+#include <cmath>
 
 #include "libs/primitive/tanglecube/TangleCube.hpp"
 #include "math/Ray.hpp"
@@ -56,8 +56,8 @@ TEST(PRIMITIVE, tanglecube_miss_returns_negative_one) {
 
 TEST(PRIMITIVE, tanglecube_surface_data_uses_normal_and_uv) {
     TangleCube cube(Vector(0, 0, 0), 0.0);
-    const auto data = cube.surfaceData(HitRecord{
-        0, -1, 0, Vector(std::sqrt(5.0), 0.0, 0.0)});
+    const auto data =
+        cube.surfaceData(HitRecord{0, -1, 0, Vector(std::sqrt(5.0), 0.0, 0.0)});
 
     ASSERT_DOUBLE_EQ(data.normal.x, 1.0);
     ASSERT_DOUBLE_EQ(data.normal.y, 0.0);
