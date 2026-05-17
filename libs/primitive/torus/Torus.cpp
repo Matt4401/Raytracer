@@ -66,18 +66,20 @@ namespace raytracer::object::primitive {
             return false;
         const maths::Vector direction = ray.direction / mag;
         const maths::Vector localOrigin = ray.origin - _center;
-        const double R2 = _majorRadius * _majorRadius;
+        const double majorR2 = _majorRadius * _majorRadius;
         const double r2 = _minorRadius * _minorRadius;
         const double pd = localOrigin.dot(direction);
         const double pp = localOrigin.dot(localOrigin);
-        const double k = pp - R2 - r2;
+        const double k = pp - majorR2 - r2;
         constexpr double A4 = 1.0;
         const double a3 = 4.0 * pd;
         const double a2 =
-            2.0 * k + 4.0 * pd * pd + 4.0 * R2 * direction.y * direction.y;
-        const double a1 = 4.0 * k * pd + 8.0 * R2 * localOrigin.y * direction.y;
-        const double a0 =
-            k * k + 4.0 * R2 * localOrigin.y * localOrigin.y - 4.0 * R2 * r2;
+            2.0 * k + 4.0 * pd * pd + 4.0 * majorR2 * direction.y * direction.y;
+        const double a1 =
+            4.0 * k * pd + 8.0 * majorR2 * localOrigin.y * direction.y;
+        const double a0 = k * k +
+                          4.0 * majorR2 * localOrigin.y * localOrigin.y -
+                          4.0 * majorR2 * r2;
         std::array<double, 4> roots{};
         const int count =
             maths::PolynomialSolver::solveQuartic(A4, a3, a2, a1, a0, roots);
@@ -104,13 +106,14 @@ namespace raytracer::object::primitive {
                 ti -= f / df;
             }
             if (ti > 0.01 && ti < tMin) {
-                const maths::Vector P = localOrigin + direction * ti;
-                const double p2 = P.dot(P);
-                const double val = p2 + R2 - r2;
+                const maths::Vector upperP = localOrigin + direction * ti;
+                const double p2 = upperP.dot(upperP);
+                const double val = p2 + majorR2 - r2;
                 const double res =
-                    val * val - 4.0 * R2 * (P.x * P.x + P.z * P.z);
+                    val * val -
+                    4.0 * majorR2 * (upperP.x * upperP.x + upperP.z * upperP.z);
 
-                if (std::fabs(res) < 0.01 * (4.0 * R2 * r2)) {
+                if (std::fabs(res) < 0.01 * (4.0 * majorR2 * r2)) {
                     tMin = ti;
                 }
             }
@@ -134,13 +137,13 @@ namespace raytracer::object::primitive {
     }
 
     maths::Vector Torus::computeNormal(const maths::Vector &localPoint,
-                                       double R) {
+                                       const double upperR) {
         const double k = std::sqrt(localPoint.x * localPoint.x +
                                    localPoint.z * localPoint.z);
 
         if (k < 1e-10)
             return maths::Vector(0, localPoint.y > 0 ? 1 : -1, 0);
-        const double commonFactor = 1.0 - R / k;
+        const double commonFactor = 1.0 - upperR / k;
         const maths::Vector normal(localPoint.x * commonFactor, localPoint.y,
                                    localPoint.z * commonFactor);
 

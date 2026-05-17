@@ -75,10 +75,10 @@ namespace raytracer::object::primitive {
 
         if (count <= 0)
             return false;
-        auto evalP = [&](double t) noexcept -> double {
+        auto evalP = [&](const double t) noexcept -> double {
             return ((((a4 * t) + a3) * t + a2) * t + a1) * t + a0;
         };
-        auto evalDP = [&](double t) noexcept -> double {
+        auto evalDP = [&](const double t) noexcept -> double {
             return (((4.0 * a4 * t) + 3.0 * a3) * t + 2.0 * a2) * t + a1;
         };
 

@@ -40,7 +40,7 @@ namespace raytracer::object::primitive {
 
       private:
         static maths::Vector computeNormal(const maths::Vector &localPoint,
-                                           double R);
+                                           double upperR);
 
         double _majorRadius;
         double _minorRadius;

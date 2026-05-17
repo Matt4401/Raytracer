@@ -131,12 +131,14 @@ namespace raytracer::maths {
         }
 
         const double invA = 1.0 / a;
-        const double B = b * invA;
-        const double C = c * invA;
-        const double D = d * invA;
-        const double p = C - B * B / 3.0;
-        const double q = (2.0 * B * B * B - 9.0 * B * C + 27.0 * D) / 27.0;
-        const double shift = -B / 3.0;
+        const double upperB = b * invA;
+        const double upperC = c * invA;
+        const double upperD = d * invA;
+        const double p = upperC - upperB * upperB / 3.0;
+        const double q = (2.0 * upperB * upperB * upperB -
+                          9.0 * upperB * upperC + 27.0 * upperD) /
+                         27.0;
+        const double shift = -upperB / 3.0;
         const double disc4 = -4.0 * p * p * p - 27.0 * q * q;
 
         if (disc4 > EPSILON) {
@@ -183,16 +185,17 @@ namespace raytracer::maths {
         }
 
         const double invA = 1.0 / a;
-        const double B = b * invA;
-        const double C = c * invA;
-        const double D = d * invA;
-        const double E = e * invA;
-        const double B2 = B * B;
-        const double p = C - 3.0 * B2 / 8.0;
-        const double q = D + B2 * B / 8.0 - B * C / 2.0;
-        const double r =
-            E - 3.0 * B2 * B2 / 256.0 + B2 * C / 16.0 - B * D / 4.0;
-        const double shift = -B / 4.0;
+        const double upperB = b * invA;
+        const double upperC = c * invA;
+        const double upperD = d * invA;
+        const double upperE = e * invA;
+        const double upperB2 = upperB * upperB;
+        const double p = upperC - 3.0 * upperB2 / 8.0;
+        const double q =
+            upperD + upperB2 * upperB / 8.0 - upperB * upperC / 2.0;
+        const double r = upperE - 3.0 * upperB2 * upperB2 / 256.0 +
+                         upperB2 * upperC / 16.0 - upperB * upperD / 4.0;
+        const double shift = -upperB / 4.0;
 
         if (isZero(q)) {
             double u0 = 0.0, u1 = 0.0;
