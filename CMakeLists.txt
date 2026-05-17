@@ -47,6 +47,7 @@ set(SRCS
         src/math/Noise.cpp
         src/math/Rectangle.cpp
         src/math/AABoundingBox.cpp
+		src/math/PolynomialSolver.cpp
         src/bvh/BVHNode.cpp
         src/bvh/StrategyFactory.cpp
         src/bvh/ASplitStrategy.cpp
@@ -85,6 +86,7 @@ set(HEADERS
         include/math/Vector.hpp
         include/math/Matrix4.hpp
         include/math/Ray.hpp
+		include/math/PolynomialSolver.hpp
         include/object/AObject.hpp
         include/object/ACamera.hpp
         include/object/IObject.hpp

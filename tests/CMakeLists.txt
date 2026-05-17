@@ -116,6 +116,10 @@ if (NOT SKIP_INTERNET)
             src/primitives/test_cone.cpp
             ${CMAKE_SOURCE_DIR}/libs/primitive/cone/Cone.cpp
             ${CMAKE_SOURCE_DIR}/libs/primitive/cone/LimitedCone.cpp
+            src/primitives/test_torus.cpp
+            ${CMAKE_SOURCE_DIR}/libs/primitive/torus/Torus.cpp
+            src/primitives/test_tanglecube.cpp
+            ${CMAKE_SOURCE_DIR}/libs/primitive/tanglecube/TangleCube.cpp
             src/primitives/test_rectangle.cpp
             ${CMAKE_SOURCE_DIR}/libs/primitive/rectangle/Rectangle.cpp
             src/primitives/test_triangle.cpp
