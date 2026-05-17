@@ -49,19 +49,10 @@ namespace raytracer {
         int getPercentRendered(int activeWorkers) const;
         void setPrintProgressCallback(const PrintProgressCallback &callback);
         ImageSize imageSize();
-        void requestReload() {
-            _reloadRequested.store(true);
-            _stopRendering.store(true);
-        }
-        bool reloadRequested() const {
-            return _reloadRequested.load();
-        }
-        void clearReload() {
-            _reloadRequested.store(false);
-            _stopRendering.store(false);
-        }
+        void requestReload();
+        bool reloadRequested() const;
+        void clearReload();
 
-      protected:
       private:
         void renderRows(const object::scene::IScene &scene,
                         unsigned int workerId, int imageHeight);

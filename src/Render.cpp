@@ -147,6 +147,20 @@ namespace raytracer {
         this->_stopRendering.store(true);
     }
 
+    void Render::requestReload() {
+        _reloadRequested.store(true);
+        _stopRendering.store(true);
+    }
+
+    bool Render::reloadRequested() const {
+        return this->_reloadRequested.load();
+    }
+
+    void Render::clearReload() {
+        this->_reloadRequested.store(false);
+        this->_stopRendering.store(false);
+    }
+
     void Render::render(const object::scene::IScene &scene, int samples) {
         auto startTotal = std::chrono::high_resolution_clock::now();
         unsigned int workerCount = 0;

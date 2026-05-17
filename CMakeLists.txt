@@ -40,11 +40,12 @@ set(SRCS
         src/Core.cpp
         src/Render.cpp
         src/exporter/ExportPPM.cpp
-		src/visual/CliVisual.cpp
-		src/visual/SFML/SFMLContext.cpp
-		src/visual/SFML/SFMLSelectionPage.cpp
-		src/visual/SFML/SFMLPage.cpp
-		src/visual/SFML/SFMLImagePage.cpp
+        src/visual/CliVisual.cpp
+        src/visual/SFMLVisual.cpp
+        src/visual/SFML/SFMLContext.cpp
+        src/visual/SFML/SFMLSelectionPage.cpp
+        src/visual/SFML/SFMLPage.cpp
+        src/visual/SFML/SFMLImagePage.cpp
         src/exception/Exception.cpp
         src/math/Color.cpp
         src/math/Vector.cpp
@@ -67,7 +68,7 @@ set(SRCS
         src/plugin/PluginManager.cpp
         src/plugin/ObjectFactory.cpp
         src/parser/ConfigParser.cpp
-		src/parser/LibCfgUtils.cpp
+        src/parser/LibCfgUtils.cpp
         src/object/light/ALight.cpp
         src/object/scene/AScene.cpp
 )
@@ -75,20 +76,20 @@ set(SRCS
 set(HEADERS
         src/Core.hpp
         src/Render.hpp
-		src/exporter/ExportPPM.hpp
-		src/visual/SFML/SFMLImagePage.hpp
-		src/visual/SFML/SFMLSelectionPage.hpp
-		src/visual/SFML/SFMLPage.hpp
-		src/visual/SFML/SFMLContext.hpp
-		src/exporter/IExport.hpp
-		src/visual/CliVisual.hpp
-		src/visual/IVisual.hpp
-		src/visual/SFMLVisual.hpp
+        src/exporter/ExportPPM.hpp
+        src/visual/SFML/SFMLImagePage.hpp
+        src/visual/SFML/SFMLSelectionPage.hpp
+        src/visual/SFML/SFMLPage.hpp
+        src/visual/SFML/SFMLContext.hpp
+        src/exporter/IExport.hpp
+        src/visual/CliVisual.hpp
+        src/visual/IVisual.hpp
+        src/visual/SFMLVisual.hpp
         src/plugin/PluginManager.hpp
         src/plugin/ObjectFactory.hpp
         src/plugin/DlLoader.hpp
         src/parser/ConfigParser.hpp
-		src/parser/LibCfgUtils.hpp
+        src/parser/LibCfgUtils.hpp
         include/exception/Exception.hpp
         include/exception/ParsingException.hpp
         include/exception/CoreException.hpp
