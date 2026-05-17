@@ -167,7 +167,7 @@ namespace raytracer::util {
          * @throws PluginException If the type cannot be converted to double.
          */
         static double toDouble(const std::any &value,
-                              const std::string &fieldName);
+                               const std::string &fieldName);
 
         /**
          * @brief Convert an std::any value to integer.
@@ -187,7 +187,7 @@ namespace raytracer::util {
          * @throws PluginException If the value exists but cannot be converted.
          */
         static double readNumeric(const std::map<std::string, std::any> &params,
-                                 const std::string &key, double defaultValue);
+                                  const std::string &key, double defaultValue);
 
         /**
          * @brief Read an integer value from parameters with default.
@@ -198,6 +198,6 @@ namespace raytracer::util {
          * @throws PluginException If the value exists but cannot be converted.
          */
         static int readInt(const std::map<std::string, std::any> &params,
-                          const std::string &key, int defaultValue);
+                           const std::string &key, int defaultValue);
     };
 }  // namespace raytracer::util

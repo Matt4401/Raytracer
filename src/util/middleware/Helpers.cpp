@@ -133,7 +133,7 @@ namespace raytracer::util {
     }
 
     double Helpers::toDouble(const std::any &value,
-                            const std::string &fieldName) {
+                             const std::string &fieldName) {
         if (value.type() == typeid(int)) {
             return static_cast<double>(std::any_cast<int>(value));
         }
@@ -143,8 +143,8 @@ namespace raytracer::util {
         if (value.type() == typeid(double)) {
             return std::any_cast<double>(value);
         }
-        throw exception::PluginException(
-            "Parameter '{}' has invalid type", fieldName);
+        throw exception::PluginException("Parameter '{}' has invalid type",
+                                         fieldName);
     }
 
     int Helpers::toInt(const std::any &value, const std::string &fieldName) {
@@ -153,7 +153,7 @@ namespace raytracer::util {
     }
 
     double Helpers::readNumeric(const std::map<std::string, std::any> &params,
-                               const std::string &key, double defaultValue) {
+                                const std::string &key, double defaultValue) {
         const auto it = params.find(key);
 
         if (it == params.end()) {
@@ -163,7 +163,7 @@ namespace raytracer::util {
     }
 
     int Helpers::readInt(const std::map<std::string, std::any> &params,
-                        const std::string &key, int defaultValue) {
+                         const std::string &key, int defaultValue) {
         const auto it = params.find(key);
 
         if (it == params.end()) {
