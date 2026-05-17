@@ -64,6 +64,7 @@ namespace raytracer::object::scene {
         virtual AmbientDiffuse ambientDiffuse() const = 0;
 
         virtual bool haveCamera() = 0;
+        virtual bool adaptiveSampling() const = 0;
 
         virtual const std::vector<std::shared_ptr<primitive::IPrimitive>> &
         primitives() const = 0;

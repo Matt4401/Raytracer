@@ -10,7 +10,6 @@
 #include <algorithm>
 #include <bvh/BVHBuilder.hpp>
 #include <limits>
-#include <numeric>
 
 #include "object/IScene.hpp"
 #include "object/primitive/IPrimitive.hpp"
